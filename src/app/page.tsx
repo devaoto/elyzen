@@ -1,12 +1,12 @@
 import { use } from 'react';
 import { Hero } from '@/components/shared/Hero';
 import Image from 'next/image';
-import { fetchPopularAnime, fetchTrendingAnime } from '@/lib/anime';
+import { getTrendingAnime, getPopularAnime } from '@/lib/anime';
 import { Slider } from '@/components/shared/Slider';
 
 export default function Home() {
-  const trending = use(fetchTrendingAnime(1, 69));
-  const popular = use(fetchPopularAnime(1, 69));
+  const trending = use(getTrendingAnime(1, 69));
+  const popular = use(getPopularAnime());
 
   return (
     <>
