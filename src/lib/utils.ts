@@ -44,3 +44,55 @@ export function numberToMonth(num: number): string {
       return 'January';
   }
 }
+
+export function darkHexColor(hex: string, percent: number): string {
+  // Remove the '#' character if present
+  hex = hex.replace('#', '');
+
+  // Parse the hexadecimal color value
+  let r = parseInt(hex.substring(0, 2), 16);
+  let g = parseInt(hex.substring(2, 4), 16);
+  let b = parseInt(hex.substring(4, 6), 16);
+
+  // Darken the color
+  r = Math.floor(r * (1 - percent / 100));
+  g = Math.floor(g * (1 - percent / 100));
+  b = Math.floor(b * (1 - percent / 100));
+
+  // Ensure the values are within the valid range [0, 255]
+  r = Math.min(Math.max(0, r), 255);
+  g = Math.min(Math.max(0, g), 255);
+  b = Math.min(Math.max(0, b), 255);
+
+  // Convert the decimal values to hexadecimal
+  const darkHex =
+    '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+  return darkHex;
+}
+
+/**
+ * getCurrentSeason function returns the current season based on the current month.
+ * The seasons are determined based on the following months:
+ * - Spring: March, April, May
+ * - Summer: June, July, August
+ * - Fall: September, October, November
+ * - Winter: December, January, February
+ * @returns The current season as a string: 'SPRING', 'SUMMER', 'FALL', or 'WINTER'.
+ */
+export function getCurrentSeason(): 'SPRING' | 'SUMMER' | 'FALL' | 'WINTER' {
+  // Get the current month
+  const month = new Date().getMonth() + 1; // Adding 1 to get 1-indexed month
+
+  // Determine the season based on the month
+  switch (true) {
+    case month >= 3 && month <= 5:
+      return 'SPRING';
+    case month >= 6 && month <= 8:
+      return 'SUMMER';
+    case month >= 9 && month <= 11:
+      return 'FALL';
+    default:
+      return 'WINTER';
+  }
+}
