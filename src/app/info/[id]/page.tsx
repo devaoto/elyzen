@@ -17,8 +17,40 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import dynamic from 'next/dynamic';
+import { Metadata, Viewport } from 'next';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
+
+export const generateMetadata = async ({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> => {
+  const info = (await fetchAnilistInfo(params)) as AnilistInfo;
+  return {
+    title:
+      info.title.userPreferred ??
+      info.title.english ??
+      info.title.romaji ??
+      info.title.native,
+    description: info.description?.replace(/<br>/g, '').slice(0, 155),
+    openGraph: {
+      images: info.bannerImage ?? info.coverImage ?? undefined,
+    },
+  };
+};
+
+export const generateViewport = async ({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Viewport> => {
+  const info = (await fetchAnilistInfo(params)) as AnilistInfo;
+
+  return {
+    themeColor: info.color ?? '#FFFFFF',
+  };
+};
 
 export default function Information({ params }: { params: { id: string } }) {
   const info = use(fetchAnilistInfo(params)) as AnilistInfo;
