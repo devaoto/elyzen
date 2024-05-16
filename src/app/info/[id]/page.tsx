@@ -55,7 +55,7 @@ export default function Information({ params }: { params: { id: string } }) {
             <div className="absolute inset-0 z-[2] bg-gradient-to-l from-transparent from-[80%] to-background" />
             <div className="absolute inset-0 z-[2] bg-gradient-to-t from-transparent from-[80%] to-background" />
             <div className="absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-background">
-              <div className="flex flex-col justify-center h-full ml-10">
+              <div className="flex mt-40 lg:mt-0 md:mt-0 xl:mt-0 2xl:mt-0 flex-col justify-center h-full ml-10">
                 <div className="flex flex-col items-center gap-4 md:flex-row lg:flex-row xl:flex-row">
                   <Image
                     src={info.coverImage!}
@@ -81,7 +81,7 @@ export default function Information({ params }: { params: { id: string } }) {
                     <Dialog>
                       <DialogTrigger>
                         <div
-                          className="py-5 px-2 -ml-2 hover:bg-black/20 duration-300 rounded-lg mt-2 text-sm line-clamp-4 max-w-xl text-left"
+                          className="py-5 px-2 -ml-2 hover:bg-black/20 duration-300 rounded-lg mt-2 text-sm line-clamp-4 max-w-xl text-left select-none"
                           dangerouslySetInnerHTML={{
                             __html: info.description?.replace(/<br>/g, '')!,
                           }}
@@ -97,6 +97,13 @@ export default function Information({ params }: { params: { id: string } }) {
                         </DialogDescription>
                       </DialogContent>
                     </Dialog>
+                    <div className="flex gap-2 flex-wrap mt-2">
+                      {info.genres?.map((g, i) => (
+                        <Badge variant={'outline'} key={g + i}>
+                          {g}
+                        </Badge>
+                      ))}
+                    </div>
                     <div className="mt-2 flex justify-center md:justify-start xl:justify-start lg:justify-start">
                       <TooltipProvider delayDuration={0}>
                         <Tooltip>
