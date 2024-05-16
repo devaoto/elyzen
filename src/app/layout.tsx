@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ModeToggle } from '@/components/ThemeToggle';
+import TopProgressBar from '@/components/TopProgressBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
           <ModeToggle />
           <main>{children}</main>
         </ThemeProvider>
+        <TopProgressBar />
       </body>
     </html>
   );
