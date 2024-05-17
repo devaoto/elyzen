@@ -125,11 +125,3 @@ export const Slider = ({
     </div>
   );
 };
-
-
-
-
-
-
-
-
