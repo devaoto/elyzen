@@ -72,18 +72,21 @@ export const Slider = ({
       </div>
       <div
         id={`anime-${title}-card`}
-        className='relative flex max-w-full flex-nowrap items-center gap-[10px] overflow-y-hidden overflow-x-scroll scrollbar-hide'
+        className='relative flex max-w-full flex-nowrap items-center gap-[10px] overflow-y-hidden overflow-x-scroll pl-2 pt-2 scrollbar-hide'
         {...events}
         ref={slider}
       >
         {data.results
           .filter(
-            (anime) => anime.status !== 'NOT_YET_RELEASED' && anime.coverImage
+            (anime) =>
+              ['FINISHED', 'RELEASING', 'NOT_YET_RELEASED'].includes(
+                anime.status || ''
+              ) && anime.coverImage
           )
           .map((anime) => (
             <div
               key={anime.id}
-              className='duration-[0.5s] max-h-full min-w-[200px] rounded-xl shadow-lg transition-transform ease-in-out hover:scale-105'
+              className='duration-[0.5s] mb-6 max-h-full min-w-[200px] rounded-xl pb-6 shadow-lg shadow-zinc-900 transition-transform ease-in-out hover:scale-105'
             >
               <div className='relative flex-none overflow-hidden rounded-t-xl'>
                 <Link href={`/info/${anime.id}`}>
@@ -96,12 +99,23 @@ export const Slider = ({
                   />
                 </Link>
               </div>
-              <div className='p-4'>
+              <div className='px-4 pt-4'>
                 <h1 className='max-w-[200px] truncate text-lg font-semibold'>
                   {anime.title.english ?? anime.title.romaji}
                 </h1>
                 <p className='mt-1 text-xs font-bold text-gray-600 dark:text-gray-300'>
-                  {anime.format} | {anime.status} | {anime.season}
+                  {anime.format} |
+                  <span
+                    className={
+                      anime.status === 'FINISHED'
+                        ? 'text-blue-600'
+                        : 'text-green-600'
+                    }
+                  >
+                    {' '}
+                    {anime.status}{' '}
+                  </span>
+                  | {anime.season}
                 </p>
               </div>
             </div>
@@ -110,3 +124,11 @@ export const Slider = ({
     </div>
   );
 };
+
+
+
+
+
+
+
+
