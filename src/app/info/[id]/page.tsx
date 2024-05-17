@@ -18,6 +18,9 @@ import {
 } from '@/components/ui/dialog';
 import dynamic from 'next/dynamic';
 import { Metadata, Viewport } from 'next';
+import { getEpisodes } from '@/lib/anime';
+import { Provider } from '@/types/api';
+import AnimeViewer from '@/components/shared/EpisodeList';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 
@@ -53,7 +56,10 @@ export const generateViewport = async ({
 };
 
 export default function Information({ params }: { params: { id: string } }) {
-  const info = use(fetchAnilistInfo(params)) as AnilistInfo;
+  const infoPromise = fetchAnilistInfo(params) as Promise<AnilistInfo>;
+  const episodesPromise = getEpisodes(params.id) as Promise<Provider[]>;
+
+  const [info, episodes] = use(Promise.all([infoPromise, episodesPromise]));
 
   return (
     <>
@@ -165,6 +171,9 @@ export default function Information({ params }: { params: { id: string } }) {
             </div>
           </div>
         }
+        <div>
+          <AnimeViewer animeData={episodes} id={params.id} />
+        </div>
       </div>
     </>
   );
