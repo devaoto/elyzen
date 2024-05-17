@@ -436,8 +436,8 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
         nextAiringEpisode: (await data.Media?.nextAiringEpisode)
           ? {
               airingTime: await data.Media.nextAiringEpisode?.airingAt,
-              timeUntilAiring: await data.Media.nextAiringEpisode
-                ?.timeUntilAiring,
+              timeUntilAiring:
+                await data.Media.nextAiringEpisode?.timeUntilAiring,
               episode: await data.Media.nextAiringEpisode?.episode,
             }
           : undefined,

@@ -7,8 +7,8 @@ export default function TopProgressBar() {
   return (
     <Suspense>
       <AppProgressBar
-        height="4px"
-        color="#FFFFFF"
+        height='4px'
+        color='#FFFFFF'
         options={{ showSpinner: false }}
         shallowRouting
       />

@@ -64,26 +64,26 @@ export default function Information({ params }: { params: { id: string } }) {
   return (
     <>
       <SideBar />
-      <div className="ml-0 lg:ml-16 xl:ml-16 2xl:ml-16 md:ml-16">
+      <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         {
-          <div className="overflow-x-hidden">
-            <div className="relative">
+          <div className='overflow-x-hidden'>
+            <div className='relative'>
               <div
                 style={{
                   backgroundColor:
                     darkHexColor(info?.color ? info?.color : '#00FF7F', 80) ??
                     'springgreen',
                 }}
-                className="overflow-x-hidden h-[620px] w-[1920px]"
+                className='h-[620px] w-[1920px] overflow-x-hidden'
               ></div>
-              <div className="overflow-x-hidden absolute inset-0 z-[1]">
+              <div className='absolute inset-0 z-[1] overflow-x-hidden'>
                 {info.bannerImage ? (
                   <Image
                     src={info.bannerImage}
                     alt={info.color!}
                     width={1920}
                     height={900}
-                    className="min-h-[620px] object-cover [clip-path:polygon(44%_0,100%_0%,100%_100%,31%_100%)]"
+                    className='min-h-[620px] object-cover [clip-path:polygon(44%_0,100%_0%,100%_100%,31%_100%)]'
                   />
                 ) : info.coverImage ? (
                   <Image
@@ -91,19 +91,19 @@ export default function Information({ params }: { params: { id: string } }) {
                     alt={info.color! ?? info.title.english ?? info.title.romaji}
                     width={1920}
                     height={900}
-                    className="max-h-[620px] min-h-[620px] min-w-[1920px] object-cover [clip-path:polygon(44%_0,100%_0%,100%_100%,31%_100%)]"
+                    className='max-h-[620px] min-h-[620px] min-w-[1920px] object-cover [clip-path:polygon(44%_0,100%_0%,100%_100%,31%_100%)]'
                   />
                 ) : null}
               </div>
-              <div className="absolute inset-0 z-[2] bg-gradient-to-r from-transparent from-[80%] to-background" />
-              <div className="absolute inset-0 z-[2] bg-gradient-to-l from-transparent from-[80%] to-background" />
-              <div className="absolute inset-0 z-[2] bg-gradient-to-t from-transparent from-[80%] to-background" />
-              <div className="absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-background">
-                <div className="flex mt-40 lg:mt-0 md:mt-0 xl:mt-0 2xl:mt-0 flex-col justify-center h-full ml-10">
-                  <div className="flex flex-col items-center gap-4 md:flex-row lg:flex-row xl:flex-row">
+              <div className='absolute inset-0 z-[2] bg-gradient-to-r from-transparent from-[80%] to-background' />
+              <div className='absolute inset-0 z-[2] bg-gradient-to-l from-transparent from-[80%] to-background' />
+              <div className='absolute inset-0 z-[2] bg-gradient-to-t from-transparent from-[80%] to-background' />
+              <div className='absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-background'>
+                <div className='ml-10 mt-40 flex h-full flex-col justify-center md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0'>
+                  <div className='flex flex-col items-center gap-4 md:flex-row lg:flex-row xl:flex-row'>
                     <Image
                       src={info.coverImage!}
-                      className="object-cover rounded-xl max-h-[400px]"
+                      className='max-h-[400px] rounded-xl object-cover'
                       alt={info.title.english! ?? info.title.romaji!}
                       width={300}
                       height={500}
@@ -111,28 +111,28 @@ export default function Information({ params }: { params: { id: string } }) {
                     <div>
                       <h1
                         style={{ color: info.color ?? 'pink' }}
-                        className="text-center text-3xl font-bold md:text-left lg:text-left"
+                        className='text-center text-3xl font-bold md:text-left lg:text-left'
                       >
                         {info.title.english ?? info.title.romaji}
                       </h1>
-                      <h2 className="text-center text-2xl font-semibold md:text-left lg:text-left">
+                      <h2 className='text-center text-2xl font-semibold md:text-left lg:text-left'>
                         {info.title.romaji}
                       </h2>
-                      <div className="flex mt-2 gap-3">
+                      <div className='mt-2 flex gap-3'>
                         <Badge>EP {info.totalEpisodes}</Badge>
                         <Badge variant={'outline'}>{info.format}</Badge>
                       </div>
                       <Dialog>
                         <DialogTrigger>
                           <div
-                            className="py-5 px-2 -ml-2 hover:bg-black/20 duration-300 rounded-lg mt-2 text-sm line-clamp-4 max-w-xl text-left select-none"
+                            className='-ml-2 mt-2 line-clamp-4 max-w-xl select-none rounded-lg px-2 py-5 text-left text-sm duration-300 hover:bg-black/20'
                             dangerouslySetInnerHTML={{
                               __html: info.description?.replace(/<br>/g, '')!,
                             }}
                           />
                         </DialogTrigger>
                         <DialogContent>
-                          <DialogDescription className="max-h-80 text-lg overflow-y-scroll scrollbar-hide">
+                          <DialogDescription className='max-h-80 overflow-y-scroll text-lg scrollbar-hide'>
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: info.description!,
@@ -141,19 +141,19 @@ export default function Information({ params }: { params: { id: string } }) {
                           </DialogDescription>
                         </DialogContent>
                       </Dialog>
-                      <div className="flex gap-2 flex-wrap mt-2">
+                      <div className='mt-2 flex flex-wrap gap-2'>
                         {info.genres?.map((g, i) => (
                           <Badge variant={'outline'} key={g + i}>
                             {g}
                           </Badge>
                         ))}
                       </div>
-                      <div className="mt-2 flex justify-center md:justify-start xl:justify-start lg:justify-start">
+                      <div className='mt-2 flex justify-center md:justify-start lg:justify-start xl:justify-start'>
                         <TooltipProvider delayDuration={0}>
                           <Tooltip>
-                            <TooltipTrigger asChild className="cursor-no-drop">
+                            <TooltipTrigger asChild className='cursor-no-drop'>
                               <div>
-                                <Button variant="outline" disabled>
+                                <Button variant='outline' disabled>
                                   Watch Now
                                 </Button>
                               </div>

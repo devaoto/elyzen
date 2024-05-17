@@ -54,7 +54,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
     <div>
       {randomElement ? (
         <>
-          <div className="relative">
+          <div className='relative'>
             {trailer && trailer.url ? (
               <RenderVideo trailer={trailer.url} />
             ) : (
@@ -80,21 +80,21 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                     }
                     width={1920}
                     height={920}
-                    className="object-cover aspect-video h-[300px] min-w-[500px] rounded-lg md:h-[350px] md:min-w-[1000px] lg:h-[600px] lg:min-w-[2000px]"
+                    className='aspect-video h-[300px] min-w-[500px] rounded-lg object-cover md:h-[350px] md:min-w-[1000px] lg:h-[600px] lg:min-w-[2000px]'
                   />
                 )}
               </>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent from-[80%] to-background"></div>
-            <div className="absolute inset-0 bg-gradient-to-l from-transparent from-[80%] to-background"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-transparent from-[80%] to-background"></div>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background">
-              <div className="ml-5 flex h-full flex-col justify-end gap-8">
+            <div className='absolute inset-0 bg-gradient-to-r from-transparent from-[80%] to-background'></div>
+            <div className='absolute inset-0 bg-gradient-to-l from-transparent from-[80%] to-background'></div>
+            <div className='absolute inset-0 bg-gradient-to-t from-transparent from-[80%] to-background'></div>
+            <div className='absolute inset-0 bg-gradient-to-b from-transparent to-background'>
+              <div className='ml-5 flex h-full flex-col justify-end gap-8'>
                 <div>
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <h3
                       style={{ color: randomElement.color ?? 'pink' }}
-                      className="line-clamp-1 max-w-[15%]"
+                      className='line-clamp-1 max-w-[15%]'
                     >
                       {randomElement?.title.native}
                     </h3>
@@ -106,37 +106,37 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                       {randomElement?.title.romaji}
                     </h3>
                   </div>
-                  <h1 className="line-clamp-2 max-w-[70%] text-3xl font-bold lg:max-w-[55%] lg:text-7xl">
+                  <h1 className='line-clamp-2 max-w-[70%] text-3xl font-bold lg:max-w-[55%] lg:text-7xl'>
                     {randomElement?.title.english ??
                       randomElement?.title.romaji}
                   </h1>
                 </div>
                 <div>
-                  <div className="flex gap-3 items-center font-semibold">
+                  <div className='flex items-center gap-3 font-semibold'>
                     <h1>{randomElement.format}</h1>
-                    <div className="size-[5px] font-bold bg-white rounded-full"></div>
+                    <div className='size-[5px] rounded-full bg-white font-bold'></div>
                     <h1>
                       {randomElement.startDate?.day}{' '}
                       {numberToMonth(randomElement.startDate?.month!)}{' '}
                       {randomElement.startDate?.year}
                     </h1>
-                    <div className="size-[5px] font-bold bg-white rounded-full"></div>
+                    <div className='size-[5px] rounded-full bg-white font-bold'></div>
                     <h1 style={{ color: randomElement.color ?? 'pink' }}>
                       {randomElement.status}
                     </h1>
                   </div>
                   <div
-                    className="hidden md:line-clamp-2 lg:line-clamp-4 xl:line-clamp-4 2xl:line-clamp-4 max-w-[50%]"
+                    className='hidden max-w-[50%] md:line-clamp-2 lg:line-clamp-4 xl:line-clamp-4 2xl:line-clamp-4'
                     dangerouslySetInnerHTML={{
                       __html: randomElement.description!.replace(/<br>/g, ''),
                     }}
                   />
                 </div>
-                <div className="flex justify-start">
+                <div className='flex justify-start'>
                   <TooltipProvider>
                     <Tooltip disableHoverableContent delayDuration={0}>
-                      <TooltipTrigger className="cursor-no-drop">
-                        <Button className="max-w-[100px]" disabled>
+                      <TooltipTrigger className='cursor-no-drop'>
+                        <Button className='max-w-[100px]' disabled>
                           Watch Now
                         </Button>
                       </TooltipTrigger>

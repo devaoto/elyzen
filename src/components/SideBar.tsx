@@ -32,20 +32,20 @@ export default function SideBar() {
   return (
     <>
       {!isMobile ? (
-        <div className="px-1 pt-10 h-screen fixed flex flex-col gap-2 items-center z-50 bg-background">
-          <div className="self-start flex flex-col gap-2">
+        <div className='fixed z-50 flex h-screen flex-col items-center gap-2 bg-background px-1 pt-10'>
+          <div className='flex flex-col gap-2 self-start'>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div>
-                    <Link href="/">
+                    <Link href='/'>
                       <Button variant={'outline'} size={'icon'}>
                         <HomeIcon />
                       </Button>
                     </Link>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side='right'>
                   <p>Home</p>
                 </TooltipContent>
               </Tooltip>
@@ -57,23 +57,23 @@ export default function SideBar() {
                     <ModeToggle />
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side='right'>
                   <p>Theme</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="my-auto flex flex-col gap-2">
+          <div className='my-auto flex flex-col gap-2'>
             <TooltipProvider>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size="icon">
-                      <FlameIcon className="hover:fill-slate-200" />
+                    <Button variant={'outline'} size='icon'>
+                      <FlameIcon className='hover:fill-slate-200' />
                     </Button>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side='right'>
                   <p>Trending</p>
                 </TooltipContent>
               </Tooltip>
@@ -82,28 +82,28 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size="icon">
-                      <StarIcon className="hover:fill-slate-200" />
+                    <Button variant={'outline'} size='icon'>
+                      <StarIcon className='hover:fill-slate-200' />
                     </Button>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side='right'>
                   <p>Popular</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className="flex self-end mb-2 flex-col gap-2">
+          <div className='mb-2 flex flex-col gap-2 self-end'>
             <TooltipProvider>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size="icon">
+                    <Button variant={'outline'} size='icon'>
                       <SettingsIcon />
                     </Button>
                   </div>
                 </TooltipTrigger>
-                <TooltipContent side="right">
+                <TooltipContent side='right'>
                   <p>Settings</p>
                 </TooltipContent>
               </Tooltip>
@@ -111,54 +111,54 @@ export default function SideBar() {
           </div>
         </div>
       ) : (
-        <div className="fixed z-[69421] top-0">
+        <div className='fixed top-0 z-[69421]'>
           <Drawer>
             <DrawerTrigger asChild>
-              <Button variant="ghost">
+              <Button variant='ghost'>
                 <Menu />
               </Button>
             </DrawerTrigger>
-            <DrawerContent className="sticky z-[388484]">
-              <div className="flex gap-3 flex-col">
-                <div className="flex gap-1 items-center">
-                  <Link href="/">
+            <DrawerContent className='sticky z-[388484]'>
+              <div className='flex flex-col gap-3'>
+                <div className='flex items-center gap-1'>
+                  <Link href='/'>
                     <Button variant={'outline'} size={'icon'}>
                       <HomeIcon />
                     </Button>
                   </Link>{' '}
-                  <span className="font-bold">Home</span>
+                  <span className='font-bold'>Home</span>
                 </div>
-                <div className="flex gap-1 items-center">
+                <div className='flex items-center gap-1'>
                   <span>
                     <ModeToggle />
                   </span>{' '}
-                  <span className="font-bold">Change Theme</span>
+                  <span className='font-bold'>Change Theme</span>
                 </div>
-                <Separator className="my-2" />
-                <div className="flex gap-1 items-center">
+                <Separator className='my-2' />
+                <div className='flex items-center gap-1'>
                   <span>
                     <Button variant={'outline'} size={'icon'}>
                       <FlameIcon />
                     </Button>
                   </span>
-                  <span className="font-bold">Trending</span>
+                  <span className='font-bold'>Trending</span>
                 </div>
-                <div className="flex gap-1 items-center">
+                <div className='flex items-center gap-1'>
                   <span>
                     <Button variant={'outline'} size={'icon'}>
                       <StarIcon />
                     </Button>
                   </span>
-                  <span className="font-bold">Popular</span>
+                  <span className='font-bold'>Popular</span>
                 </div>
-                <Separator className="my-2" />
-                <div className="flex gap-1 items-center">
+                <Separator className='my-2' />
+                <div className='flex items-center gap-1'>
                   <span>
                     <Button variant={'outline'} size={'icon'}>
                       <SettingsIcon />
                     </Button>
                   </span>
-                  <span className="font-bold">Settings</span>
+                  <span className='font-bold'>Settings</span>
                 </div>
               </div>
             </DrawerContent>

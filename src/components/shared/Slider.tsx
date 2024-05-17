@@ -1,10 +1,10 @@
-"use client";
-import { useDraggable } from "react-use-draggable-scroll";
-import React, { useRef, useState } from "react";
-import { ReturnData } from "@/types/api";
-import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+'use client';
+import { useDraggable } from 'react-use-draggable-scroll';
+import React, { useRef, useState } from 'react';
+import { ReturnData } from '@/types/api';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
 
 export const Slider = ({
   data,
@@ -33,16 +33,16 @@ export const Slider = ({
     const cont = document.getElementById(`anime-${title}-card`);
 
     if (cont && container) {
-      cont.classList.add("scroll-smooth");
+      cont.classList.add('scroll-smooth');
       container.scrollLeft += amount;
 
       setTimeout(() => {
-        cont.classList.remove("scroll-smooth");
+        cont.classList.remove('scroll-smooth');
       }, 300);
     }
   };
 
-   const variants = {
+  const variants = {
     initial: {
       opacity: 0,
     },
@@ -65,57 +65,57 @@ export const Slider = ({
   }
 
   return (
-    <div className="relative">
-      <div className="group">
+    <div className='relative'>
+      <div className='group'>
         <ArrowLeft
           onClick={scrollLeft}
           style={{ opacity: 1 }}
-          className="absolute w-[30px] flex items-center h-full z-[69420] bg-gradient-to-r from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba cursor-pointer duration-500 ease-out transition-all"
+          className='absolute z-[69420] flex h-full w-[30px] cursor-pointer items-center bg-gradient-to-r from-transparent-gr to-transparent-gr transition-all duration-500 ease-out group-hover:from-[#000000] group-hover:to-gradient-rgba'
         />
       </div>
-      <div className="group">
+      <div className='group'>
         <ArrowRight
           onClick={scrollRight}
           style={{ opacity: 1 }}
-          className="absolute w-[30px] flex items-center h-full z-[69420] bg-gradient-to-l from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba to-gradient-rgba cursor-pointer duration-500 ease-out transition-all right-0"
+          className='absolute right-0 z-[69420] flex h-full w-[30px] cursor-pointer items-center bg-gradient-to-l from-transparent-gr to-gradient-rgba to-transparent-gr transition-all duration-500 ease-out group-hover:from-[#000000] group-hover:to-gradient-rgba'
         />
       </div>
       <div
         id={`anime-${title}-card`}
-        className="flex flex-nowrap gap-[10px] overflow-y-hidden relative items-center max-w-full overflow-x-scroll scrollbar-hide"
+        className='relative flex max-w-full flex-nowrap items-center gap-[10px] overflow-y-hidden overflow-x-scroll scrollbar-hide'
         {...events}
         ref={slider}
         onScroll={handleScroll}
       >
         {data.results
           .filter(
-            (anime) => anime.status !== "NOT_YET_RELEASED" && anime.coverImage
+            (anime) => anime.status !== 'NOT_YET_RELEASED' && anime.coverImage
           )
           .map((anime) => (
-              <div
-                key={anime.id}
-                className="min-w-[200px] max-h-full transition-all duration-500 ease-in-out hover:scale-105 rounded-xl shadow-lg "
-              >
-                <div className="flex-none relative overflow-hidden rounded-t-xl">
-                  <Link href={`/info/${anime.id}`}>
-                    <Image
-                      src={anime.coverImage!}
-                      alt={anime.title.english ?? anime.title.romaji}
-                      height={300}
-                      width={200}
-                      className="object-cover min-h-[285px] max-h-[285px] min-w-[200px]"
-                    />
-                  </Link>
-                </div>
-                <div className="p-4">
-                  <h1 className="text-white truncate text-lg font-semibold max-w-[200px]">
-                    {anime.title.english ?? anime.title.romaji}
-                  </h1>
-                  <p className="font-bold text-xs text-gray-600 mt-1">
-                    {anime.format} | {anime.status} | {anime.season}
-                  </p>
-                </div>
+            <div
+              key={anime.id}
+              className='max-h-full min-w-[200px] rounded-xl shadow-lg transition-all duration-500 ease-in-out hover:scale-105 '
+            >
+              <div className='relative flex-none overflow-hidden rounded-t-xl'>
+                <Link href={`/info/${anime.id}`}>
+                  <Image
+                    src={anime.coverImage!}
+                    alt={anime.title.english ?? anime.title.romaji}
+                    height={300}
+                    width={200}
+                    className='max-h-[285px] min-h-[285px] min-w-[200px] object-cover'
+                  />
+                </Link>
               </div>
+              <div className='p-4'>
+                <h1 className='max-w-[200px] truncate text-lg font-semibold text-white'>
+                  {anime.title.english ?? anime.title.romaji}
+                </h1>
+                <p className='mt-1 text-xs font-bold text-gray-600'>
+                  {anime.format} | {anime.status} | {anime.season}
+                </p>
+              </div>
+            </div>
           ))}
       </div>
     </div>

@@ -15,15 +15,15 @@ export default function Home() {
   return (
     <>
       <SideBar />
-      <div className="ml-0 lg:ml-16 xl:ml-16 2xl:ml-16 md:ml-16">
+      <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         <Hero data={trending} />
-        <div className="mt-20">
-          <h1 className="text-3xl font-mono mb-4">TRENDING NOW</h1>
-          <Slider data={trending} title="trending" />
+        <div className='mt-20'>
+          <h1 className='mb-4 font-mono text-3xl'>TRENDING NOW</h1>
+          <Slider data={trending} title='trending' />
         </div>
-        <div className="mt-20">
-          <h1 className="text-3xl font-mono mb-4">ALL TIME POPULAR</h1>
-          <Slider data={popular} title="popular" />
+        <div className='mt-20'>
+          <h1 className='mb-4 font-mono text-3xl'>ALL TIME POPULAR</h1>
+          <Slider data={popular} title='popular' />
         </div>
       </div>
     </>
