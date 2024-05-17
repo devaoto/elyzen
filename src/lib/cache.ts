@@ -10,15 +10,19 @@ if (!process.env.REDIS_URI) {
 export namespace cache {
   let cacheInstance: NodeCache | Redis;
 
-  export async function get(key: string): Promise<any> {
+  function initializeCacheInstance(): void {
     if (!cacheInstance) {
       cacheInstance = process.env.REDIS_URI
         ? new Redis(process.env.REDIS_URI)
         : new NodeCache();
     }
+  }
+
+  export async function get(key: string): Promise<any> {
+    initializeCacheInstance();
 
     if (isRedis(cacheInstance)) {
-      return await cacheInstance.get(key);
+      return await (cacheInstance as Redis).get(key);
     } else {
       return (cacheInstance as NodeCache).get(key);
     }
@@ -29,11 +33,7 @@ export namespace cache {
     value: any,
     expireTime?: number
   ): Promise<void> {
-    if (!cacheInstance) {
-      cacheInstance = process.env.REDIS_URI
-        ? new Redis(process.env.REDIS_URI)
-        : new NodeCache();
-    }
+    initializeCacheInstance();
 
     if (isRedis(cacheInstance)) {
       if (expireTime) {
@@ -47,6 +47,16 @@ export namespace cache {
       } else {
         (cacheInstance as NodeCache).set(key, value);
       }
+    }
+  }
+
+  export async function del(key: string): Promise<void> {
+    initializeCacheInstance();
+
+    if (isRedis(cacheInstance)) {
+      await (cacheInstance as Redis).del(key);
+    } else {
+      (cacheInstance as NodeCache).del(key);
     }
   }
 
