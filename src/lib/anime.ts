@@ -1,6 +1,6 @@
 import { QueryResponse } from '@/types/query';
 import { cache } from './cache';
-import { ReturnData } from '@/types/api';
+import { Provider, ReturnData } from '@/types/api';
 import { AnimeListResponse } from '@/types/consumet';
 
 import { getCurrentSeason } from './utils';
@@ -484,3 +484,29 @@ export const getSeasonalAnime = async () => {
     }
   }
 };
+
+export async function getEpisodes(id: string): Promise<Provider[]> {
+  try {
+    const response = await FetchDataAndCache(
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/episodes/${id}`,
+      `episode-${id}`
+    );
+
+    if (response && typeof response === 'object' && !Array.isArray(response)) {
+      return Object.keys(response)
+        .filter((key) => key !== 'isCached')
+        .map((key) => {
+          const provider = response[key];
+          return {
+            consumet: provider.consumet,
+            providerId: provider.providerId,
+            episodes: provider.episodes,
+          } as Provider;
+        });
+    } else {
+      throw new Error('Invalid response format');
+    }
+  } catch (error) {
+    throw error;
+  }
+}
