@@ -46,3 +46,23 @@ export interface ReturnData {
   hasNextPage: boolean;
   results: Media[];
 }
+
+export interface Episode {
+  id?: string;
+  episodeId?: string;
+  number: number;
+  url?: string;
+  img: string;
+  title: string;
+  description: string;
+  isFiller?: boolean;
+}
+
+export interface Provider {
+  consumet?: boolean;
+  providerId: string;
+  episodes: {
+    sub: Episode[];
+    [key: string]: Episode[];
+  };
+}

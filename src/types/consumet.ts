@@ -37,3 +37,14 @@ export interface AnimeListResponse {
   hasNextPage: boolean;
   results: Anime[];
 }
+
+export interface ConsumetAnimeEpisode {
+  id: string;
+  title: string | null;
+  image: string;
+  imageHash: string;
+  number: number;
+  createdAt: string | null;
+  description: string | null;
+  url: string;
+}
