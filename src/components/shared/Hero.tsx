@@ -80,7 +80,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                     }
                     width={1920}
                     height={920}
-                    className='aspect-video h-[300px] min-w-[500px] rounded-lg object-cover md:h-[350px] md:min-w-[1000px] lg:h-[600px] lg:min-w-[2000px]'
+                    className='aspect-video max-h-[300px] min-w-[500px] rounded-lg object-cover md:max-h-[350px] md:min-w-[1000px] lg:max-h-[600px] lg:min-w-[2000px]'
                   />
                 )}
               </>

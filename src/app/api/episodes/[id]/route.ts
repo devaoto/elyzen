@@ -245,12 +245,21 @@ async function fetchEpisodeMeta(id: string, available = false) {
   }
 }
 
+/**
+ * Asynchronously fetches and caches data based on the provided parameters.
+ *
+ * @param {string} id - The ID used to fetch the data.
+ * @param {any} meta - The metadata associated with the data.
+ * @param {any} cacheTime - The time to cache the data.
+ * @param {any} refresh - Flag indicating whether to refresh the cache.
+ * @return {Promise<any>} The combined and processed data after caching and merging.
+ */
 const fetchAndCacheData = async (
   id: string,
   meta: any,
   cacheTime: any,
   refresh: any
-) => {
+): Promise<any> => {
   let malsync;
   if (id) {
     malsync = await malSync(id);
