@@ -125,10 +125,12 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         alt={episode.title}
         width={1600}
         height={1600}
-        className='mr-4 object-cover md:h-auto md:w-1/4 lg:h-auto lg:w-1/4 xl:h-auto xl:w-1/4 2xl:h-auto 2xl:w-1/4'
+        className='mr-4 object-cover md:h-auto md:max-h-[150px] md:w-1/4 md:min-w-[20%] md:max-w-[20%] lg:h-auto lg:max-h-[150px] lg:w-1/4 lg:min-w-[20%] lg:max-w-[20%] xl:h-auto xl:max-h-[150px] xl:w-1/4 xl:min-w-[20%] xl:max-w-[20%] 2xl:h-auto 2xl:max-h-[150px] 2xl:w-1/4 2xl:min-w-[20%]  2xl:max-w-[20%]'
       />
       <div className='flex flex-col justify-center'>
-        <h2 className='text-xl font-bold'>{episode.title}</h2>
+        <h2 className='text-xl font-bold'>
+          {episode.number} - {episode.title}
+        </h2>
         <p>{episode.description}</p>
       </div>
     </a>
