@@ -40,7 +40,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id }) => {
   }, [selectedProvider, language]);
 
   const filteredEpisodes = useMemo(() => {
-    return episodes.filter(
+    return (episodes as Episode[]).filter(
       (episode) =>
         episode.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         String(episode.number).includes(searchQuery)
