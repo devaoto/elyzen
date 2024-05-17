@@ -1,7 +1,7 @@
 import { AnilistInfo, fetchAnilistInfo } from '@/lib/info';
 import { use } from 'react';
 import Image from 'next/image';
-import { darkHexColor } from '@/lib/utils';
+import { darkHexColor, numberToMonth } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   TooltipProvider,
@@ -118,9 +118,20 @@ export default function Information({ params }: { params: { id: string } }) {
                       <h2 className='text-center text-2xl font-semibold md:text-left lg:text-left'>
                         {info.title.romaji}
                       </h2>
-                      <div className='mt-2 flex gap-3'>
+                      <div className='mt-2 flex flex-wrap gap-3'>
                         <Badge>EP {info.totalEpisodes}</Badge>
                         <Badge variant={'outline'}>{info.format}</Badge>
+                        <Badge variant={'outline'}>{info.season}</Badge>
+                        <Badge variant={'outline'}>
+                          <div className='flex gap-1'>
+                            <span>{info.startDate.day}</span>
+                            <span>{numberToMonth(info.startDate.month!)}</span>
+                            <span>{info.startDate.year}</span>
+                          </div>
+                        </Badge>
+                      </div>
+                      <div className='mt-2 max-w-xl'>
+                        <p>By: {info.studios?.join(', ')}</p>
                       </div>
                       <Dialog>
                         <DialogTrigger>

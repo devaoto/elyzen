@@ -4,6 +4,7 @@ import { Provider, ReturnData } from '@/types/api';
 import { AnimeListResponse } from '@/types/consumet';
 
 import { getCurrentSeason } from './utils';
+import { AnilistInfo, fetchAnilistInfo } from './info';
 
 const FetchDataAndCache = async (
   url: string,
@@ -509,4 +510,72 @@ export async function getEpisodes(id: string): Promise<Provider[]> {
   } catch (error) {
     throw error;
   }
+}
+
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+interface Prms {
+  id: string;
+}
+
+interface VoiceActor {
+  name: string;
+  image: string;
+}
+interface ConsumetVoiceActor {
+  id: number;
+  language: string;
+  name: ConsumetName;
+  image: string;
+  imageHash: string;
+}
+
+interface ConsumetCharacter {
+  id: number;
+  role: string;
+  name: ConsumetName;
+  image: string;
+  imageHash: string;
+  voiceActors: ConsumetVoiceActor[];
+}
+interface ConsumetName {
+  first: string;
+  last: string;
+  full: string;
+  native: string | null;
+  userPreferred: string;
+}
+
+interface Character {
+  name: string;
+  image: string;
+  voiceActor: VoiceActor;
+}
+
+function convertToVoiceActor(
+  consumetVoiceActor: ConsumetVoiceActor
+): VoiceActor {
+  return {
+    name: consumetVoiceActor.name.first + ' ' + consumetVoiceActor.name.last,
+    image: consumetVoiceActor.image,
+  };
+}
+
+export function convertToCharacter(
+  consumetCharacter: ConsumetCharacter
+): Character | null {
+  const originalVoiceActor = consumetCharacter.voiceActors.find(
+    (vo) => vo.language === 'Japanese'
+  );
+  if (!originalVoiceActor) return null;
+
+  return {
+    name: consumetCharacter.name.first + ' ' + consumetCharacter.name.last,
+    image: consumetCharacter.image,
+    voiceActor: convertToVoiceActor(originalVoiceActor),
+  };
 }
