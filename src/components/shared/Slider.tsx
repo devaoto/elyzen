@@ -1,11 +1,10 @@
-'use client';
-
-import { useDraggable } from 'react-use-draggable-scroll';
-import React, { useRef, useState } from 'react';
-import { ReturnData } from '@/types/api';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+"use client";
+import { useDraggable } from "react-use-draggable-scroll";
+import React, { useRef, useState } from "react";
+import { ReturnData } from "@/types/api";
+import Link from "next/link";
+import Image from "next/image";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 
 export const Slider = ({
   data,
@@ -34,13 +33,27 @@ export const Slider = ({
     const cont = document.getElementById(`anime-${title}-card`);
 
     if (cont && container) {
-      cont.classList.add('scroll-smooth');
+      cont.classList.add("scroll-smooth");
       container.scrollLeft += amount;
 
       setTimeout(() => {
-        cont.classList.remove('scroll-smooth');
+        cont.classList.remove("scroll-smooth");
       }, 300);
     }
+  };
+
+   const variants = {
+    initial: {
+      opacity: 0,
+    },
+
+    animate: {
+      opacity: 1,
+    },
+
+    exit: {
+      opacity: 0,
+    },
   };
 
   function scrollLeft() {
@@ -56,15 +69,15 @@ export const Slider = ({
       <div className="group">
         <ArrowLeft
           onClick={scrollLeft}
-          style={{ opacity: isLeftArrowActive ? 1 : 0.5 }}
-          className="absolute w-[20px] flex items-center h-full z-[69420] bg-gradient-to-r from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba cursor-pointer duration-500 ease-out transition-all"
+          style={{ opacity: 1 }}
+          className="absolute w-[30px] flex items-center h-full z-[69420] bg-gradient-to-r from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba cursor-pointer duration-500 ease-out transition-all"
         />
       </div>
       <div className="group">
         <ArrowRight
           onClick={scrollRight}
-          style={{ opacity: isRightArrowActive ? 1 : 0.5 }}
-          className="absolute w-[20px] flex items-center h-full z-[69420] bg-gradient-to-l from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba cursor-pointer duration-500 ease-out transition-all right-0"
+          style={{ opacity: 1 }}
+          className="absolute w-[30px] flex items-center h-full z-[69420] bg-gradient-to-l from-transparent-gr to-transparent-gr group-hover:from-[#000000] group-hover:to-gradient-rgba to-gradient-rgba cursor-pointer duration-500 ease-out transition-all right-0"
         />
       </div>
       <div
@@ -76,13 +89,15 @@ export const Slider = ({
       >
         {data.results
           .filter(
-            (anime) => anime.status !== 'NOT_YET_RELEASED' && anime.coverImage
+            (anime) => anime.status !== "NOT_YET_RELEASED" && anime.coverImage
           )
           .map((anime) => (
-            <div key={anime.id}>
-              <div className="flex-none relative overflow-hidden">
-                <Link href={`/info/${anime.id}`}>
-                  <div className="transition-transform duration-300 ease-in-out hover:scale-[1.1] rounded-xl">
+              <div
+                key={anime.id}
+                className="min-w-[200px] max-h-full transition-all duration-500 ease-in-out hover:scale-105 rounded-xl shadow-lg "
+              >
+                <div className="flex-none relative overflow-hidden rounded-t-xl">
+                  <Link href={`/info/${anime.id}`}>
                     <Image
                       src={anime.coverImage!}
                       alt={anime.title.english ?? anime.title.romaji}
@@ -90,18 +105,17 @@ export const Slider = ({
                       width={200}
                       className="object-cover min-h-[285px] max-h-[285px] min-w-[200px]"
                     />
-                  </div>
-                </Link>
+                  </Link>
+                </div>
+                <div className="p-4">
+                  <h1 className="text-white truncate text-lg font-semibold max-w-[200px]">
+                    {anime.title.english ?? anime.title.romaji}
+                  </h1>
+                  <p className="font-bold text-xs text-gray-600 mt-1">
+                    {anime.format} | {anime.status} | {anime.season}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="truncate max-w-[200px]">
-                  {anime.title.english ?? anime.title.romaji}
-                </h1>
-                <p className="font-bold text-xs">
-                  {anime.format} | {anime.status} | {anime.season}
-                </p>
-              </div>
-            </div>
           ))}
       </div>
     </div>

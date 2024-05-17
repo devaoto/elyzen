@@ -17,11 +17,11 @@ export default function Home() {
       <div className="ml-0 lg:ml-16 xl:ml-16 2xl:ml-16 md:ml-16">
         <Hero data={trending} />
         <div className="mt-20">
-          <h1 className="font-bold text-3xl">Trending Now</h1>
+          <h1 className="text-3xl font-mono mb-4">TRENDING NOW</h1>
           <Slider data={trending} title="trending" />
         </div>
         <div className="mt-20">
-          <h1 className="font-bold text-3xl">All Time Popular</h1>
+          <h1 className="text-3xl font-mono mb-4">ALL TIME POPULAR</h1>
           <Slider data={popular} title="popular" />
         </div>
       </div>
