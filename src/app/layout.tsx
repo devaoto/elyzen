@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import TopProgressBar from '@/components/TopProgressBar';
+import NavBar from '@/components/NavBar';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -52,6 +53,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <NavBar />
           <main>{children}</main>
         </ThemeProvider>
         <TopProgressBar />
