@@ -79,7 +79,8 @@ export const Slider = ({
         {data.results
           .filter(
             (anime) =>
-              ['FINISHED', 'RELEASING', 'NOT_YET_RELEASED'].includes(
+            anime.status !== 'NOT_YET_RELEASED' &&
+              ['FINISHED', 'RELEASING'].includes(
                 anime.status || ''
               ) && anime.coverImage
           )
