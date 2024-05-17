@@ -71,7 +71,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id }) => {
         )}
       </div>
       <div className='mt-20'>
-        <ScrollArea>
+        <ScrollArea className='h-[600px]'>
           {selectedProvider?.providerId === 'gogoanime'
             ? selectedProvider.episodes[language]?.map((episode) => (
                 <EpisodeCard
