@@ -1,11 +1,12 @@
 import { use } from 'react';
 import { Hero } from '@/components/shared/Hero';
-import Image from 'next/image';
 import { getTrendingAnime, getPopularAnime } from '@/lib/anime';
 import { Slider } from '@/components/shared/Slider';
 import dynamic from 'next/dynamic';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
+
+export const revalidate = 3600;
 
 export default function Home() {
   const trending = use(getTrendingAnime(1, 69));
