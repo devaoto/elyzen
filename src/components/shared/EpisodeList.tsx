@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Provider, Episode } from '@/types/api';
 import Image from 'next/image';
 import {
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
+import _, { List } from 'lodash';
 
 interface Props {
   animeData: Provider[];
@@ -19,16 +20,38 @@ interface Props {
 }
 
 const AnimeViewer: React.FC<Props> = ({ animeData, id }) => {
-  console.log(animeData);
   const [selectedProvider, setSelectedProvider] = useState<
     Provider | undefined
   >(animeData.find((p) => p.providerId === 'zoro') || animeData[0]);
   const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
+  const [episodePage, setEpisodePage] = useState<number>(0);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleProviderChange = (providerId: string) => {
     const provider = animeData.find((p) => p.providerId === providerId);
     setSelectedProvider(provider);
+    setEpisodePage(0);
   };
+
+  const episodes = useMemo(() => {
+    return selectedProvider?.providerId === 'gogoanime'
+      ? selectedProvider.episodes[language] || []
+      : selectedProvider?.episodes || [];
+  }, [selectedProvider, language]);
+
+  const filteredEpisodes = useMemo(() => {
+    return episodes.filter(
+      (episode) =>
+        episode.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(episode.number).includes(searchQuery)
+    );
+  }, [searchQuery, episodes]);
+
+  const episodeChunks = useMemo(
+    () => _.chunk(filteredEpisodes as List<Episode>, 100),
+    [filteredEpisodes]
+  );
+  const currentEpisodes = episodeChunks[episodePage] || [];
 
   return (
     <div className='p-4'>
@@ -44,10 +67,16 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id }) => {
             <SelectGroup>
               {animeData.map((provider) => (
                 <SelectItem
-                  key={provider.providerId}
+                  key={
+                    provider.providerId === 'zoro'
+                      ? 'hianime'
+                      : provider.providerId
+                  }
                   value={provider.providerId}
                 >
-                  {provider.providerId}
+                  {provider.providerId === 'zoro'
+                    ? 'hianime'
+                    : provider.providerId}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -69,30 +98,46 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id }) => {
             </SelectContent>
           </Select>
         )}
+        {episodeChunks.length > 1 && (
+          <Select
+            onValueChange={(e) => setEpisodePage(Number(e))}
+            value={String(episodePage)}
+          >
+            <SelectTrigger className='w-[130px]'>
+              <SelectValue
+                placeholder={`${episodePage * 100 + 1}-${(episodePage + 1) * 100}`}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {episodeChunks.map((_, index) => (
+                  <SelectItem key={index} value={String(index)}>
+                    {index * 100 + 1}-{(index + 1) * 100}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        )}
+        <input
+          type='text'
+          placeholder='Search episodes...'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className='ml-3 rounded border p-2'
+        />
       </div>
       <div className='mt-20'>
         <ScrollArea className='h-[600px]'>
-          {selectedProvider?.providerId === 'gogoanime'
-            ? selectedProvider.episodes[language]?.map((episode) => (
-                <EpisodeCard
-                  key={episode.id || episode.episodeId}
-                  episode={episode}
-                  provider={selectedProvider.providerId}
-                  type={language}
-                  id={id}
-                />
-              ))
-            : (selectedProvider?.episodes as unknown as Episode[])?.map(
-                (episode) => (
-                  <EpisodeCard
-                    key={episode.id || episode.episodeId}
-                    episode={episode}
-                    provider={selectedProvider?.providerId!}
-                    id={id}
-                    type='sub' // default type for zoro since it doesn't differentiate
-                  />
-                )
-              )}
+          {currentEpisodes.map((episode) => (
+            <EpisodeCard
+              key={episode.id || episode.episodeId}
+              episode={episode}
+              provider={selectedProvider?.providerId!}
+              id={id}
+              type={language}
+            />
+          ))}
         </ScrollArea>
       </div>
     </div>
@@ -115,9 +160,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   const episodeId = episode.id || episode.episodeId;
   return (
     <a
-      href={`/watch/${id}?episodeId=${encodeURIComponent(
-        episodeId!
-      )}&provider=${provider}&type=${type}`}
+      href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}`}
       className='mb-4 flex flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
     >
       <Image
