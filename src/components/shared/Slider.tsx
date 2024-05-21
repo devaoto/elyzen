@@ -5,6 +5,7 @@ import { ReturnData } from '@/types/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { SliderCard } from './SliderCard';
 
 export const Slider = ({
   data,
@@ -84,40 +85,8 @@ export const Slider = ({
               anime.coverImage
           )
           .map((anime) => (
-            <div
-              key={anime.id}
-              className='duration-[0.5s] mb-6 max-h-full min-w-[250px] rounded-xl pb-6 shadow-lg shadow-zinc-900 transition-transform ease-in-out hover:scale-105'
-            >
-              <div className='relative flex-none overflow-hidden rounded-t-xl'>
-                <Link href={`/info/${anime.id}`}>
-                  <Image
-                    src={anime.coverImage!}
-                    alt={anime.title.english ?? anime.title.romaji}
-                    height={300}
-                    width={200}
-                    className='max-h-[285px] min-h-[285px] min-w-[250px] object-cover'
-                  />
-                </Link>
-              </div>
-              <div className='px-4 pt-4'>
-                <h1 className='max-w-[250px] truncate text-lg font-semibold'>
-                  {anime.title.english ?? anime.title.romaji}
-                </h1>
-                <p className='mt-1 text-xs font-bold text-gray-600 dark:text-gray-300'>
-                  {anime.format} |
-                  <span
-                    className={
-                      anime.status === 'FINISHED'
-                        ? 'text-blue-600'
-                        : 'text-green-600'
-                    }
-                  >
-                    {' '}
-                    {anime.status}{' '}
-                  </span>
-                  | {anime.season}
-                </p>
-              </div>
+            <div key={anime.id}>
+              <SliderCard anime={anime} />
             </div>
           ))}
       </div>
