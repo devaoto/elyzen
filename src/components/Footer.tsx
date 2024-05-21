@@ -93,7 +93,7 @@ function Footer() {
                   </li>
                   <li>
                     <Link
-                      href='/policy'
+                      href='/privacy'
                       target='_blank'
                       className='!text-[0.8rem] !font-semibold hover:text-white'
                     >
