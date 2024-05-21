@@ -32,7 +32,7 @@ export default function SideBar() {
   return (
     <>
       {!isMobile ? (
-        <div className='fixed z-50 flex h-screen flex-col items-center gap-2 bg-background px-1 pt-10'>
+        <div className='fixed z-[79420] flex h-screen flex-col items-center gap-2 px-1 pt-10'>
           <div className='flex flex-col gap-2 self-start'>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
