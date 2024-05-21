@@ -66,7 +66,7 @@ export default function Information({ params }: { params: { id: string } }) {
       <SideBar />
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         {
-          <div className='overflow-x-hidden'>
+          <div className='min-h-max overflow-x-hidden scrollbar-hide'>
             <div className='relative'>
               <div
                 style={{
@@ -74,9 +74,9 @@ export default function Information({ params }: { params: { id: string } }) {
                     darkHexColor(info?.color ? info?.color : '#00FF7F', 80) ??
                     'springgreen',
                 }}
-                className='h-[620px] w-[1920px] overflow-x-hidden'
+                className='h-[620px] w-[1920px] overflow-x-hidden scrollbar-hide'
               ></div>
-              <div className='absolute inset-0 z-[1] overflow-x-hidden'>
+              <div className='absolute inset-0 z-[1] overflow-x-hidden scrollbar-hide'>
                 {info.bannerImage ? (
                   <Image
                     src={info.bannerImage}
