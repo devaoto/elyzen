@@ -121,7 +121,7 @@ function Footer() {
             <Link href='/' className='hover:text-white'>
               Elyzen
             </Link>{' '}
-            | Made by <span className='font-bold'>codeblitz97, avalynndev</span>
+            | Made by <span className='font-bold'>codeblitz97</span>
           </span>
           <div className='mt-4 flex lg:mt-0 lg:justify-center'>
             <Link
@@ -130,7 +130,7 @@ function Footer() {
               className=' ms-5 hover:text-gray-900 dark:hover:text-white lg:ms-0'
             >
               <GithubIcon />
-              <span className='sr-only'>GitHub account</span>
+              <span className='sr-only'>GitHub</span>
             </Link>
             <Link
               href='https://discord.gg'
