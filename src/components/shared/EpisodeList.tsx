@@ -160,7 +160,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
   const episodeId = episode.id || episode.episodeId;
   return (
     <a
-      href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}`}
+      href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`}
       className='mb-4 flex flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
     >
       <Image
