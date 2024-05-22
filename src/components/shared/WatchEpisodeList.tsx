@@ -232,7 +232,7 @@ const EpisodeCard: React.FC<
           className='mr-4 aspect-video object-cover lg:max-h-[100px] lg:min-h-[100px] lg:min-w-[150px] lg:max-w-[150px]'
         />
         <div className='flex flex-col justify-center'>
-          <h2 className='text-xl font-bold'>
+          <h2 className='line-clamp-1 text-sm font-bold'>
             {episode.number} -{' '}
             {episode.title ? episode.title : `Episode ${episode.number}`}
           </h2>
