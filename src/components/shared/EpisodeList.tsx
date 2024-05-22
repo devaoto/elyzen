@@ -66,7 +66,13 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
             className='w-[130px]'
             value={selectedProvider?.providerId}
           >
-            <SelectValue placeholder={selectedProvider?.providerId} />
+            <SelectValue
+              placeholder={
+                selectedProvider?.providerId === 'zoro'
+                  ? 'hianime'
+                  : selectedProvider?.providerId
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>

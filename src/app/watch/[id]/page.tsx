@@ -192,6 +192,8 @@ export default function Watch({
               animeData={episodes}
               id={params.id}
               info={info}
+              defaultLanguage={searchParams.type as 'sub' | 'dub'}
+              defaultProvider={searchParams.provider}
             />
           </div>
         </div>

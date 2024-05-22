@@ -21,6 +21,8 @@ interface Props {
   id: string;
   currentlyWatching: number;
   info: AnilistInfo;
+  defaultProvider?: string;
+  defaultLanguage?: 'sub' | 'dub';
 }
 
 const AnimeViewer: React.FC<Props> = ({
@@ -28,11 +30,13 @@ const AnimeViewer: React.FC<Props> = ({
   id,
   currentlyWatching,
   info,
+  defaultProvider = 'zoro',
+  defaultLanguage = 'sub',
 }) => {
   const [selectedProvider, setSelectedProvider] = useState<
     Provider | undefined
-  >(animeData.find((p) => p.providerId === 'zoro') || animeData[0]);
-  const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
+  >(animeData.find((p) => p.providerId === defaultProvider) || animeData[0]);
+  const [language, setLanguage] = useState<'sub' | 'dub'>(defaultLanguage);
   const [episodePage, setEpisodePage] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
@@ -83,7 +87,13 @@ const AnimeViewer: React.FC<Props> = ({
             className='w-[130px]'
             value={selectedProvider?.providerId}
           >
-            <SelectValue placeholder={selectedProvider?.providerId} />
+            <SelectValue
+              placeholder={
+                selectedProvider?.providerId === 'zoro'
+                  ? 'hianime'
+                  : selectedProvider?.providerId
+              }
+            />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
