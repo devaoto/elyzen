@@ -1,8 +1,9 @@
 import { getEpisodes, getSources } from '@/lib/anime';
-import { fetchAnilistInfo } from '@/lib/info';
+import { AnilistInfo, fetchAnilistInfo } from '@/lib/info';
 import { Episode } from '@/types/api';
 import { use } from 'react';
 import dynamic from 'next/dynamic';
+import { Metadata, Viewport } from 'next';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
@@ -14,6 +15,66 @@ const AnimeViewer = dynamic(
     ssr: false,
   }
 );
+
+export const generateMetadata = async ({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { number: number; provider: string };
+}): Promise<Metadata> => {
+  const info = (await fetchAnilistInfo(params)) as AnilistInfo;
+  const episodes = await getEpisodes(params.id);
+
+  let currentEpisode: Episode | undefined = undefined;
+
+  if (searchParams.provider === 'gogoanime') {
+    currentEpisode = episodes
+      .find((p) => p.providerId === 'gogoanime')
+      ?.episodes.sub.find(
+        (episode) => Number(episode.number) === Number(searchParams.number)
+      );
+  } else {
+    currentEpisode = (
+      episodes.find((p) => p.providerId === 'zoro')
+        ?.episodes as unknown as Episode[]
+    ).find((episode) => Number(episode.number) === Number(searchParams.number));
+  }
+
+  return {
+    title: currentEpisode?.title
+      ? currentEpisode.title
+      : info.title.userPreferred
+        ? info.title.userPreferred
+        : info.title.english
+          ? info.title.english
+          : info.title.romaji
+            ? info.title.romaji
+            : info.title.native,
+    description: currentEpisode?.description
+      ? currentEpisode.description.slice(0, 155)
+      : info.description?.replace(/<br>/g, '').slice(0, 155),
+    openGraph: {
+      images: currentEpisode?.img
+        ? currentEpisode.img
+        : info.bannerImage
+          ? info.bannerImage
+          : info.coverImage ?? undefined,
+    },
+  };
+};
+
+export const generateViewport = async ({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Viewport> => {
+  const info = (await fetchAnilistInfo(params)) as AnilistInfo;
+
+  return {
+    themeColor: info.color ?? '#FFFFFF',
+  };
+};
 
 export default function Watch({
   params,
