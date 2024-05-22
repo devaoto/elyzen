@@ -12,6 +12,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
+import Link from 'next/link';
 
 export const Hero = ({ data }: { data: ReturnData }) => {
   const [randomElement, setRandomElement] = React.useState<Media | null>(null);
@@ -134,18 +135,11 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                   />
                 </div>
                 <div className='flex justify-start'>
-                  <TooltipProvider>
-                    <Tooltip disableHoverableContent delayDuration={0}>
-                      <TooltipTrigger className='cursor-no-drop'>
-                        <Button className='max-w-[100px]' disabled>
-                          Watch Now
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Not yet implemented</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Link
+                    href={`${process.env.NEXT_PUBLIC_DOMAIN}/info/${randomElement.id}#watch`}
+                  >
+                    <Button>Watch Now</Button>
+                  </Link>
                 </div>
               </div>
             </div>

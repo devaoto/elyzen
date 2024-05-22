@@ -46,9 +46,11 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
           <Link className='relative z-[69999]' href={`/info/${anime.id}`}>
             <Button className='cursor-pointer'>Info</Button>
           </Link>
-          <Button className='cursor-pointer' variant={'secondary'}>
-            Watch
-          </Button>
+          <Link className='relative z-[69999]' href={`/info/${anime.id}#watch`}>
+            <Button className='cursor-pointer' variant={'secondary'}>
+              Watch
+            </Button>
+          </Link>
         </motion.div>
       )}
       <div className='absolute inset-0 top-0'>

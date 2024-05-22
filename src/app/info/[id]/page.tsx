@@ -21,6 +21,7 @@ import { Metadata, Viewport } from 'next';
 import { getEpisodes } from '@/lib/anime';
 import { Provider } from '@/types/api';
 import AnimeViewer from '@/components/shared/EpisodeList';
+import Link from 'next/link';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 
@@ -193,20 +194,11 @@ export default function Information({ params }: { params: { id: string } }) {
                         ))}
                       </div>
                       <div className='mt-2 flex justify-center md:justify-start lg:justify-start xl:justify-start'>
-                        <TooltipProvider delayDuration={0}>
-                          <Tooltip>
-                            <TooltipTrigger asChild className='cursor-no-drop'>
-                              <div>
-                                <Button variant='outline' disabled>
-                                  Watch Now
-                                </Button>
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Not yet implemented</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Link
+                          href={`${process.env.NEXT_PUBLIC_DOMAIN}/info/${params.id}#watch`}
+                        >
+                          <Button>Watch Now</Button>
+                        </Link>
                       </div>
                     </div>
                   </div>

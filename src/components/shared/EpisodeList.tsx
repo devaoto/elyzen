@@ -59,7 +59,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   const currentEpisodes = episodeChunks[episodePage] || [];
 
   return (
-    <div className='p-4'>
+    <div className='p-4' id='watch'>
       <div className='mb-4 flex gap-3'>
         <Select onValueChange={(e) => handleProviderChange(e)}>
           <SelectTrigger
