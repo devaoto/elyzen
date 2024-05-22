@@ -81,8 +81,18 @@ export default function Watch({
         <div className='flex flex-col gap-2 lg:flex-row'>
           <div className='max-w-[950px] flex-grow'>
             <Player
-              title={currentEpisode?.title!}
-              cover={currentEpisode?.img!}
+              title={
+                currentEpisode?.title
+                  ? currentEpisode.title!
+                  : `Episode ${currentEpisode?.number}`
+              }
+              cover={
+                currentEpisode?.img
+                  ? currentEpisode.img!
+                  : info.bannerImage
+                    ? info.bannerImage!
+                    : info.coverImage!
+              }
               currentEp={currentEpisode?.number!}
               idMal={String(info.malId)}
               anId={params.id}
@@ -99,7 +109,12 @@ export default function Watch({
             />
             <div>
               <h1 className='mb-0 max-w-[895px] text-2xl font-bold'>
-                {currentEpisode?.title} - Episode {currentEpisode?.number}
+                {currentEpisode?.title
+                  ? currentEpisode.title
+                  : `Episode ${currentEpisode?.number}`}{' '}
+                {currentEpisode?.title
+                  ? `- Episode ${currentEpisode?.number}`
+                  : ''}
               </h1>
               <p className='mt-0 text-gray-500'>
                 {info.title.english ??
@@ -114,6 +129,7 @@ export default function Watch({
               currentlyWatching={currentEpisode?.number!}
               animeData={episodes}
               id={params.id}
+              info={info}
             />
           </div>
         </div>

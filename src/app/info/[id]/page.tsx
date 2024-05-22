@@ -216,7 +216,7 @@ export default function Information({ params }: { params: { id: string } }) {
           </div>
         }
         <div>
-          <AnimeViewer animeData={episodes} id={params.id} />
+          <AnimeViewer animeData={episodes} id={params.id} info={info} />
         </div>
       </div>
     </>

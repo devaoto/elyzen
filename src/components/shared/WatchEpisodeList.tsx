@@ -14,14 +14,21 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import _, { List } from 'lodash';
 import { Input } from '../ui/input';
+import { AnilistInfo } from '@/lib/info';
 
 interface Props {
   animeData: Provider[];
   id: string;
   currentlyWatching: number;
+  info: AnilistInfo;
 }
 
-const AnimeViewer: React.FC<Props> = ({ animeData, id, currentlyWatching }) => {
+const AnimeViewer: React.FC<Props> = ({
+  animeData,
+  id,
+  currentlyWatching,
+  info,
+}) => {
   const [selectedProvider, setSelectedProvider] = useState<
     Provider | undefined
   >(animeData.find((p) => p.providerId === 'zoro') || animeData[0]);
@@ -44,7 +51,9 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id, currentlyWatching }) => {
   const filteredEpisodes = useMemo(() => {
     return (episodes as Episode[]).filter(
       (episode) =>
-        episode.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (episode.title ?? `Episode ${episode.number}`)
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
         String(episode.number).includes(searchQuery)
     );
   }, [searchQuery, episodes]);
@@ -148,6 +157,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id, currentlyWatching }) => {
                   ? currentlyWatchingRef
                   : null
               }
+              info={info}
               isWatching={Number(episode.number) === Number(currentlyWatching)}
               key={episode.id || episode.episodeId}
               episode={episode}
@@ -168,43 +178,63 @@ interface EpisodeCardProps {
   type: 'sub' | 'dub';
   id: string;
   isWatching: boolean;
+  info: AnilistInfo;
 }
 
 const EpisodeCard: React.FC<
   EpisodeCardProps & React.RefAttributes<HTMLDivElement>
   // eslint-disable-next-line react/display-name
-> = React.forwardRef(({ episode, provider, type, id, isWatching }, ref) => {
-  const episodeId = episode.id || episode.episodeId;
-  return (
-    <div
-      ref={ref}
-      onClick={() => {
-        if (!isWatching) {
-          window.location.href = `/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`;
+> = React.forwardRef(
+  ({ episode, provider, type, id, isWatching, info }, ref) => {
+    const episodeId = episode.id || episode.episodeId;
+    return (
+      <div
+        ref={ref}
+        onClick={() => {
+          if (!isWatching) {
+            window.location.href = `/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`;
+          }
+        }}
+        className={
+          isWatching
+            ? 'mb-4 flex cursor-no-drop flex-col rounded border bg-gray-100 p-4 duration-300 dark:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
+            : 'mb-4 flex cursor-pointer flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
         }
-      }}
-      className={
-        isWatching
-          ? 'mb-4 flex cursor-no-drop flex-col rounded border bg-gray-100 p-4 duration-300 dark:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
-          : 'mb-4 flex cursor-pointer flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
-      }
-    >
-      <Image
-        src={episode.img}
-        alt={episode.title}
-        width={1600}
-        height={1600}
-        title={isWatching ? '' : episode.title}
-        className='mr-4 aspect-video object-cover lg:max-h-[100px] lg:min-h-[100px] lg:min-w-[150px] lg:max-w-[150px]'
-      />
-      <div className='flex flex-col justify-center'>
-        <h2 className='line-clamp-1 text-sm font-bold'>
-          {episode.number} - {episode.title}
-        </h2>
-        <p className='line-clamp-4 text-xs'>{episode.description}</p>
+      >
+        <Image
+          src={
+            episode.img
+              ? episode.img!
+              : info.bannerImage
+                ? info.bannerImage!
+                : info.coverImage!
+          }
+          title={
+            isWatching
+              ? ''
+              : episode.title
+                ? episode.title
+                : `Episode ${episode.number}`
+          }
+          alt={episode.title ? episode.title : `Episode ${episode.number}`}
+          width={1600}
+          height={1600}
+          className='mr-4 aspect-video object-cover lg:max-h-[100px] lg:min-h-[100px] lg:min-w-[150px] lg:max-w-[150px]'
+        />
+        <div className='flex flex-col justify-center'>
+          <h2 className='text-xl font-bold'>
+            {episode.number} -{' '}
+            {episode.title ? episode.title : `Episode ${episode.number}`}
+          </h2>
+          <p className='line-clamp-4 text-xs'>
+            {episode.description
+              ? episode.description
+              : `Episode ${episode.number} of ${info.title.english ?? info.title.userPreferred ?? info.title.romaji ?? info.title.native}`}
+          </p>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 export default AnimeViewer;
