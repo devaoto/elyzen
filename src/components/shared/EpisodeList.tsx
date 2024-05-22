@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Provider, Episode } from '@/types/api';
 import Image from 'next/image';
 import {
@@ -12,9 +12,18 @@ import {
   SelectValue,
 } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
-import _, { List } from 'lodash';
+import _ from 'lodash';
 import { Input } from '../ui/input';
 import { AnilistInfo } from '@/lib/info';
+import { Play, Grid, List as ListIcon } from 'lucide-react';
+import { Button } from '../ui/button';
+import { motion } from 'framer-motion';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
 interface Props {
   animeData: Provider[];
@@ -29,6 +38,18 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
   const [episodePage, setEpisodePage] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [layout, setLayout] = useState<'list' | 'grid'>('list');
+
+  useEffect(() => {
+    const savedLayout = localStorage.getItem('layout');
+    if (savedLayout === 'list' || savedLayout === 'grid') {
+      setLayout(savedLayout);
+    }
+  }, []);
+
+  const saveLayoutToLocalStorage = (layout: 'list' | 'grid') => {
+    localStorage.setItem('layout', layout);
+  };
 
   const handleProviderChange = (providerId: string) => {
     const provider = animeData.find((p) => p.providerId === providerId);
@@ -53,7 +74,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   }, [searchQuery, episodes]);
 
   const episodeChunks = useMemo(
-    () => _.chunk(filteredEpisodes as List<Episode>, 100),
+    () => _.chunk(filteredEpisodes, 100),
     [filteredEpisodes]
   );
   const currentEpisodes = episodeChunks[episodePage] || [];
@@ -61,7 +82,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   return (
     <div className='p-4' id='watch'>
       <div className='mb-4 flex gap-3'>
-        <Select onValueChange={(e) => handleProviderChange(e)}>
+        <Select onValueChange={handleProviderChange}>
           <SelectTrigger
             className='w-[130px]'
             value={selectedProvider?.providerId}
@@ -78,11 +99,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
             <SelectGroup>
               {animeData.map((provider) => (
                 <SelectItem
-                  key={
-                    provider.providerId === 'zoro'
-                      ? 'hianime'
-                      : provider.providerId
-                  }
+                  key={provider.providerId}
                   value={provider.providerId}
                 >
                   {provider.providerId === 'zoro'
@@ -130,25 +147,84 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
             </SelectContent>
           </Select>
         )}
-        <Input
-          type='text'
-          placeholder='Search episodes...'
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+        <div className='max-w-44'>
+          <Input
+            type='text'
+            placeholder='Search episodes...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button
+                  onClick={() => {
+                    setLayout('grid');
+                    saveLayoutToLocalStorage('grid');
+                  }}
+                  variant={'outline'}
+                  size='icon'
+                >
+                  <Grid />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Grid Layout</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button
+                  onClick={() => {
+                    setLayout('list');
+                    saveLayoutToLocalStorage('list');
+                  }}
+                  variant={'outline'}
+                  size='icon'
+                >
+                  <ListIcon />
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>List Layout</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
       <div className='mt-20'>
         <ScrollArea className='h-[600px]'>
-          {currentEpisodes.map((episode) => (
-            <EpisodeCard
-              info={info}
-              key={episode.id || episode.episodeId}
-              episode={episode}
-              provider={selectedProvider?.providerId!}
-              id={id}
-              type={language}
-            />
-          ))}
+          {layout === 'list' ? (
+            currentEpisodes.map((episode) => (
+              <EpisodeCard
+                info={info}
+                key={episode.id || episode.episodeId}
+                episode={episode}
+                provider={selectedProvider?.providerId!}
+                id={id}
+                type={language}
+              />
+            ))
+          ) : (
+            <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4'>
+              {currentEpisodes.map((episode) => (
+                <GridEpisodeCard
+                  info={info}
+                  key={episode.id || episode.episodeId}
+                  episode={episode}
+                  provider={selectedProvider?.providerId!}
+                  id={id}
+                  type={language}
+                />
+              ))}
+            </div>
+          )}
         </ScrollArea>
       </div>
     </div>
@@ -187,7 +263,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         alt={episode.title ? episode.title : `Episode ${episode.number}`}
         width={1600}
         height={1600}
-        className='mr-4 object-cover md:h-auto md:max-h-[150px] md:w-1/4 md:min-w-[20%] md:max-w-[20%] lg:h-auto lg:max-h-[150px] lg:min-h-[150px] lg:w-1/4 lg:min-w-[20%] lg:max-w-[20%] xl:h-auto xl:max-h-[150px] xl:min-h-[150px]  xl:w-1/4 xl:min-w-[20%] xl:max-w-[20%] 2xl:h-auto 2xl:max-h-[150px] 2xl:min-h-[150px] 2xl:w-1/4 2xl:min-w-[20%]  2xl:max-w-[20%]'
+        className='mr-4 object-cover md:h-auto md:max-h-[150px] md:w-1/4 md:min-w-[20%] md:max-w-[20%] lg:h-auto lg:max-h-[150px] lg:min-h-[150px] lg:w-1/4 lg:min-w-[20%] lg:max-w-[20%] xl:h-auto xl:max-h-[150px] xl:min-h-[150px] xl:w-1/4 xl:min-w-[20%] xl:max-w-[20%] 2xl:h-auto 2xl:max-h-[150px] 2xl:min-h-[150px] 2xl:w-1/4 2xl:min-w-[20%] 2xl:max-w-[20%]'
       />
       <div className='flex flex-col justify-center'>
         <h2 className='text-xl font-bold'>
@@ -198,6 +274,58 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
           {episode.description
             ? episode.description
             : `Episode ${episode.number} of ${info.title.english ?? info.title.userPreferred ?? info.title.romaji ?? info.title.native}`}
+        </p>
+      </div>
+    </a>
+  );
+};
+
+const GridEpisodeCard: React.FC<EpisodeCardProps> = ({
+  episode,
+  provider,
+  type,
+  id,
+  info,
+}) => {
+  const episodeId = episode.id || episode.episodeId;
+
+  return (
+    <a
+      href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`}
+      className='relative flex flex-col rounded p-4'
+    >
+      <motion.div
+        initial={{ opacity: 1 }}
+        whileHover={{ opacity: 0.5 }}
+        className='relative mb-4 h-40 w-full overflow-hidden rounded-xl'
+      >
+        <Image
+          src={
+            episode.img
+              ? episode.img!
+              : info.bannerImage
+                ? info.bannerImage!
+                : info.coverImage!
+          }
+          alt={episode.title ? episode.title : `Episode ${episode.number}`}
+          width={1600}
+          height={1600}
+          className='h-full w-full object-cover'
+        />
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileHover={{ opacity: 1 }}
+          className='absolute inset-0 z-50 flex items-center justify-center'
+        >
+          <Button size='icon' variant={'ghost'}>
+            <Play className='h-12 w-12 fill-white text-white' />
+          </Button>
+        </motion.div>
+      </motion.div>
+      <div className='flex flex-col justify-center'>
+        <h2 className='text-xl font-bold'>{`Episode ${episode.number}`}</h2>
+        <p className='line-clamp-2 text-gray-700 dark:text-slate-300'>
+          {episode.title ? episode.title : `Episode ${episode.number}`}
         </p>
       </div>
     </a>
