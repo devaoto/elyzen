@@ -43,16 +43,17 @@ export const generateMetadata = async ({
 
   return {
     title: currentEpisode?.title
-      ? currentEpisode.title
+      ? currentEpisode.title +
+        `- ${info.title.english ?? info.title.userPreferred ?? info.title.romaji ?? info.title.native}`
       : info.title.userPreferred
-        ? info.title.userPreferred
+        ? `Episode ${currentEpisode?.number} of ${info.title.userPreferred}`
         : info.title.english
-          ? info.title.english
+          ? `Episode ${currentEpisode?.number} of ${info.title.english}`
           : info.title.romaji
-            ? info.title.romaji
-            : info.title.native,
+            ? `Episode ${currentEpisode?.number} of ${info.title.romaji}`
+            : `Episode ${currentEpisode?.number} of ${info.title.native}`,
     description: currentEpisode?.description
-      ? currentEpisode.description.slice(0, 155)
+      ? currentEpisode.description
       : info.description?.replace(/<br>/g, '').slice(0, 155),
     openGraph: {
       images: currentEpisode?.img
