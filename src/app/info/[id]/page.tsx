@@ -130,6 +130,39 @@ export default function Information({ params }: { params: { id: string } }) {
                           </div>
                         </Badge>
                       </div>
+                      <div className='mt-2 flex flex-wrap gap-3'>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Badge
+                                className='cursor-pointer'
+                                variant={'secondary'}
+                              >
+                                CEP{' '}
+                                {Number.isNaN(info.currentEpisode)
+                                  ? info.totalEpisodes
+                                  : info.currentEpisode}
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Currently Airing Episode</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <Badge variant={'outline'}>{info.duration}</Badge>
+                        <Badge variant={'outline'}>
+                          {info.countryOfOrigin}
+                        </Badge>
+                        {info.endDate && info.endDate.day ? (
+                          <Badge variant={'outline'}>
+                            <div className='flex gap-1'>
+                              <span>{info.endDate.day}</span>
+                              <span>{numberToMonth(info.endDate.month!)}</span>
+                              <span>{info.endDate.year}</span>
+                            </div>
+                          </Badge>
+                        ) : null}
+                      </div>
                       <div className='mt-2 max-w-xl'>
                         <p>By: {info.studios?.join(', ')}</p>
                       </div>
