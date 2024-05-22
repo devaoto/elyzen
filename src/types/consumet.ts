@@ -48,3 +48,34 @@ export interface ConsumetAnimeEpisode {
   description: string | null;
   url: string;
 }
+
+export interface ConsumetSearchResult {
+  currentPage: number;
+  hasNextPage: boolean;
+  totalPages: number;
+  totalResults: number;
+  results: {
+    id: string;
+    malId: number;
+    title: {
+      english: string;
+      native: string;
+      romaji: string;
+    };
+    status: string;
+    image: string;
+    imageHash: string;
+    cover: string;
+    coverHash: string;
+    popularity: number;
+    totalEpisodes: number;
+    currentEpisode: number | null;
+    countryOfOrigin: string;
+    description: string;
+    genres: string[];
+    rating: number;
+    color: string;
+    type: string;
+    releaseDate: number;
+  }[];
+}
