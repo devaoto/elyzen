@@ -24,6 +24,9 @@ import AnimeViewer from '@/components/shared/EpisodeList';
 import Link from 'next/link';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
+const Countdown = dynamic(() => import('@/components/shared/Countdown'), {
+  ssr: false,
+});
 
 export const generateMetadata = async ({
   params,
@@ -165,12 +168,17 @@ export default function Information({ params }: { params: { id: string } }) {
                         ) : null}
                       </div>
                       <div className='mt-2 max-w-xl'>
+                        <Countdown
+                          airingAt={info.nextAiringEpisode?.airingTime!}
+                        />
+                      </div>
+                      <div className='mt-2 max-w-xl'>
                         <p>By: {info.studios?.join(', ')}</p>
                       </div>
                       <Dialog>
                         <DialogTrigger>
                           <div
-                            className='-ml-2 mt-2 line-clamp-4 max-w-xl select-none rounded-lg px-2 py-5 text-left text-sm duration-300 hover:bg-black/20'
+                            className='-ml-2 mt-2 line-clamp-4 max-w-xl select-none rounded-lg px-2 text-left text-sm duration-300 hover:bg-black/20'
                             dangerouslySetInnerHTML={{
                               __html: info.description?.replace(/<br>/g, '')!,
                             }}

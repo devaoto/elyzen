@@ -21,7 +21,8 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
         initial={{ opacity: 1 }}
         animate={{ opacity: isHovered ? 0.5 : 1 }}
         transition={{ duration: 0.3 }}
-        className='overflow-hidden rounded-2xl'
+        className='overflow-hidden
+        rounded-2xl'
       >
         <Image
           src={anime.coverImage!}
