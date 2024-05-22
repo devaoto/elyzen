@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import TopProgressBar from '@/components/TopProgressBar';
 import NavBar from '@/components/NavBar';
+import { Source_Sans_3 } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'] });
+const sourceSans = Source_Sans_3({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
+});
 
 export const metadata: Metadata = {
   title: 'Elyzen',
@@ -44,7 +47,7 @@ export default function RootLayout({
       <body
         className={
           'h-full scrollbar scrollbar-track-sky-300 scrollbar-thumb-sky-700 ' +
-          inter.className
+          sourceSans.className
         }
       >
         <ThemeProvider
