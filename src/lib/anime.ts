@@ -579,3 +579,23 @@ export function convertToCharacter(
     voiceActor: convertToVoiceActor(originalVoiceActor),
   };
 }
+
+export const getSources = async (
+  id: string,
+  episodeId: string,
+  episodeNumber: number,
+  provider: string,
+  subType = 'sub',
+  source = 'zoro'
+) => {
+  try {
+    const response = await FetchDataAndCache(
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/source/${id}?episodeId=${encodeURIComponent(episodeId)}&episodeNumber=${episodeNumber}&subType=${subType}&source=${source}&provider=${provider}`,
+      `ep:src:${id}:${episodeId}`
+    );
+
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
