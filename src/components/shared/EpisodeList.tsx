@@ -174,7 +174,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         <h2 className='text-xl font-bold'>
           {episode.number} - {episode.title}
         </h2>
-        <p>{episode.description}</p>
+        <p className='line-clamp-5'>{episode.description}</p>
       </div>
     </a>
   );

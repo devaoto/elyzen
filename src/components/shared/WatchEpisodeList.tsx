@@ -198,10 +198,10 @@ const EpisodeCard: React.FC<
         className='mr-4 aspect-video object-cover lg:max-h-[100px] lg:min-h-[100px] lg:min-w-[150px] lg:max-w-[150px]'
       />
       <div className='flex flex-col justify-center'>
-        <h2 className='text-sm font-bold'>
+        <h2 className='line-clamp-1 text-sm font-bold'>
           {episode.number} - {episode.title}
         </h2>
-        <p className='text-xs'>{episode.description}</p>
+        <p className='line-clamp-4 text-xs'>{episode.description}</p>
       </div>
     </div>
   );
