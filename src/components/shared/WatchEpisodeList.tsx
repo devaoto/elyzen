@@ -13,6 +13,7 @@ import {
 } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
 import _, { List } from 'lodash';
+import { Input } from '../ui/input';
 
 interface Props {
   animeData: Provider[];
@@ -131,12 +132,11 @@ const AnimeViewer: React.FC<Props> = ({ animeData, id, currentlyWatching }) => {
             </SelectContent>
           </Select>
         )}
-        <input
+        <Input
           type='text'
           placeholder='Search episodes...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className='ml-3 rounded border p-2'
         />
       </div>
       <div className='mt-20'>
