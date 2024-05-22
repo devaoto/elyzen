@@ -97,6 +97,17 @@ export default function Watch({
               epid={searchParams.episodeId}
               // thumbnails={thumbnails}
             />
+            <div>
+              <h1 className='mb-0 max-w-[895px] text-2xl font-bold'>
+                {currentEpisode?.title} - Episode {currentEpisode?.number}
+              </h1>
+              <p className='mt-0 text-gray-500'>
+                {info.title.english ??
+                  info.title.userPreferred ??
+                  info.title.romaji ??
+                  info.title.native}
+              </p>
+            </div>
           </div>
           <div className='max-h-[509px] max-w-lg overflow-x-hidden overflow-y-scroll scrollbar-hide'>
             <AnimeViewer
