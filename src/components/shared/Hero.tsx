@@ -51,7 +51,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
   }, [randomElement?.trailer]);
 
   return (
-    <div>
+    <div className='overflow-hidden'>
       {randomElement ? (
         <>
           <div className='relative'>
@@ -69,6 +69,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                     }
                     width={1920}
                     height={920}
+                    className='aspect-video max-h-[300px] min-w-[500px] overflow-hidden rounded-lg object-cover md:max-h-[350px] md:min-w-[1000px] lg:max-h-[600px] lg:min-w-[2000px] lg:max-w-[2000px]'
                   />
                 ) : (
                   <Image
@@ -80,7 +81,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                     }
                     width={1920}
                     height={920}
-                    className='aspect-video max-h-[300px] min-w-[500px] rounded-lg object-cover md:max-h-[350px] md:min-w-[1000px] lg:max-h-[600px] lg:min-w-[2000px]'
+                    className='aspect-video max-h-[300px] min-w-[500px] overflow-hidden rounded-lg object-cover md:max-h-[350px] md:min-w-[1000px] lg:max-h-[600px] lg:min-w-[2000px] lg:max-w-[2000px]'
                   />
                 )}
               </>
