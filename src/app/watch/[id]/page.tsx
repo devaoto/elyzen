@@ -46,7 +46,7 @@ export const generateMetadata = async ({
   return {
     title: currentEpisode?.title
       ? currentEpisode.title +
-        `- ${info.title.english ?? info.title.userPreferred ?? info.title.romaji ?? info.title.native}`
+        ` - ${info.title.english ?? info.title.userPreferred ?? info.title.romaji ?? info.title.native}`
       : info.title.userPreferred
         ? `Episode ${currentEpisode?.number} of ${info.title.userPreferred}`
         : info.title.english
