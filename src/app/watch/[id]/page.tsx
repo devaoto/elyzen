@@ -166,7 +166,7 @@ export default function Watch({
 
   return (
     <>
-      <div className='fixed -top-1'>
+      <div className='absolute top-0'>
         <SideBar />
       </div>
       <div className='ml-0 mt-16 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>

@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import TopProgressBar from '@/components/TopProgressBar';
 import NavBar from '@/components/NavBar';
 import { Source_Sans_3 } from 'next/font/google';
+import { Providers } from './providers';
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin', 'latin-ext'],
@@ -56,8 +57,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NavBar />
-          <main>{children}</main>
+          <Providers>
+            <NavBar />
+            <main>{children}</main>
+          </Providers>
         </ThemeProvider>
         <TopProgressBar />
       </body>

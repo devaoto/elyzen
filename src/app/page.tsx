@@ -16,7 +16,9 @@ export default function Home() {
 
   return (
     <>
-      <SideBar />
+      <div className='absolute top-0'>
+        <SideBar />
+      </div>
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         <Hero data={trending} />
         <div className='mt-20'>

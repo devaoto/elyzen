@@ -1,7 +1,7 @@
 'use client';
 
 import { Media, ReturnData } from '@/types/api';
-import { Button } from '../ui/button';
+import { Button } from '@nextui-org/react';
 import Image from 'next/image';
 import React from 'react';
 import { getRandomElement, numberToMonth } from '@/lib/utils';
@@ -138,7 +138,7 @@ export const Hero = ({ data }: { data: ReturnData }) => {
                   <Link
                     href={`${process.env.NEXT_PUBLIC_DOMAIN}/info/${randomElement.id}#watch`}
                   >
-                    <Button>Watch Now</Button>
+                    <Button color="primary">Watch Now</Button>
                   </Link>
                 </div>
               </div>

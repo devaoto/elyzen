@@ -16,7 +16,6 @@ import _ from 'lodash';
 import { Input } from '../ui/input';
 import { AnilistInfo } from '@/lib/info';
 import { Play, Grid, List as ListIcon } from 'lucide-react';
-import { Button } from '../ui/button';
 import { motion } from 'framer-motion';
 import {
   Tooltip,
@@ -24,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
+import { Button } from '@nextui-org/react';
 
 interface Props {
   animeData: Provider[];
@@ -164,8 +164,8 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
                     setLayout('grid');
                     saveLayoutToLocalStorage('grid');
                   }}
-                  variant={'outline'}
-                  size='icon'
+                  variant={'light'}
+                  isIconOnly
                 >
                   <Grid />
                 </Button>
@@ -185,8 +185,8 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
                     setLayout('list');
                     saveLayoutToLocalStorage('list');
                   }}
-                  variant={'outline'}
-                  size='icon'
+                  variant={'light'}
+                  isIconOnly
                 >
                   <ListIcon />
                 </Button>
@@ -317,7 +317,7 @@ const GridEpisodeCard: React.FC<EpisodeCardProps> = ({
           whileHover={{ opacity: 1 }}
           className='absolute inset-0 z-50 flex items-center justify-center'
         >
-          <Button size='icon' variant={'ghost'}>
+          <Button isIconOnly variant={'ghost'}>
             <Play className='h-12 w-12 fill-white text-white' />
           </Button>
         </motion.div>

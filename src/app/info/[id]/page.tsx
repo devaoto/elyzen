@@ -2,7 +2,7 @@ import { AnilistInfo, fetchAnilistInfo } from '@/lib/info';
 import { use } from 'react';
 import Image from 'next/image';
 import { darkHexColor, numberToMonth } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button } from '@nextui-org/react';
 import {
   TooltipProvider,
   Tooltip,
@@ -78,7 +78,9 @@ export default function Information({
 
   return (
     <>
-      <SideBar />
+      <div className='absolute top-0'>
+        <SideBar />
+      </div>
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         {
           <div className='min-h-max overflow-x-hidden scrollbar-hide'>
@@ -216,7 +218,7 @@ export default function Information({
                         <Link
                           href={`${process.env.NEXT_PUBLIC_DOMAIN}/info/${params.id}#watch`}
                         >
-                          <Button>Watch Now</Button>
+                          <Button color='primary'>Watch Now</Button>
                         </Link>
                       </div>
                     </div>
