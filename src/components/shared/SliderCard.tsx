@@ -44,10 +44,16 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
           transition={{ duration: 0.3 }}
           className='absolute inset-0 flex items-center justify-center gap-4'
         >
-          <Link className='relative z-[69999]' href={`/info/${anime.id}`}>
+          <Link
+            className='relative z-[69999]'
+            href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}`}
+          >
             <Button className='cursor-pointer'>Info</Button>
           </Link>
-          <Link className='relative z-[69999]' href={`/info/${anime.id}#watch`}>
+          <Link
+            className='relative z-[69999]'
+            href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}#watch`}
+          >
             <Button className='cursor-pointer' variant={'secondary'}>
               Watch
             </Button>

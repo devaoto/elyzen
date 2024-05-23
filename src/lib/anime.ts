@@ -168,6 +168,7 @@ export const getTrendingAnime = async (page = 1, perPage = 24) => {
           format: item.format,
           type: item.type,
           season: item.season,
+          nextAiringEpisode: item.nextAiringEpisode,
         })),
     };
 
@@ -316,6 +317,7 @@ export const getPopularAnime = async () => {
           format: item.format,
           type: item.type,
           season: item.season,
+          nextAiringEpisode: item.nextAiringEpisode,
         })),
     };
 
@@ -463,6 +465,7 @@ export const getSeasonalAnime = async () => {
             : item.episodes ?? item.nextAiringEpisode?.episode - 1 ?? 0,
           duration: item.duration,
           type: item.format,
+          nextAiringEpisode: item.nextAiringEpisode,
         })),
     };
 
@@ -486,10 +489,13 @@ export const getSeasonalAnime = async () => {
   }
 };
 
-export async function getEpisodes(id: string): Promise<Provider[]> {
+export async function getEpisodes(
+  id: string,
+  releasing = false
+): Promise<Provider[]> {
   try {
     const response = await FetchDataAndCache(
-      `${process.env.NEXT_PUBLIC_DOMAIN}/api/episodes/${id}`,
+      `${process.env.NEXT_PUBLIC_DOMAIN}/api/episodes/${id}?releasing=${releasing}`,
       `episode-${id}`
     );
 

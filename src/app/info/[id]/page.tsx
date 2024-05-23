@@ -59,9 +59,20 @@ export const generateViewport = async ({
   };
 };
 
-export default function Information({ params }: { params: { id: string } }) {
+export default function Information({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: {
+    releasing?: boolean;
+  };
+}) {
   const infoPromise = fetchAnilistInfo(params) as Promise<AnilistInfo>;
-  const episodesPromise = getEpisodes(params.id) as Promise<Provider[]>;
+  const episodesPromise = getEpisodes(
+    params.id,
+    searchParams.releasing
+  ) as Promise<Provider[]>;
 
   const [info, episodes] = use(Promise.all([infoPromise, episodesPromise]));
 

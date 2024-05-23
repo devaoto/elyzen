@@ -10,6 +10,11 @@ export interface Media {
     native: string;
     userPreferred: string;
   };
+  nextAiringEpisode: {
+    airingAt: number;
+    timeUntilAiring: number;
+    episode: number;
+  } | null;
   description: string | null;
   coverImage: string | null;
   color: string | null;

@@ -306,7 +306,7 @@ const fetchAndCacheData = async (
     if (refresh) {
       if (cover && cover?.length > 0) {
         try {
-          await cache.set(`metaData:${id}`, JSON.stringify(cover), cacheTime);
+          await cache.set(`metaEData:${id}`, JSON.stringify(cover), cacheTime);
           data = await mergeEpisodeMetadata(combinedData, cover);
         } catch (error) {
           console.error('Error serializing cover:', error);
@@ -346,14 +346,14 @@ export const GET = async (
 
   if (cache) {
     try {
-      meta = await cache.get(`metaData:${id}`);
+      meta = await cache.get(`metaEData:${id}`);
       if (JSON.parse(meta)?.length === 0) {
-        await cache.del(`metaData:${id}`);
+        await cache.del(`metaEData:${id}`);
         meta = null;
       }
-      cached = await cache.get(`episodeData:${id}`);
+      cached = await cache.get(`episodeEData:${id}`);
       if (JSON.parse(cached!)?.length === 0) {
-        await cache.del(`episodeData:${id}`);
+        await cache.del(`episodeEData:${id}`);
         cached = null;
       }
       let data: any[] | any = null;
