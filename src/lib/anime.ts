@@ -597,7 +597,7 @@ export const getSources = async (
   try {
     const response = await FetchDataAndCache(
       `${process.env.NEXT_PUBLIC_DOMAIN}/api/source/${id}?episodeId=${encodeURIComponent(episodeId)}&episodeNumber=${episodeNumber}&subType=${subType}&source=${source}&provider=${provider}`,
-      `ep:src:${id}:${episodeId}`
+      `episode:src:${id}:${episodeId}`
     );
 
     return response;

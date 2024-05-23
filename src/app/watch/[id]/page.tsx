@@ -4,6 +4,8 @@ import { Episode } from '@/types/api';
 import { use } from 'react';
 import dynamic from 'next/dynamic';
 import { Metadata, Viewport } from 'next';
+import Link from 'next/link';
+import { TriangleAlert } from 'lucide-react';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
@@ -105,6 +107,11 @@ export default function Watch({
   );
 
   let currentEpisode: Episode | undefined = undefined;
+  let fallbackProvider: Episode | undefined = episodes
+    .find((provider) => provider.providerId === 'gogoanime')
+    ?.episodes.sub.find(
+      (episode) => Number(episode.number) === Number(searchParams.number)
+    );
 
   if (searchParams.provider === 'gogoanime') {
     currentEpisode = episodes
@@ -121,7 +128,30 @@ export default function Watch({
 
   let hslURL: string | undefined = undefined;
 
+  console.log(sources);
   if (searchParams.provider === 'zoro') {
+    if (
+      sources.status === 500 &&
+      sources.message === "Couldn't find server. Try another server"
+    ) {
+      return (
+        <div className='flex min-h-screen flex-col items-center justify-center'>
+          <h1 className='flex items-center gap-1 text-7xl font-bold text-red-500'>
+            <TriangleAlert className='size-[72px]' />
+            <span>ERROR</span>
+          </h1>
+          <p>
+            Couldn&apos;t find any sources in this server. Try using{' '}
+            <Link
+              className='text-blue-400'
+              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent(fallbackProvider?.id!)}&number=${fallbackProvider?.number}`}
+            >
+              gogoanime
+            </Link>
+          </p>
+        </div>
+      );
+    }
     hslURL = sources.sources[0].url;
   } else {
     hslURL = sources.sources.find(

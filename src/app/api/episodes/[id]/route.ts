@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mergeEpisodeMetadata } from '@/lib/episode';
 import { ConsumetAnimeEpisode } from '@/types/consumet';
 import { AnifyEpisodesResponse } from '@/types/anify';
-import { MalSyncAnime } from '@/types/malSync';
+import { MalSyncAnime, MalSyncSiteDetails } from '@/types/malSync';
 import { GogoAnimeAnime } from '@/types/gogo';
 import { HiAnimeSeries } from '@/types/hianime';
 import { AniZipData } from '@/types/anizip';
@@ -95,7 +95,10 @@ async function malSync(id: string) {
     const sites = Object.keys(data.Sites).map((providerId) => ({
       providerId: providerId.toLowerCase(),
       data: Object.values(data.Sites[providerId]),
-    }));
+    })) as {
+      providerId: string;
+      data: MalSyncSiteDetails[];
+    }[];
     const newData = sites.filter(
       (site) => site.providerId === 'gogoanime' || site.providerId === 'zoro'
     );
@@ -295,7 +298,7 @@ const fetchAndCacheData = async (
   if (cache) {
     if (consumet?.length! > 0 || anify?.length! > 0) {
       await cache.set(
-        `episodeData:${id}`,
+        `episodeEData:${id}`,
         JSON.stringify(consumet && anify ? [...consumet, ...anify] : []),
         cacheTime
       );
