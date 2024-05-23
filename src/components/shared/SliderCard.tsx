@@ -1,14 +1,15 @@
 'use client';
 
 import { Media } from '@/types/api';
-import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
+import { RelationData } from '@/lib/info';
+import { Image } from '@nextui-org/react';
 
-export const SliderCard = ({ anime }: { anime: Media }) => {
+export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -25,16 +26,21 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
         rounded-2xl'
       >
         <Image
-          src={anime.coverImage!}
+          src={
+            (anime as Media).coverImage
+              ? (anime as Media).coverImage!
+              : (anime as RelationData).image!
+          }
           alt={
-            anime.title.userPreferred ??
-            anime.title.english ??
-            anime.title.romaji ??
-            anime.title.native
+            anime.title.userPreferred! ??
+            anime.title.english! ??
+            anime.title.romaji! ??
+            anime.title.native!
           }
           height={400}
+          isBlurred
           width={300}
-          className='max-h-[285px] min-h-[285px] min-w-[220px] object-cover'
+          className='max-h-[285px] min-h-[285px] min-w-[220px] max-w-[220px] object-cover'
         />
       </motion.div>
       {isHovered && (
@@ -60,10 +66,14 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
           </Link>
         </motion.div>
       )}
-      <div className='absolute inset-0 top-0'>
+      <div className='absolute inset-0 top-0 z-[70]'>
         <div className='flex justify-between'>
           <Badge>{anime.status}</Badge>
-          <Badge variant={'secondary'}>{anime.format}</Badge>
+          <Badge variant={'secondary'}>
+            {(anime as Media).format
+              ? (anime as Media).format
+              : (anime as RelationData).relationType}
+          </Badge>
         </div>
       </div>
       <motion.h1 className='max-w-[220px] truncate font-semibold'>
@@ -74,8 +84,13 @@ export const SliderCard = ({ anime }: { anime: Media }) => {
           ''}
       </motion.h1>
       <div className='flex gap-2 text-xs font-bold'>
-        <p>{anime.totalEpisodes}</p> <div className='h-4 w-[1px] bg-gray-400' />
-        <p>{anime.season}</p>
+        <p>{(anime as Media).totalEpisodes}</p>{' '}
+        <div className='h-4 w-[1px] bg-gray-400' />
+        <p>
+          {(anime as Media).season
+            ? (anime as Media).season
+            : (anime as RelationData).status}
+        </p>
         <div className='h-4 w-[1px] bg-gray-400' />
         <p>{anime.type}</p>
       </div>

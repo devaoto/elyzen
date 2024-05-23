@@ -116,33 +116,33 @@ export interface AnilistInfo {
           userPreferred: string | null;
         };
         status: string;
-        episodes?: number | null;
+        totalEpisodes?: number | null;
         image: string | null;
         cover: string | null;
         rating?: number | null;
         type: string | null;
       }[]
     | null;
-  relations?:
-    | {
-        id: string;
-        relationType: string;
-        malId?: number | null;
-        title: {
-          romaji: string | null;
-          english: string | null;
-          native: string | null;
-          userPreferred: string | null;
-        };
-        status: string;
-        episodes?: number | null;
-        image: string | null;
-        color?: string | null;
-        type: string | null;
-        cover: string | null;
-        rating?: number | null;
-      }[]
-    | null;
+  relations?: RelationData[] | null;
+}
+
+export interface RelationData {
+  id: string;
+  relationType: string;
+  malId?: number | null;
+  title: {
+    romaji: string | null;
+    english: string | null;
+    native: string | null;
+    userPreferred: string | null;
+  };
+  status: string;
+  episodes?: number | null;
+  image: string | null;
+  color?: string | null;
+  type: string | null;
+  cover: string | null;
+  rating?: number | null;
 }
 
 function convertToVoiceActor(
@@ -365,7 +365,7 @@ interface MediaInterface {
         meanScore: number;
       };
     }[];
-  }[];
+  };
   studios: {
     edges: {
       isMain: boolean;
@@ -394,7 +394,7 @@ interface MediaResponse {
 }
 
 export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
-  let cachedData = await cache.get(`animeInfoData:${params.id}`);
+  let cachedData = await cache.get(`Info:${params.id}`);
 
   if (!cachedData) {
     try {
@@ -689,34 +689,32 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
             type: item.node.mediaRecommendation?.format,
           })
         ),
-        //@ts-ignore
-        relations: data.Media?.relations?.edges?.map(async (item: any) => ({
-          id: await item.node.id,
-          relationType: await item.relationType,
-          malId: await item.node.idMal,
-          title: { ...(await item.node.title) },
-          status:
-            (await item.node.status) === 'HIATUS'
-              ? 'HIATUS'
-              : (await item.node.status) ?? 'UNKNOWN',
-          episodes: await item.node.episodes,
+        relations: data.Media.relations.edges.map((relation) => ({
+          title: relation.node.title,
+          id: relation.node.id,
+          idMal: relation.node.idMal,
+          totalEpisodes: relation.node.episodes,
           image:
-            (await item.node.coverImage.extraLarge) ??
-            (await item.node.coverImage.large) ??
-            (await item.node.coverImage.medium),
-          color: await item.node.coverImage?.color,
-          type: await item.node.format,
+            relation.node.coverImage.extraLarge ??
+            relation.node.coverImage.large ??
+            relation.node.coverImage.medium ??
+            null,
           cover:
-            (await item.node.bannerImage) ??
-            (await item.node.coverImage.extraLarge) ??
-            (await item.node.coverImage.large) ??
-            (await item.node.coverImage.medium),
-          rating: await item.node.meanScore,
+            relation.node.bannerImage ??
+            relation.node.coverImage.extraLarge ??
+            relation.node.coverImage.large ??
+            relation.node.coverImage.medium ??
+            null,
+          type: relation.node.format,
+          status: relation.node.status,
+          color: relation.node.coverImage.color,
+          relationType: relation.relationType,
+          rating: relation.node.meanScore,
         })),
       };
 
       cachedData = animeInfo;
-      await cache.set(`info:${params.id}`, JSON.stringify(animeInfo), 5 * 3600);
+      await cache.set(`Info:${params.id}`, JSON.stringify(animeInfo), 5 * 3600);
     } catch (error) {
       console.error(error);
       cachedData = defaultResponse;

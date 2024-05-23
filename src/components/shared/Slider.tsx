@@ -1,18 +1,21 @@
 'use client';
 import { useDraggable } from 'react-use-draggable-scroll';
 import React, { useRef, useState, useEffect } from 'react';
-import { ReturnData } from '@/types/api';
+import { Media, ReturnData } from '@/types/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowLeft } from 'lucide-react';
 import { SliderCard } from './SliderCard';
+import { RelationData } from '@/lib/info';
 
 export const Slider = ({
   data,
   title,
+  type,
 }: {
-  data: ReturnData;
+  data: ReturnData | RelationData[];
   title: string;
+  type?: string;
 }) => {
   const slider =
     useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
@@ -77,18 +80,34 @@ export const Slider = ({
         {...events}
         ref={slider}
       >
-        {data.results
-          .filter(
-            (anime) =>
-              anime.status !== 'NOT_YET_RELEASED' &&
-              ['FINISHED', 'RELEASING'].includes(anime.status || '') &&
-              anime.coverImage
-          )
-          .map((anime) => (
-            <div key={anime.id}>
-              <SliderCard anime={anime} />
-            </div>
-          ))}
+        {!type ? (
+          <>
+            {(data as ReturnData).results
+              .filter(
+                (anime) =>
+                  anime.status !== 'NOT_YET_RELEASED' &&
+                  ['FINISHED', 'RELEASING'].includes(anime.status || '') &&
+                  anime.coverImage
+              )
+              .map((anime) => (
+                <div key={anime.id}>
+                  <SliderCard anime={anime} />
+                </div>
+              ))}
+          </>
+        ) : (
+          <>
+            {(data as RelationData[])
+              .filter(
+                (r) => !['ALTERNATIVE', 'ADAPTATION'].includes(r.relationType)
+              )
+              .map((r) => (
+                <div key={r.id}>
+                  <SliderCard anime={r as unknown as Media} />
+                </div>
+              ))}
+          </>
+        )}
       </div>
     </div>
   );
