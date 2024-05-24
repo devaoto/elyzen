@@ -77,7 +77,6 @@ function Footer() {
                   <li>
                     <Link
                       href='/privacy'
-                      target='_blank'
                       className='!text-[0.8rem] !font-semibold'
                     >
                       Privacy Policy
@@ -86,7 +85,6 @@ function Footer() {
                   <li>
                     <Link
                       href='/terms'
-                      target='_blank'
                       className='!text-[0.8rem] !font-semibold'
                     >
                       Terms of Service
@@ -97,7 +95,7 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className='bg-tersier mt-2 border-t border-white/5'></div>
+        <div className='mt-2 border-t border-white/5'></div>
         <div className='mx-auto w-full py-3 text-[0.7rem] lg:flex lg:max-w-[83%] lg:items-center lg:justify-between lg:text-[0.8rem]'>
           <span className='ms-5 sm:text-center lg:ms-0'>
             © {year}{' '}
