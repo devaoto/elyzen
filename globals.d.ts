@@ -5,6 +5,7 @@ declare namespace NodeJS {
     HIANIME_API: string;
     CONSUMET_API: string;
     MALSYNC_URI: string;
+    NEXT_PUBLIC_CORS_PROXY_URL?: string;
   }
 }
 
@@ -17,5 +18,6 @@ declare namespace NodeJS {
 //     HIANIME_API: string;
 //     CONSUMET_API: string;
 //     MALSYNC_URI: string;
+//     NEXT_PUBLIC_CORS_PROXY_URL?: string;
 //   }
 // }

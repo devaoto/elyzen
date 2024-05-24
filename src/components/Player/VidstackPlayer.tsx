@@ -484,7 +484,7 @@ export default function Player({
             })}
           {thumbnails && thumbnails.file ? (
             <VideoLayout
-              thumbnails={`${process.env.NEXT_PUBLIC_CORS_PROXY_URL}?${thumbnails.file}`}
+              thumbnails={`${process.env.NEXT_PUBLIC_CORS_PROXY_URL}/${thumbnails.file}`}
             />
           ) : (
             <VideoLayout />

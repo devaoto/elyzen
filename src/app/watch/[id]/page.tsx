@@ -190,9 +190,11 @@ export default function Watch({
     )?.sources?.find((source) => source.quality === 'default')?.url;
   }
 
-  // const thumbnails = sources.tracks.find(
-  //   (track: { kind: string; file: string }) => track.kind === 'thumbnails'
-  // );
+  const thumbnails = (
+    sources as { tracks: { kind: string; file: string }[] }
+  ).tracks.find(
+    (track: { kind: string; file: string }) => track.kind === 'thumbnails'
+  );
 
   return (
     <>
@@ -233,7 +235,7 @@ export default function Watch({
                 info.title.native!
               }
               epid={searchParams.episodeId}
-              // thumbnails={thumbnails}
+              thumbnails={thumbnails}
             />
             <div>
               <h1 className='mb-0 max-w-[895px] text-2xl font-bold'>
