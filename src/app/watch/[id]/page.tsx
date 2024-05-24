@@ -101,7 +101,13 @@ export default function Watch({
         searchParams.provider,
         searchParams.type,
         searchParams.provider === 'gogoanime' ? 'consumet' : 'anify'
-      ),
+      ) as Promise<
+        | { message: string; status: number }
+        | {
+            tracks: { kind: string; file: string; label: string }[];
+            sources: { quality: string; url: string; isM3U8?: boolean }[];
+          }
+      >,
       getEpisodes(params.id),
     ])
   );
@@ -131,8 +137,9 @@ export default function Watch({
   console.log(sources);
   if (searchParams.provider === 'zoro') {
     if (
-      sources.status === 500 &&
-      sources.message === "Couldn't find server. Try another server"
+      (sources as { status: number }).status === 500 &&
+      (sources as { message: string }).message ===
+        "Couldn't find server. Try another server"
     ) {
       return (
         <div className='flex min-h-screen flex-col items-center justify-center'>
@@ -152,12 +159,35 @@ export default function Watch({
         </div>
       );
     }
-    hslURL = sources.sources[0].url;
+    if (
+      (sources as { status: number }).status === 500 &&
+      (sources as { message: string }).message.includes('final block length')
+    ) {
+      return (
+        <div className='flex min-h-screen flex-col items-center justify-center'>
+          <h1 className='flex items-center gap-1 text-7xl font-bold text-red-500'>
+            <TriangleAlert className='size-[72px]' />
+            <span>ERROR</span>
+          </h1>
+          <p>
+            There was an encryption error. Try using{' '}
+            <Link
+              className='text-blue-400'
+              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent(fallbackProvider?.id!)}&number=${fallbackProvider?.number}`}
+            >
+              gogoanime
+            </Link>
+          </p>
+        </div>
+      );
+    }
+    hslURL = (sources as { sources: { url: string }[] }).sources[0].url;
   } else {
-    hslURL = sources.sources.find(
-      (source: { url: string; isM3U8: boolean; quality: string }) =>
-        source.quality === 'default'
-    ).url;
+    hslURL = (
+      sources as {
+        sources: { url: string; quality: string }[];
+      }
+    )?.sources?.find((source) => source.quality === 'default')?.url;
   }
 
   // const thumbnails = sources.tracks.find(
@@ -189,7 +219,13 @@ export default function Watch({
               idMal={String(info.malId)}
               anId={params.id}
               hls={hslURL}
-              subtitles={sources.tracks ?? undefined}
+              subtitles={
+                (
+                  sources as {
+                    tracks: { label: string; kind: string; file: string }[];
+                  }
+                ).tracks ?? undefined
+              }
               animeTitle={
                 info.title.english ??
                 info.title.romaji ??
