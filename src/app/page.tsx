@@ -34,7 +34,6 @@ export default function Home() {
           <Slider data={popular} title='popular' />
         </div>
       </div>
-      <Footer />
     </>
   );
 }
