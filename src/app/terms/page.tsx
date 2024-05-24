@@ -1,13 +1,14 @@
-import Footer from '@/components/Footer';
 import dynamic from 'next/dynamic';
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 
 const Terms = () => {
   return (
     <>
-      <SideBar />
+      <div className='absolute top-0'>
+        <SideBar />
+      </div>
       <div className='mx-auto max-w-3xl px-4 py-20'>
-        <h1 className='mb-4 font-mono text-3xl'>TERMS OF SERVICE</h1>
+        <h1 className='mb-4 text-4xl font-bold'>TERMS OF SERVICE</h1>
         <h1 className='mb-4 text-xl'>Last updated: 05/06/2024</h1>
         <p className='mb-4'>
           <strong className='font-bold'>Acceptance of Terms:</strong> By using
@@ -49,13 +50,8 @@ const Terms = () => {
           for any breach of these Terms.
         </p>
       </div>
-      <Footer />
     </>
   );
 };
 
 export default Terms;
-
-
-
-
