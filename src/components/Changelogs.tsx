@@ -120,7 +120,7 @@ export default function Changelogs() {
                         <Link
                           href='https://discord.gg/8ynFhUQJbc'
                           target='_blank'
-                          className='h-6 w-6 hover:opacity-75'
+                          className='h-5 w-5 hover:opacity-75'
                         >
                           <AiFillDiscord />
                         </Link>
