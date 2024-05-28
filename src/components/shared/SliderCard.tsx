@@ -52,7 +52,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
           className='absolute inset-0 flex items-center justify-center gap-4'
         >
           <Link
-            className='relative z-[69999]'
+            className='relative z-50'
             href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}`}
           >
             <Button className='cursor-pointer'>
@@ -62,7 +62,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
             </Button>
           </Link>
           <Link
-            className='relative z-[69999]'
+            className='relative z-50'
             href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}#watch`}
           >
             <Button className='cursor-pointer' variant={'secondary'}>
@@ -73,7 +73,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
           </Link>
         </motion.div>
       )}
-      <div className='absolute inset-0 top-0 z-[70]'>
+      <div className='absolute inset-0 top-0 z-[10]'>
         <div className='flex justify-between'>
           <Badge>{anime.status}</Badge>
           <Badge variant={'secondary'}>

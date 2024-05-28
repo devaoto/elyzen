@@ -79,7 +79,7 @@ export default function NavBar() {
           <DialogTrigger>
             <SearchIcon className='size-5 md:size-8 lg:size-8' />
           </DialogTrigger>
-          <DialogContent className='relative z-[3553535]'>
+          <DialogContent className=''>
             <DialogDescription>
               <h1 className='text-2xl font-bold'>Search By Name</h1>
               <Input
