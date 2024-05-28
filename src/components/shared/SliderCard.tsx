@@ -7,7 +7,8 @@ import { useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { RelationData } from '@/lib/info';
-import { Image } from '@nextui-org/react';
+import { Image, Tooltip } from '@nextui-org/react';
+import { Info, Play } from 'lucide-react';
 
 export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -54,14 +55,20 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
             className='relative z-[69999]'
             href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}`}
           >
-            <Button className='cursor-pointer'>Info</Button>
+            <Button className='cursor-pointer'>
+              <Tooltip content='Info'>
+                <Info />
+              </Tooltip>
+            </Button>
           </Link>
           <Link
             className='relative z-[69999]'
             href={`/info/${anime.id}?releasing=${anime.status === 'RELEASING'}#watch`}
           >
             <Button className='cursor-pointer' variant={'secondary'}>
-              Watch
+              <Tooltip content='Watch'>
+                <Play />
+              </Tooltip>
             </Button>
           </Link>
         </motion.div>

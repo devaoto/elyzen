@@ -32,8 +32,8 @@ export default function SideBar() {
   return (
     <>
       {!isMobile ? (
-        <div className='fixed z-[999999] flex h-screen flex-col items-center gap-2 px-1 pt-10'>
-          <div className='flex flex-col gap-2 self-start'>
+        <div className='fixed z-[999999] flex h-full flex-col items-center justify-center gap-2 px-1 pt-10'>
+          <div className='flex flex-col gap-2'>
             <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -57,13 +57,14 @@ export default function SideBar() {
                     <ModeToggle />
                   </div>
                 </TooltipTrigger>
+                <Separator className='my-2' />
                 <TooltipContent side='right'>
                   <p>Theme</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className='my-auto flex flex-col gap-2'>
+          <div className='flex flex-col gap-2'>
             <TooltipProvider>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
@@ -93,7 +94,8 @@ export default function SideBar() {
               </Tooltip>
             </TooltipProvider>
           </div>
-          <div className='mb-2 flex flex-col gap-2 self-end'>
+          <Separator className='my-2' />
+          <div className='mb-2 flex flex-col gap-2'>
             <TooltipProvider>
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
