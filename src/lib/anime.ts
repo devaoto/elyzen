@@ -15,7 +15,8 @@ const FetchDataAndCache = async (
 ) => {
   try {
     let isCached = false;
-    let data: any = await cache.get(`${url}:${id}`);
+    let cacheKey = `${url}:${id}`;
+    let data: any = await cache.get(cacheKey);
 
     if (!data) {
       const options: RequestInit = {
@@ -26,11 +27,19 @@ const FetchDataAndCache = async (
       };
 
       data = await (await fetch(url, options)).json();
-      await cache.set(`${url}i:${id}`, JSON.stringify(data), 5 * 60 * 60);
-      isCached = true;
+
+      if (!data.errors) {
+        await cache.set(cacheKey, JSON.stringify(data), 5 * 60 * 60);
+        isCached = true;
+      }
     } else {
       data = JSON.parse(data);
-      isCached = true;
+      if (data.errors) {
+        await cache.del(cacheKey);
+        isCached = false;
+      } else {
+        isCached = true;
+      }
     }
 
     return { ...data, isCached };
@@ -122,6 +131,8 @@ export const getTrendingAnime = async (page = 1, perPage = 24) => {
       JSON.stringify({ query, variables })
     );
 
+    console.log(response);
+
     const res: any = {
       currentPage: response.data.Page.pageInfo.currentPage,
       hasNextPage: response.data.Page.pageInfo.hasNextPage,
@@ -178,11 +189,11 @@ export const getTrendingAnime = async (page = 1, perPage = 24) => {
       console.log(
         'There was an error fetching trending from anilist. Using consumet....'
       );
-      response = await FetchDataAndCache(
-        `${process.env.NEXT_PUBLIC_CONSUMET_API}/meta/anilist/trending?perPage=${perPage}&page=${page}`,
-        'trending3'
+      response = await fetch(
+        `${process.env.CONSUMET_API}/meta/anilist/trending?perPage=${perPage}&page=${page}`
       );
-      return await response;
+
+      return await response.json();
     } catch (error) {
       console.error(error);
     }
@@ -324,15 +335,15 @@ export const getPopularAnime = async () => {
     return res as ReturnData;
   } catch (error) {
     try {
+      console.error(error);
       console.log(
         'There was an error fetching popular from anilist. Using consumet....'
       );
 
-      response = await FetchDataAndCache(
-        `${process.env.CONSUMET_API}/meta/anilist/popular?perPage=24`,
-        'popular3'
+      response = await fetch(
+        `${process.env.CONSUMET_API}/meta/anilist/popular?perPage=24`
       );
-      return await response;
+      return await response.json();
     } catch (error) {
       console.error(error);
     }
@@ -476,13 +487,12 @@ export const getSeasonalAnime = async () => {
         'There was an error fetching seasonal from anilist. Using consumet....'
       );
 
-      response = await FetchDataAndCache(
+      response = await fetch(
         `${
           process.env.CONSUMET_API
-        }/meta/anilist/advanced-search?perPage=24&season=${getCurrentSeason()}&year=${new Date().getFullYear()}`,
-        'seasonal3'
+        }/meta/anilist/advanced-search?perPage=24&season=${getCurrentSeason()}&year=${new Date().getFullYear()}`
       );
-      return await response;
+      return await response.json();
     } catch (error) {
       console.error(error);
     }
