@@ -96,3 +96,27 @@ export function getCurrentSeason(): 'SPRING' | 'SUMMER' | 'FALL' | 'WINTER' {
       return 'WINTER';
   }
 }
+
+export function convertStatus(
+  status: string
+): 'RELEASING' | 'FINISHED' | 'NOT_YET_RELEASED' | 'HIATUS' | 'CANCELLED' {
+  switch (status) {
+    case 'Ongoing':
+    case 'RELEASING':
+      return 'RELEASING';
+    case 'FINISHED':
+    case 'Aired':
+      return 'FINISHED';
+    case 'NOT_YET_RELEASED':
+    case 'Not yet aired':
+      return 'NOT_YET_RELEASED';
+    case 'HIATUS':
+    case 'Hiatus':
+      return 'HIATUS';
+    case 'CANCELLED':
+    case 'Cancelled':
+      return 'CANCELLED';
+    default:
+      return 'RELEASING';
+  }
+}

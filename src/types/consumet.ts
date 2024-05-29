@@ -79,3 +79,44 @@ export interface ConsumetSearchResult {
     releaseDate: number;
   }[];
 }
+
+export interface ConsumetAnime {
+  id: string;
+  malId: number;
+  title: {
+    romaji: string;
+    english: string;
+    native: string;
+    userPreferred: string;
+  };
+  image: string;
+  imageHash: string;
+  trailer: {
+    id: string;
+    site: string;
+    thumbnail: string;
+    thumbnailHash: string;
+  };
+  description: string;
+  status: string;
+  cover: string;
+  coverHash: string;
+  rating: number;
+  releaseDate: number;
+  color: string;
+  genres: string[];
+  totalEpisodes: number;
+  duration: number;
+  startDate: {
+    year: number;
+    day: number;
+    month: any;
+  };
+  type: string;
+}
+
+export interface ConsumetAnimePage {
+  currentPage: number;
+  hasNextPage: boolean;
+  results: ConsumetAnime[];
+}
