@@ -134,7 +134,6 @@ export default function Watch({
 
   let hslURL: string | undefined = undefined;
 
-  console.log(sources);
   if (searchParams.provider === 'zoro') {
     if (
       (sources as { status: number }).status === 500 &&
@@ -190,11 +189,17 @@ export default function Watch({
     )?.sources?.find((source) => source.quality === 'default')?.url;
   }
 
-  const thumbnails = (
-    sources as { tracks: { kind: string; file: string }[] }
-  ).tracks.find(
-    (track: { kind: string; file: string }) => track.kind === 'thumbnails'
-  );
+  let thumbnails: { file: string; kind: string } | undefined = undefined;
+
+  try {
+    thumbnails = (
+      sources as { tracks: { kind: string; file: string }[] }
+    ).tracks.find(
+      (track: { kind: string; file: string }) => track.kind === 'thumbnails'
+    );
+  } catch (error) {
+    thumbnails = undefined;
+  }
 
   return (
     <>
