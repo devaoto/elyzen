@@ -3,10 +3,13 @@ import { Hero } from '@/components/shared/Hero';
 import { getTrendingAnime, getPopularAnime } from '@/lib/anime';
 import { Slider } from '@/components/shared/Slider';
 import dynamic from 'next/dynamic';
-import Footer from '@/components/Footer';
 import { Flame, Star } from 'lucide-react';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
+const ContinueWatching = dynamic(
+  () => import('@/components/shared/ContinueWatching'),
+  { ssr: false }
+);
 
 export const revalidate = 3600;
 
@@ -22,6 +25,7 @@ export default function Home() {
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         <Hero data={trending} />
         <div className='mt-20'>
+          <ContinueWatching />
           <h1 className='mb-4 flex gap-1 text-4xl font-bold'>
             <Flame className='size-9' /> <span>Trending Now</span>
           </h1>
