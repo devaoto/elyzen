@@ -69,9 +69,11 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size='icon'>
-                      <FlameIcon className='hover:fill-slate-200' />
-                    </Button>
+                    <Link href='/trending'>
+                      <Button variant={'outline'} size='icon'>
+                        <FlameIcon className='hover:fill-slate-200' />
+                      </Button>
+                    </Link>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side='right'>
@@ -83,9 +85,11 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size='icon'>
-                      <StarIcon className='hover:fill-slate-200' />
-                    </Button>
+                    <Link href='/popular'>
+                      <Button variant={'outline'} size='icon'>
+                        <StarIcon className='hover:fill-slate-200' />
+                      </Button>
+                    </Link>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side='right'>
@@ -137,22 +141,26 @@ export default function SideBar() {
                   <span className='font-bold'>Change Theme</span>
                 </div>
                 <Separator className='my-2' />
-                <div className='flex items-center gap-1'>
-                  <span>
-                    <Button variant={'outline'} size={'icon'}>
-                      <FlameIcon />
-                    </Button>
-                  </span>
-                  <span className='font-bold'>Trending</span>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <span>
-                    <Button variant={'outline'} size={'icon'}>
-                      <StarIcon />
-                    </Button>
-                  </span>
-                  <span className='font-bold'>Popular</span>
-                </div>
+                <Link href='/trending'>
+                  <div className='flex items-center gap-1'>
+                    <span>
+                      <Button variant={'outline'} size={'icon'}>
+                        <FlameIcon />
+                      </Button>
+                    </span>
+                    <span className='font-bold'>Trending</span>
+                  </div>
+                </Link>
+                <Link href='/popular'>
+                  <div className='flex items-center gap-1'>
+                    <span>
+                      <Button variant={'outline'} size={'icon'}>
+                        <StarIcon />
+                      </Button>
+                    </span>
+                    <span className='font-bold'>Popular</span>
+                  </div>
+                </Link>
                 <Separator className='my-2' />
                 <div className='flex items-center gap-1'>
                   <span>
