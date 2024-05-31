@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Provider, Episode } from '@/types/api';
-import Image from 'next/image';
 import {
   Select,
   SelectContent,
@@ -23,7 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../ui/tooltip';
-import { Button } from '@nextui-org/react';
+import { Button, Image } from '@nextui-org/react';
 
 interface Props {
   animeData: Provider[];

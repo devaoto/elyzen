@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Provider, Episode } from '@/types/api';
-import Image from 'next/image';
 import {
   Select,
   SelectContent,
@@ -15,6 +14,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import _, { List } from 'lodash';
 import { Input } from '../ui/input';
 import { AnilistInfo } from '@/lib/info';
+import { Image } from '@nextui-org/react';
 
 interface Props {
   animeData: Provider[];
