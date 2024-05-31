@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { Button, Image } from '@nextui-org/react';
+import NextImage from 'next/image';
 
 interface Props {
   animeData: Provider[];
@@ -251,7 +252,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
       href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`}
       className='mb-4 flex flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
     >
-      <Image
+      <NextImage
         src={
           episode.img
             ? episode.img!
