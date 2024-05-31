@@ -26,7 +26,7 @@
     "framer-motion": "^11.2.6",
     "ioredis": "^5.4.1",
     "lodash": "^4.17.21",
-    "lucide-react": "^0.379.0",
+    "lucide-react": "^0.381.0",
     "marked": "^12.0.2",
     "media-icons": "^1.1.4",
     "next": "^14.2.3",
