@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Book,
   FlameIcon,
   HomeIcon,
   Menu,
@@ -94,6 +95,22 @@ export default function SideBar() {
                 </TooltipTrigger>
                 <TooltipContent side='right'>
                   <p>Popular</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Link href='/catalog'>
+                      <Button variant={'outline'} size='icon'>
+                        <Book className='hover:fill-slate-200' />
+                      </Button>
+                    </Link>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side='right'>
+                  <p>Catalog</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
