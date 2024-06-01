@@ -17,10 +17,10 @@ interface Episode {
   createdAt: string;
 }
 
-const parseTime = (seconds: number): string => {
-  const hrs = Math.floor((seconds - 3) / 3600);
-  const mins = Math.floor(((seconds - 3) % 3600) / 60);
-  const secs = Math.floor((seconds - 3) % 60);
+const parseTime = (seconds: number, typeFor?: string): string => {
+  const hrs = Math.floor((seconds - (typeFor === 'one' ? 3 : 0)) / 3600);
+  const mins = Math.floor((seconds - (typeFor === 'one' ? 3 : 0)) / 60);
+  const secs = Math.floor((seconds - (typeFor === 'one' ? 3 : 0)) % 60);
   return `${hrs}:${mins}:${secs}`;
 };
 
@@ -63,7 +63,7 @@ const AnimeList = () => {
                     </h2>
                     <h3 className='text-md font-medium'>{episode.aniTitle}</h3>
                     <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
-                      {parseTime(episode.timeWatched)} /{' '}
+                      {parseTime(episode.timeWatched, 'one')} /{' '}
                       {parseTime(episode.duration)}
                     </p>
                   </div>
