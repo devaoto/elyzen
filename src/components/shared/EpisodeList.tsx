@@ -23,7 +23,6 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { Button, Image } from '@nextui-org/react';
-import NextImage from 'next/image';
 
 interface Props {
   animeData: Provider[];
@@ -252,7 +251,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
       href={`/watch/${id}?episodeId=${encodeURIComponent(episodeId!)}&provider=${provider}&type=${type}&number=${episode.number}`}
       className='mb-4 flex flex-col rounded border p-4 duration-300 hover:bg-gray-100 dark:hover:bg-gray-700/55 md:flex-row lg:flex-row xl:flex-row 2xl:flex-row'
     >
-      <NextImage
+      <Image
         src={
           episode.img
             ? episode.img!
@@ -261,9 +260,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
               : info.coverImage!
         }
         alt={episode.title ? episode.title : `Episode ${episode.number}`}
-        width={1600}
-        height={1600}
-        className='mr-4 object-cover md:h-auto md:max-h-[150px] md:w-1/4 md:min-w-[20%] md:max-w-[20%] lg:h-auto lg:max-h-[150px] lg:min-h-[150px] lg:w-1/4 lg:min-w-[20%] lg:max-w-[20%] xl:h-auto xl:max-h-[150px] xl:min-h-[150px] xl:w-1/4 xl:min-w-[20%] xl:max-w-[20%] 2xl:h-auto 2xl:max-h-[150px] 2xl:min-h-[150px] 2xl:w-1/4 2xl:min-w-[20%] 2xl:max-w-[20%]'
+        className='mr-6 h-full w-full object-cover md:max-h-[165px] md:min-h-[165px] md:min-w-[295px] md:max-w-[295px] lg:max-h-[165px] lg:min-h-[165px] lg:min-w-[295px] lg:max-w-[295px]'
       />
       <div className='flex flex-col justify-center'>
         <h2 className='text-xl font-bold'>
