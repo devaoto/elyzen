@@ -121,9 +121,11 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Button variant={'outline'} size='icon'>
-                      <SettingsIcon />
-                    </Button>
+                    <Link href='/settings'>
+                      <Button variant={'outline'} size='icon'>
+                        <SettingsIcon />
+                      </Button>
+                    </Link>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side='right'>
