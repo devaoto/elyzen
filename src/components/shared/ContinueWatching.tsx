@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Image, Link } from '@nextui-org/react';
-import { Clock } from 'lucide-react';
+import { Button, Image, Link, Tooltip } from '@nextui-org/react';
+import { Clock, Cross } from 'lucide-react';
 
 interface Episode {
   id: string;
@@ -36,13 +36,30 @@ const AnimeList = () => {
     }
   }, []);
 
+  const handleClearVidstackSettings = () => {
+    localStorage.removeItem('vidstack_settings');
+    setEpisodes(null);
+  };
+
   return (
     <>
       {episodes ? (
         <>
-          <h1 className='mb-4 flex gap-1 text-4xl font-bold'>
-            <Clock className='size-9' /> <span>Continue Watching</span>
-          </h1>
+          <div className='flex items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-4xl font-bold'>
+              <Clock className='size-9' /> <span>Continue Watching</span>
+            </h1>
+            <Tooltip content='Clear all'>
+              <Button
+                color='danger'
+                variant='light'
+                isIconOnly
+                onClick={handleClearVidstackSettings}
+              >
+                <Cross className='rotate-45' />
+              </Button>
+            </Tooltip>
+          </div>
           <div className='max-h-[400px] overflow-x-hidden overflow-y-scroll scrollbar-hide'>
             <div className='grid grid-cols-1 p-4 lg:grid-cols-3'>
               {episodes?.map((episode) => (
