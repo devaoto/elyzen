@@ -6,6 +6,8 @@ import dynamic from 'next/dynamic';
 import { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { TriangleAlert } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import ProviderSwitch from './handleProviderSwitch';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
@@ -113,23 +115,25 @@ export default function Watch({
   );
 
   let currentEpisode: Episode | undefined = undefined;
-  let fallbackProvider: Episode | undefined = episodes
-    .find((provider) => provider.providerId === 'gogoanime')
-    ?.episodes.sub.find(
-      (episode) => Number(episode.number) === Number(searchParams.number)
-    );
+  let zoroEpisode: Episode | undefined = undefined;
+  let gogoanimeEpisode: Episode | undefined = undefined;
 
-  if (searchParams.provider === 'gogoanime') {
-    currentEpisode = episodes
-      .find((p) => p.providerId === 'gogoanime')
-      ?.episodes.sub.find(
+  episodes.forEach((provider) => {
+    if (provider.providerId === 'gogoanime') {
+      gogoanimeEpisode = provider.episodes.sub.find(
         (episode) => Number(episode.number) === Number(searchParams.number)
       );
+    } else if (provider.providerId === 'zoro') {
+      zoroEpisode = (provider.episodes as unknown as Episode[]).find(
+        (episode) => Number(episode.number) === Number(searchParams.number)
+      );
+    }
+  });
+
+  if (searchParams.provider === 'gogoanime') {
+    currentEpisode = gogoanimeEpisode;
   } else {
-    currentEpisode = (
-      episodes.find((p) => p.providerId === 'zoro')
-        ?.episodes as unknown as Episode[]
-    ).find((episode) => Number(episode.number) === Number(searchParams.number));
+    currentEpisode = zoroEpisode;
   }
 
   let hslURL: string | undefined = undefined;
@@ -150,7 +154,7 @@ export default function Watch({
             Couldn&apos;t find any sources in this server. Try using{' '}
             <Link
               className='text-blue-400'
-              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent(fallbackProvider?.id!)}&number=${fallbackProvider?.number}`}
+              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent((gogoanimeEpisode as unknown as Episode)?.id!)}&number=${(gogoanimeEpisode as unknown as Episode)?.number}`}
             >
               gogoanime
             </Link>
@@ -172,7 +176,7 @@ export default function Watch({
             There was an encryption error. Try using{' '}
             <Link
               className='text-blue-400'
-              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent(fallbackProvider?.id!)}&number=${fallbackProvider?.number}`}
+              href={`/watch/${info.id}?provider=gogoanime&type=sub&episodeId=${encodeURIComponent((gogoanimeEpisode as unknown as Episode)?.id!)}&number=${(gogoanimeEpisode as unknown as Episode)?.number}`}
             >
               gogoanime
             </Link>
@@ -211,18 +215,18 @@ export default function Watch({
           <div className='max-w-[950px] flex-grow'>
             <Player
               title={
-                currentEpisode?.title
-                  ? currentEpisode.title!
-                  : `Episode ${currentEpisode?.number}`
+                (currentEpisode as unknown as Episode)?.title
+                  ? (currentEpisode as unknown as Episode).title!
+                  : `Episode ${(currentEpisode as unknown as Episode)?.number}`
               }
               cover={
-                currentEpisode?.img
-                  ? currentEpisode.img!
+                (currentEpisode as unknown as Episode)?.img
+                  ? (currentEpisode as unknown as Episode).img!
                   : info.bannerImage
                     ? info.bannerImage!
                     : info.coverImage!
               }
-              currentEp={currentEpisode?.number!}
+              currentEp={(currentEpisode as unknown as Episode)?.number!}
               idMal={String(info.malId)}
               anId={params.id}
               hls={hslURL}
@@ -242,13 +246,19 @@ export default function Watch({
               epid={searchParams.episodeId}
               thumbnails={thumbnails}
             />
+            <ProviderSwitch
+              searchParams={searchParams}
+              params={params}
+              zoroEpisode={zoroEpisode as unknown as Episode}
+              gogoanimeEpisode={gogoanimeEpisode as unknown as Episode}
+            />
             <div>
               <h1 className='mb-0 max-w-[895px] text-2xl font-bold'>
-                {currentEpisode?.title
-                  ? currentEpisode.title
-                  : `Episode ${currentEpisode?.number}`}{' '}
-                {currentEpisode?.title
-                  ? `- Episode ${currentEpisode?.number}`
+                {(currentEpisode as unknown as Episode)?.title
+                  ? (currentEpisode as unknown as Episode).title
+                  : `Episode ${(currentEpisode as unknown as Episode)?.number}`}{' '}
+                {(currentEpisode as unknown as Episode)?.title
+                  ? `- Episode ${(currentEpisode as unknown as Episode)?.number}`
                   : ''}
               </h1>
               <p className='mt-0 text-gray-500'>
@@ -261,7 +271,9 @@ export default function Watch({
           </div>
           <div className='max-h-[509px] max-w-lg overflow-x-hidden overflow-y-scroll scrollbar-hide'>
             <AnimeViewer
-              currentlyWatching={currentEpisode?.number!}
+              currentlyWatching={
+                (currentEpisode as unknown as Episode)?.number!
+              }
               animeData={episodes}
               id={params.id}
               info={info}
