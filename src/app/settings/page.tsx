@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Switch } from '@nextui-org/react';
 
 export default function Settings() {
-  const [isTrailerEnabled, setIsTrailerEnabled] = useState(false);
+  const [isTrailerEnabled, setIsTrailerEnabled] = useState(true);
 
   const handleSwitchChange = (checked: boolean) => {
     setIsTrailerEnabled(checked);
