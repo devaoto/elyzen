@@ -12,7 +12,7 @@ export const ColumnCard = ({
   title?: string;
 }) => {
   return (
-    <>
+    <div className='w-auto'>
       <h1 className='mt-20 text-4xl font-bold'>
         {title ? title : 'Upcoming Anime'}
       </h1>
@@ -50,9 +50,11 @@ export const ColumnCard = ({
                     <span>{anime.season}</span>
                     <div className='h-4 w-[0.5px] bg-black dark:bg-white'></div>
                     <span>
-                      {String(anime.startDate?.day).length >= 2
-                        ? `${anime.startDate?.day}`
-                        : `0${anime.startDate?.day}`}
+                      {anime.startDate?.day
+                        ? String(anime.startDate?.day).length >= 2
+                          ? `${anime.startDate?.day}`
+                          : `0${anime.startDate?.day}`
+                        : '01'}
                       /
                       {String(anime.startDate?.month).length >= 2
                         ? `${anime.startDate?.month}`
@@ -66,6 +68,6 @@ export const ColumnCard = ({
           </Link>
         ))}
       </div>
-    </>
+    </div>
   );
 };

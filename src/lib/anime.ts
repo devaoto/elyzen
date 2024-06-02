@@ -1,11 +1,9 @@
 import { QueryResponse } from '@/types/upcoming';
+import { QueryResponse as SeasonQueryResponse } from '@/types/seasonal';
 import { cache } from './cache';
 import { Provider, ReturnData } from '@/types/api';
-import { AnimeListResponse } from '@/types/consumet';
 
 import { getCurrentSeason } from './utils';
-import { AnilistInfo, fetchAnilistInfo } from './info';
-import { OmitUndefined } from 'class-variance-authority/types';
 
 const FetchDataAndCache = async (
   url: string,
@@ -425,61 +423,66 @@ export const getSeasonalAnime = async () => {
   let response;
 
   try {
-    response = await FetchDataAndCache(
-      `https://graphql.anilist.co`,
-      'seasonal2',
-      'POST',
-      {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      JSON.stringify({ query, variables })
-    );
+    response = (await (
+      await FetchDataAndCache(
+        `https://graphql.anilist.co`,
+        'seasonalAnime',
+        'POST',
+        {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        JSON.stringify({ query, variables })
+      )
+    ).data) as SeasonQueryResponse;
 
-    const res: any = {
-      currentPage: response.data.Page.pageInfo.currentPage,
-      hasNextPage: response.data.Page.pageInfo.hasNextPage,
-      results: response.data.Page.media
-        .filter((item: any) => item.status !== 'NOT_YET_RELEASED')
-        .map((item: any) => ({
-          id: item.id.toString(),
-          malId: item.idMal,
-          title:
-            {
-              romaji: item.title.romaji,
-              english: item.title.english,
-              native: item.title.native,
-              userPreferred: item.title.userPreferred,
-            } || item.title.romaji,
-          image:
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          trailer: {
-            id: item.trailer?.id,
-            site: item.trailer?.site,
-            thumbnail: item.trailer?.thumbnail,
-          },
-          description: item.description,
-          status: item.status,
-          cover:
-            item.bannerImage ??
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          rating: item.averageScore,
-          meanScore: item.meanScore,
-          releaseDate: item.seasonYear,
-          color: item.coverImage?.color,
-          genres: item.genres,
-          totalEpisodes: isNaN(item.episodes)
-            ? 0
-            : item.episodes ?? item.nextAiringEpisode?.episode - 1 ?? 0,
-          duration: item.duration,
-          type: item.format,
-          nextAiringEpisode: item.nextAiringEpisode,
-        })),
+    const res = {
+      currentPage: response.Page.pageInfo.currentPage,
+      hasNextPage: response.Page.pageInfo.hasNextPage,
+      results: response.Page.media.map((item) => ({
+        id: item.id.toString(),
+        malId: item.idMal,
+        season: item.season,
+        title:
+          {
+            romaji: item.title.romaji,
+            english: item.title.english,
+            native: item.title.native,
+            userPreferred: item.title.userPreferred,
+          } || item.title.romaji,
+        coverImage:
+          item.coverImage.extraLarge ??
+          item.coverImage.large ??
+          item.coverImage.medium,
+        trailer: {
+          id: item.trailer?.id,
+          site: item.trailer?.site,
+          thumbnail: item.trailer?.thumbnail,
+        },
+        description: item.description,
+        status: item.status,
+        bannerImage:
+          item.bannerImage ??
+          item.coverImage.extraLarge ??
+          item.coverImage.large ??
+          item.coverImage.medium,
+        rating: item.averageScore,
+        meanScore: item.meanScore,
+        releaseDate: item.seasonYear,
+        color: item.coverImage?.color,
+        genres: item.genres,
+        totalEpisodes: isNaN(item.episodes)
+          ? 0
+          : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+        duration: item.duration,
+        type: item.format,
+        nextAiringEpisode: item.nextAiringEpisode,
+        startDate: item.startDate,
+        endDate: item.endDate,
+      })),
     };
+
+    console.log(res);
 
     return res;
   } catch (error) {
@@ -753,8 +756,6 @@ export const getUpcomingAnime = async (): Promise<ReturnData | undefined> => {
           season: item?.media?.season,
         })),
     };
-
-    console.log(res);
 
     return res as ReturnData;
   } catch (error) {
