@@ -1,10 +1,11 @@
-import { QueryResponse } from '@/types/query';
+import { QueryResponse } from '@/types/upcoming';
 import { cache } from './cache';
 import { Provider, ReturnData } from '@/types/api';
 import { AnimeListResponse } from '@/types/consumet';
 
 import { getCurrentSeason } from './utils';
 import { AnilistInfo, fetchAnilistInfo } from './info';
+import { OmitUndefined } from 'class-variance-authority/types';
 
 const FetchDataAndCache = async (
   url: string,
@@ -613,5 +614,162 @@ export const getSources = async (
     return response;
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const getUpcomingAnime = async (): Promise<ReturnData | undefined> => {
+  const query = `query Query($page: Int, $perPage: Int, $notYetAired: Boolean, $episode: Int) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        currentPage
+        hasNextPage
+        lastPage
+        perPage
+        total
+      }
+      airingSchedules(notYetAired: $notYetAired, episode: $episode) {
+        media {
+          bannerImage
+          averageScore
+          countryOfOrigin
+          coverImage {
+            extraLarge
+            large
+            medium
+            color
+          }
+          description
+          duration
+          endDate {
+            year
+            month
+            day
+          }
+          episodes
+          format
+          genres
+          hashtag
+          id
+          idMal
+          isAdult
+          meanScore
+          popularity
+          season
+          seasonYear
+          startDate {
+            year
+            month
+            day
+          }
+          status
+          synonyms
+          title {
+            romaji
+            english
+            native
+            userPreferred
+          }
+          trailer {
+            id
+            site
+            thumbnail
+          }
+          trending
+          type
+        }
+      }
+    }
+  }`;
+
+  const variables = {
+    page: 1,
+    perPage: 2000,
+    notYetAired: true,
+    episode: 1,
+  };
+
+  let response;
+
+  try {
+    response = (await (
+      await FetchDataAndCache(
+        `https://graphql.anilist.co`,
+        'upcomin',
+        'POST',
+        {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        JSON.stringify({ query, variables })
+      )
+    ).data) as QueryResponse;
+
+    const res: any = {
+      currentPage: response.Page.pageInfo.currentPage,
+      hasNextPage: response.Page.pageInfo.hasNextPage,
+      results: response.Page.airingSchedules
+        .filter(
+          (item) =>
+            item?.media?.status === 'NOT_YET_RELEASED' && !item?.media?.isAdult
+        )
+        .map((item) => ({
+          id: item?.media?.id.toString(),
+          malId: item?.media?.idMal,
+          title:
+            {
+              romaji: item?.media?.title?.romaji,
+              english: item?.media?.title?.english,
+              native: item?.media?.title?.native,
+              userPreferred: item?.media?.title?.userPreferred,
+            } || item?.media?.title?.romaji,
+          coverImage:
+            item?.media?.coverImage?.extraLarge ??
+            item?.media?.coverImage?.large ??
+            item?.media?.coverImage?.medium,
+          trailer: item?.media?.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item?.media?.trailer?.id}`
+            : null,
+          description: item?.media?.description,
+          status: item?.media?.status,
+          bannerImage:
+            item?.media?.bannerImage ??
+            item?.media?.coverImage?.extraLarge ??
+            item?.media?.coverImage?.large ??
+            item?.media?.coverImage?.medium,
+          rating: item?.media?.averageScore,
+          meanScore: item?.media?.meanScore,
+          releaseDate: item?.media?.seasonYear,
+          startDate: {
+            year: item?.media?.startDate?.year,
+            month: item?.media?.startDate?.month,
+            day: item?.media?.startDate?.day,
+          },
+          color: item?.media?.coverImage?.color,
+          genres: item?.media?.genres,
+          totalEpisodes: item?.media?.episodes,
+          duration: item?.media?.duration,
+          format: item?.media?.format,
+          type: item?.media?.type,
+          season: item?.media?.season,
+        })),
+    };
+
+    console.log(res);
+
+    return res as ReturnData;
+  } catch (error) {
+    try {
+      console.error(error);
+      console.log(
+        'There was an error fetching popular from anilist. Using consumet....'
+      );
+
+      response = await fetch(
+        `${process.env.CONSUMET_API}/meta/anilist/popular?perPage=24`
+      );
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+    }
   }
 };

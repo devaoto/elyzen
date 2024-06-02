@@ -1,9 +1,14 @@
 import { use } from 'react';
 import { Hero } from '@/components/shared/Hero';
-import { getTrendingAnime, getPopularAnime } from '@/lib/anime';
+import {
+  getTrendingAnime,
+  getPopularAnime,
+  getUpcomingAnime,
+} from '@/lib/anime';
 import { Slider } from '@/components/shared/Slider';
 import dynamic from 'next/dynamic';
 import { Flame, Star } from 'lucide-react';
+import { ColumnCard } from '@/components/shared/ColumnCard';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const ContinueWatching = dynamic(
@@ -16,6 +21,7 @@ export const revalidate = 3600;
 export default function Home() {
   const trending = use(getTrendingAnime(1, 69));
   const popular = use(getPopularAnime());
+  const upcoming = use(getUpcomingAnime());
 
   return (
     <>
@@ -37,6 +43,7 @@ export default function Home() {
           </h1>
           <Slider data={popular} title='popular' />
         </div>
+        <ColumnCard media={upcoming?.results?.slice(0, 10)!} />
       </div>
     </>
   );
