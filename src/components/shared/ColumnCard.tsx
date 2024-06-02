@@ -23,7 +23,7 @@ export const ColumnCard = ({
             href={`/info/${anime.id}`}
             key={anime.id}
           >
-            <div className='px-3 py-2 duration-300'>
+            <div className='min-w-full px-3 py-2 duration-300 lg:min-w-[500px]'>
               <div className='flex items-center gap-4'>
                 <h1
                   className='text-2xl font-bold'
@@ -41,13 +41,15 @@ export const ColumnCard = ({
                   height={100}
                 />
                 <div>
-                  <Tooltip content={anime.title.english! ?? anime.title.romaji!}>
-                  <motion.h1
-                    className='max-w-[210px] truncate'
-                    whileHover={{ color: anime.color ?? 'greenyellow' }}
+                  <Tooltip
+                    content={anime.title.english! ?? anime.title.romaji!}
                   >
-                    {anime.title.english! ?? anime.title.romaji!}
-                  </motion.h1>
+                    <motion.h1
+                      className='max-w-[210px] truncate'
+                      whileHover={{ color: anime.color ?? 'greenyellow' }}
+                    >
+                      {anime.title.english! ?? anime.title.romaji!}
+                    </motion.h1>
                   </Tooltip>
                   <div className='flex items-center gap-2'>
                     <span>{anime.season}</span>
