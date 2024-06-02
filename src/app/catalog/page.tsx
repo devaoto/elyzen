@@ -101,7 +101,7 @@ export default function Catalog() {
             <RadioGroup
               label='Select a format to search'
               color='primary'
-              value={format}
+              value={format!}
               onValueChange={(value) => setFormat(value)}
             >
               <Radio value='TV'>TV</Radio>
