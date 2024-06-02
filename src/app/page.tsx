@@ -45,7 +45,7 @@ export default function Home() {
           </h1>
           <Slider data={popular} title='popular' />
         </div>
-        <div className='flex w-full justify-between pr-4'>
+        <div className='flex w-full flex-col justify-between pr-4 md:flex-row lg:flex-row'>
           <ColumnCard media={upcoming?.results?.slice(0, 10)!} />
           <ColumnCard
             media={seasonal?.results.slice(0, 10)!}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Media } from '@/types/api';
-import { Image, Link } from '@nextui-org/react';
+import { Image, Link, Tooltip } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 
 export const ColumnCard = ({
@@ -41,11 +41,14 @@ export const ColumnCard = ({
                   height={100}
                 />
                 <div>
+                  <Tooltip content={anime.title.english! ?? anime.title.romaji!}>
                   <motion.h1
+                    className='max-w-[210px] truncate'
                     whileHover={{ color: anime.color ?? 'greenyellow' }}
                   >
                     {anime.title.english! ?? anime.title.romaji!}
                   </motion.h1>
+                  </Tooltip>
                   <div className='flex items-center gap-2'>
                     <span>{anime.season}</span>
                     <div className='h-4 w-[0.5px] bg-black dark:bg-white'></div>
