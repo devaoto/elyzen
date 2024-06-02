@@ -23,8 +23,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
         initial={{ opacity: 1 }}
         animate={{ opacity: isHovered ? 0.5 : 1 }}
         transition={{ duration: 0.3 }}
-        className='overflow-hidden
-        rounded-2xl'
+        className='overflow-hidden'
       >
         <Image
           src={
@@ -40,6 +39,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
           }
           height={400}
           isBlurred
+          radius='none'
           width={300}
           className='max-h-[205px] min-h-[205px] min-w-[165px] max-w-[165px] object-cover'
         />
