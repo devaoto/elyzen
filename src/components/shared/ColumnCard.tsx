@@ -13,7 +13,7 @@ export const ColumnCard = ({
 }) => {
   return (
     <div className='w-auto'>
-      <h1 className='mt-20 text-4xl font-bold'>
+      <h1 className='mt-20 text-3xl font-bold'>
         {title ? title : 'Upcoming Anime'}
       </h1>
       <div className='flex flex-col gap-4 py-6'>

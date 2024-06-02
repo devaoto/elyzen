@@ -34,13 +34,13 @@ export default function Home() {
         <Hero data={trending} />
         <div className='mt-20 pr-4'>
           <ContinueWatching />
-          <h1 className='mb-4 flex gap-1 text-4xl font-bold'>
+          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
             <Flame className='size-9' /> <span>Trending Now</span>
           </h1>
           <Slider data={trending} title='trending' />
         </div>
         <div className='mt-20 pr-4'>
-          <h1 className='mb-4 flex gap-1 text-4xl font-bold'>
+          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
             <Star className='size-9' /> All Time Popular
           </h1>
           <Slider data={popular} title='popular' />
