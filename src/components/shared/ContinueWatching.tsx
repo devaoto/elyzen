@@ -64,6 +64,7 @@ const AnimeList = () => {
             <div className='grid grid-cols-1 p-4 lg:grid-cols-3'>
               {episodes?.map((episode) => (
                 <Link
+                  className='text-foreground'
                   key={`${episode.epid}-${episode.id}`}
                   href={`/watch/${episode.id}?episodeId=${encodeURIComponent(episode.epid)}&number=${episode.epnum}&type=${episode.subtype}&provider=${episode.epid.includes('?ep=') ? 'zoro' : 'gogoanime'}`}
                 >

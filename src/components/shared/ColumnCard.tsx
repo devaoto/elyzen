@@ -19,7 +19,7 @@ export const ColumnCard = ({
       <div className='flex flex-col gap-4 py-6'>
         {media.map((anime, ind) => (
           <Link
-            className='rounded-xl bg-neutral-800'
+            className='rounded-xl bg-slate-200 text-foreground dark:bg-neutral-800'
             href={`/info/${anime.id}`}
             key={anime.id}
           >
