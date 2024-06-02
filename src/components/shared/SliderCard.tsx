@@ -41,7 +41,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
           height={400}
           isBlurred
           width={300}
-          className='max-h-[285px] min-h-[285px] min-w-[220px] max-w-[220px] object-cover'
+          className='max-h-[205px] min-h-[205px] min-w-[165px] max-w-[165px] object-cover'
         />
       </motion.div>
       {isHovered && (
@@ -83,7 +83,7 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
           </Badge>
         </div>
       </div>
-      <motion.h1 className='max-w-[220px] truncate font-semibold'>
+      <motion.h1 className='max-w-[165px] truncate font-semibold'>
         {anime.title.english ??
           anime.title.userPreferred ??
           anime.title.romaji ??
