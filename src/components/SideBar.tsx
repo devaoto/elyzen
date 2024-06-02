@@ -180,6 +180,16 @@ export default function SideBar() {
                     <span className='font-bold'>Popular</span>
                   </div>
                 </Link>
+                <Link href='/catalog'>
+                  <div className='flex items-center gap-1'>
+                    <span>
+                      <Button variant={'outline'} size={'icon'}>
+                        <Book className='hover:fill-slate-200' />
+                      </Button>
+                    </span>
+                    <span className='font-bold'>Catalog</span>
+                  </div>
+                </Link>
                 <Separator className='my-2' />
                 <div className='flex items-center gap-1'>
                   <span>
