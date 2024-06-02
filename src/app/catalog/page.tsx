@@ -88,7 +88,7 @@ export default function Catalog() {
             <RadioGroup
               label='Select a season to search'
               color='primary'
-              value={season}
+              value={season as string | undefined}
               onValueChange={(value) => setSeason(value)}
             >
               <Radio value='SPRING'>Spring</Radio>
