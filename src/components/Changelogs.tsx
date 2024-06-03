@@ -142,7 +142,7 @@ export default function Changelogs() {
                       dangerouslySetInnerHTML={{
                         __html: marked
                           .use({ extensions: [ulExtension] })
-                          .parse(latestRelease.body),
+                          .parse(latestRelease.body) as string,
                       }}
                     />
                   </div>
