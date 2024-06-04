@@ -1,4 +1,5 @@
 import withPWAInit from '@ducanh2912/next-pwa';
+import { withHydrationOverlay } from '@builder.io/react-hydration-overlay/next';
 
 const withPWA = withPWAInit({
   dest: 'public',
@@ -12,9 +13,9 @@ const withPWA = withPWAInit({
   },
 });
 
-export default withPWA({
+const nextConfig = {
   typescript: {
-    ignoreBuildErros: true,
+    ignoreBuildErrors: true,
   },
   images: {
     remotePatterns: [
@@ -56,4 +57,10 @@ export default withPWA({
       },
     ],
   },
-});
+};
+
+const combinedConfig = withPWA(
+  withHydrationOverlay({ appRootSelector: 'main' })(nextConfig)
+);
+
+export default combinedConfig;

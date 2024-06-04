@@ -7,6 +7,7 @@ import { Source_Sans_3 } from 'next/font/google';
 import { Providers } from './providers';
 import Footer from '@/components/Footer';
 import Changelogs from '@/components/Changelogs';
+import { HydrationOverlay } from '@builder.io/react-hydration-overlay';
 
 const sourceSans = Source_Sans_3({
   subsets: ['latin', 'latin-ext'],
@@ -129,20 +130,22 @@ export default function RootLayout({
           sourceSans.className
         }
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <Providers>
-            <NavBar />
-            <main>{children}</main>
-            <Footer />
-            <Changelogs />
-          </Providers>
-        </ThemeProvider>
-        <TopProgressBar />
+        <HydrationOverlay>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Providers>
+              <NavBar />
+              <main>{children}</main>
+              <Footer />
+              <Changelogs />
+            </Providers>
+          </ThemeProvider>
+          <TopProgressBar />
+        </HydrationOverlay>
       </body>
     </html>
   );
