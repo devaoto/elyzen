@@ -3,7 +3,6 @@
 import { AnilistInfo } from '@/lib/info';
 import { Provider } from '@/types/api';
 import AnimeViewer from '../shared/EpisodeList';
-import { Slider } from '../shared/Slider';
 import { Card } from '../shared/Card';
 import { Tabs as UITabs, Tab } from '@nextui-org/react';
 import { SeasonalMedia } from '@/types/animeData';
