@@ -80,21 +80,17 @@ export function darkHexColor(hex: string, percent: number): string {
  * - Winter: December, January, February
  * @returns The current season as a string: 'SPRING', 'SUMMER', 'FALL', or 'WINTER'.
  */
-export function getCurrentSeason(): 'SPRING' | 'SUMMER' | 'FALL' | 'WINTER' {
-  // Get the current month
-  const month = new Date().getMonth() + 1; // Adding 1 to get 1-indexed month
+export function getCurrentSeason(month?: number): string {
+  month = month ? month : new Date().getMonth();
 
-  // Determine the season based on the month
-  switch (true) {
-    case month >= 3 && month <= 5:
-      return 'SPRING';
-    case month >= 6 && month <= 8:
-      return 'SUMMER';
-    case month >= 9 && month <= 11:
-      return 'FALL';
-    default:
-      return 'WINTER';
+  const seasons = ['Winter', 'Spring', 'Summer', 'Fall'];
+
+  if (month < 1 || month > 12) {
+    throw new Error('Month must be between 1 and 12');
   }
+
+  const index = Math.floor(((month % 12) / 12) * 4) % 4;
+  return seasons[index];
 }
 
 export function convertStatus(
@@ -119,4 +115,25 @@ export function convertStatus(
     default:
       return 'RELEASING';
   }
+}
+
+export function hexToRgb(hex: string) {
+  hex = hex.replace(/^#/, '');
+
+  let bigint = parseInt(hex, 16);
+  let r = (bigint >> 16) & 255;
+  let g = (bigint >> 8) & 255;
+  let b = bigint & 255;
+
+  return { r, g, b };
+}
+
+export function getBrightnessScore(hex: string) {
+  let { r, g, b } = hexToRgb(hex);
+
+  let brightness = Math.sqrt(
+    0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b)
+  );
+
+  return Math.round((brightness / 255) * 100);
 }

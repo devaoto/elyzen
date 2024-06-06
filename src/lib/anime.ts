@@ -1,7 +1,11 @@
-import { QueryResponse } from '@/types/upcoming';
-import { QueryResponse as SeasonQueryResponse } from '@/types/seasonal';
 import { cache } from './cache';
-import { Provider, ReturnData } from '@/types/api';
+import { Provider } from '@/types/api';
+import {
+  ResponseData,
+  ReturnData,
+  UpcomingSeasonalResponse,
+  UpcomingSeasonalReturnData,
+} from '@/types/animeData';
 
 import { getCurrentSeason } from './utils';
 
@@ -19,7 +23,6 @@ const FetchDataAndCache = async (
 
     if (!data) {
       const options: RequestInit = {
-        cache: 'no-cache',
         method: method ? method : 'GET',
         headers: headers ? new Headers(headers) : undefined,
         body: body ? body : undefined,
@@ -47,310 +50,11 @@ const FetchDataAndCache = async (
   }
 };
 
-export const getTrendingAnime = async (page = 1, perPage = 24) => {
+export const getTrendingAnime = async (
+  page = 1,
+  perPage = 24
+): Promise<ReturnData> => {
   const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $sort: [MediaSort] = [TRENDING_DESC, POPULARITY_DESC], $type: MediaType) {
-        Page(page: $page, perPage: $size) {
-          pageInfo {
-            total
-            perPage
-            currentPage
-            lastPage
-            hasNextPage
-          }
-          media(isAdult: $isAdult, sort: $sort, type: $type) {
-            id
-            idMal
-            status(version: 2)
-            title {
-              userPreferred
-              romaji
-              english
-              native
-            }
-            genres
-            trailer {
-              id
-              site
-              thumbnail
-            }
-            description
-            format
-            bannerImage
-            coverImage {
-              extraLarge
-              large
-              medium
-              color
-            }
-            episodes
-            meanScore
-            duration
-            season
-            seasonYear
-            averageScore
-            nextAiringEpisode {
-              airingAt
-              timeUntilAiring
-              episode
-            }
-            type
-            startDate {
-              year
-              month
-              day
-            }
-            endDate {
-              year
-              month
-              day
-            }
-          }
-        }
-      }      
-      `;
-
-  const variables = {
-    isAdult: false,
-    page: page,
-    size: perPage,
-    type: 'ANIME',
-  };
-
-  let response;
-
-  try {
-    response = await FetchDataAndCache(
-      `https://graphql.anilist.co`,
-      'trending2',
-      'POST',
-      {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      JSON.stringify({ query, variables })
-    );
-
-    console.log(response);
-
-    const res: any = {
-      currentPage: response.data.Page.pageInfo.currentPage,
-      hasNextPage: response.data.Page.pageInfo.hasNextPage,
-      results: response.data.Page.media
-        .filter((item: any) => item.status !== 'NOT_YET_RELEASED')
-        .map((item: any) => ({
-          id: item.id.toString(),
-          malId: item.idMal,
-          title:
-            {
-              romaji: item.title.romaji,
-              english: item.title.english,
-              native: item.title.native,
-              userPreferred: item.title.userPreferred,
-            } || item.title.romaji,
-          coverImage:
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          trailer: item.trailer?.id
-            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
-            : null,
-          description: item.description,
-          status: item.status,
-          bannerImage:
-            item.bannerImage ??
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          rating: item.averageScore,
-          meanScore: item.meanScore,
-          releaseDate: item.seasonYear,
-          startDate: {
-            year: item.startDate.year,
-            month: item.startDate.month,
-            day: item.startDate.day,
-          },
-          color: item.coverImage?.color,
-          genres: item.genres,
-          totalEpisodes: isNaN(item.episodes)
-            ? 0
-            : item.episodes ?? item.nextAiringEpisode?.episode - 1 ?? 0,
-          duration: item.duration,
-          format: item.format,
-          type: item.type,
-          season: item.season,
-          nextAiringEpisode: item.nextAiringEpisode,
-        })),
-    };
-
-    return res as ReturnData;
-  } catch (error) {
-    try {
-      console.log(
-        'There was an error fetching trending from anilist. Using consumet....'
-      );
-      response = await fetch(
-        `${process.env.CONSUMET_API}/meta/anilist/trending?perPage=${perPage}&page=${page}`
-      );
-
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-};
-
-export const getPopularAnime = async () => {
-  const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $sort: [MediaSort] = [POPULARITY_DESC], $type: MediaType) {
-        Page(page: $page, perPage: $size) {
-          pageInfo {
-            total
-            perPage
-            currentPage
-            lastPage
-            hasNextPage
-          }
-          media(isAdult: $isAdult, sort: $sort, type: $type) {
-            id
-            idMal
-            status(version: 2)
-            title {
-              userPreferred
-              romaji
-              english
-              native
-            }
-            genres
-            trailer {
-              id
-              site
-              thumbnail
-            }
-            description
-            format
-            bannerImage
-            coverImage {
-              extraLarge
-              large
-              medium
-              color
-            }
-            episodes
-            meanScore
-            duration
-            season
-            seasonYear
-            averageScore
-            nextAiringEpisode {
-              airingAt
-              timeUntilAiring
-              episode
-            }
-            type
-            startDate {
-              year
-              month
-              day
-            }
-            endDate {
-              year
-              month
-              day
-            }
-          }
-        }
-      }      
-      `;
-
-  const variables = {
-    isAdult: false,
-    page: 1,
-    size: 35,
-    type: 'ANIME',
-  };
-
-  let response;
-
-  try {
-    response = await FetchDataAndCache(
-      `https://graphql.anilist.co`,
-      'popular2',
-      'POST',
-      {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      JSON.stringify({ query, variables })
-    );
-    const res: any = {
-      currentPage: response.data.Page.pageInfo.currentPage,
-      hasNextPage: response.data.Page.pageInfo.hasNextPage,
-      results: response.data.Page.media
-        .filter((item: any) => item.status !== 'NOT_YET_RELEASED')
-        .map((item: any) => ({
-          id: item.id.toString(),
-          malId: item.idMal,
-          title:
-            {
-              romaji: item.title.romaji,
-              english: item.title.english,
-              native: item.title.native,
-              userPreferred: item.title.userPreferred,
-            } || item.title.romaji,
-          coverImage:
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          trailer: item.trailer?.id
-            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
-            : null,
-          description: item.description,
-          status: item.status,
-          bannerImage:
-            item.bannerImage ??
-            item.coverImage.extraLarge ??
-            item.coverImage.large ??
-            item.coverImage.medium,
-          rating: item.averageScore,
-          meanScore: item.meanScore,
-          releaseDate: item.seasonYear,
-          startDate: {
-            year: item.startDate.year,
-            month: item.startDate.month,
-            day: item.startDate.day,
-          },
-          color: item.coverImage?.color,
-          genres: item.genres,
-          totalEpisodes: isNaN(item.episodes)
-            ? 0
-            : item.episodes ?? item.nextAiringEpisode?.episode - 1 ?? 0,
-          duration: item.duration,
-          format: item.format,
-          type: item.type,
-          season: item.season,
-          nextAiringEpisode: item.nextAiringEpisode,
-        })),
-    };
-
-    return res as ReturnData;
-  } catch (error) {
-    try {
-      console.error(error);
-      console.log(
-        'There was an error fetching popular from anilist. Using consumet....'
-      );
-
-      response = await fetch(
-        `${process.env.CONSUMET_API}/meta/anilist/popular?perPage=24`
-      );
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-};
-
-export const getSeasonalAnime = async () => {
-  const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $type: MediaType, $season: MediaSeason, $seasonYear: Int) {
     Page(page: $page, perPage: $size) {
       pageInfo {
         total
@@ -359,7 +63,7 @@ export const getSeasonalAnime = async () => {
         lastPage
         hasNextPage
       }
-      media(isAdult: $isAdult, type: $type, season: $season, seasonYear: $seasonYear) {
+      media(isAdult: $isAdult, sort: $sort, type: $type) {
         id
         idMal
         status(version: 2)
@@ -395,6 +99,16 @@ export const getSeasonalAnime = async () => {
           timeUntilAiring
           episode
         }
+        studios(isMain: true) {
+          edges {
+            isMain
+            node {
+              id
+              name
+              isAnimationStudio
+            }
+          }
+        }
         type
         startDate {
           year
@@ -408,98 +122,460 @@ export const getSeasonalAnime = async () => {
         }
       }
     }
-  }    
-      `;
+  }`;
+
+  const variables = {
+    isAdult: false,
+    page,
+    size: perPage,
+    type: 'ANIME',
+  };
+
+  try {
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      'trendingNow',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          genres: item.genres,
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          studios: item.studios.edges.map((studio) => studio.node.name),
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return { currentPage: 0, hasNextPage: false, results: [] };
+  }
+};
+
+export const getAllTimePopularAnime = async (): Promise<ReturnData> => {
+  const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $sort: [MediaSort] = [POPULARITY_DESC], $type: MediaType) {
+    Page(page: $page, perPage: $size) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      media(isAdult: $isAdult, sort: $sort, type: $type) {
+        id
+        idMal
+        status(version: 2)
+        title {
+          userPreferred
+          romaji
+          english
+          native
+        }
+        genres
+        trailer {
+          id
+          site
+          thumbnail
+        }
+        description
+        format
+        bannerImage
+        coverImage {
+          extraLarge
+          large
+          medium
+          color
+        }
+        episodes
+        meanScore
+        duration
+        season
+        seasonYear
+        averageScore
+        nextAiringEpisode {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+        studios(isMain: true) {
+          edges {
+            isMain
+            node {
+              id
+              name
+              isAnimationStudio
+            }
+          }
+        }
+        type
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+      }
+    }
+  }`;
 
   const variables = {
     isAdult: false,
     page: 1,
     size: 35,
     type: 'ANIME',
-    season: getCurrentSeason(),
-    seasonYear: new Date().getFullYear() ?? 2024,
+    isMain: true,
   };
 
-  let response;
+  try {
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      'allTimePopularAnime',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          studios: item.studios.edges.map((studio) => studio.node.name),
+          genres: item.genres,
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return { currentPage: 0, hasNextPage: false, results: [] };
+  }
+};
+
+export const getPopularThisSeasonAnime = async (): Promise<ReturnData> => {
+  const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $sort: [MediaSort] = [POPULARITY_DESC], $type: MediaType, $season: MediaSeason = ${getCurrentSeason().toUpperCase()}, $seasonYear: Int = ${new Date().getFullYear()}) {
+    Page(page: $page, perPage: $size) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      media(season: $season, seasonYear: $seasonYear, isAdult: $isAdult, sort: $sort, type: $type) {
+        id
+        idMal
+        status(version: 2)
+        title {
+          userPreferred
+          romaji
+          english
+          native
+        }
+        genres
+        trailer {
+          id
+          site
+          thumbnail
+        }
+        description
+        format
+        bannerImage
+        coverImage {
+          extraLarge
+          large
+          medium
+          color
+        }
+        episodes
+        meanScore
+        duration
+        season
+        seasonYear
+        averageScore
+        nextAiringEpisode {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+        studios(isMain: true) {
+          edges {
+            isMain
+            node {
+              id
+              name
+              isAnimationStudio
+            }
+          }
+        }
+        type
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+      }
+    }
+  }`;
+
+  const variables = {
+    isAdult: false,
+    page: 1,
+    size: 35,
+    type: 'ANIME',
+  };
 
   try {
-    response = (await (
-      await FetchDataAndCache(
-        `https://graphql.anilist.co`,
-        'seasonalAnime',
-        'POST',
-        {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        JSON.stringify({ query, variables })
-      )
-    ).data) as SeasonQueryResponse;
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      'popularThisSeasonAnime',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          genres: item.genres,
+          studios: item.studios.edges.map((studio) => studio.node.name),
+
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return { currentPage: 0, hasNextPage: false, results: [] };
+  }
+};
+
+export const getUpcomingNextSeason = async (
+  page: number = 1,
+  perPage: number = 24
+): Promise<UpcomingSeasonalReturnData> => {
+  try {
+    const query = `query Query($season: MediaSeason, $seasonYear: Int, $sort: [MediaSort], $isAdult: Boolean, $type: MediaType, $isMain: Boolean, $page: Int, $perPage: Int) {
+      Page(page: $page, perPage: $perPage) {
+        media(season: $season, seasonYear: $seasonYear, sort: $sort, isAdult: $isAdult, type: $type) {
+          title {
+            romaji
+            english
+            native
+            userPreferred
+          }
+          countryOfOrigin
+          nextAiringEpisode {
+            airingAt
+            episode
+            id
+            mediaId
+            timeUntilAiring
+          }
+          coverImage {
+            extraLarge
+            large
+            medium
+            color
+          }
+          id
+          idMal
+          season
+          seasonYear
+          isAdult
+          genres
+          format
+          studios(isMain: $isMain) {
+            edges {
+              isMain
+              node {
+                id
+                name
+                isAnimationStudio
+              }
+            }
+          }
+        }
+        pageInfo {
+          currentPage
+          hasNextPage
+          lastPage
+          perPage
+          total
+        }
+      }
+    }`;
+
+    const variables = {
+      sort: ['POPULARITY_DESC'],
+      isAdult: false,
+      type: 'ANIME',
+      season: getCurrentSeason(new Date().getMonth() + 1).toUpperCase(),
+      seasonYear: 2024,
+      isMain: true,
+      page: page,
+      perPage: perPage,
+    };
+
+    const data = (await await FetchDataAndCache(
+      'https://graphql.anilist.co',
+      'upcomingNxtSeason',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: UpcomingSeasonalResponse };
 
     const res = {
-      currentPage: response.Page.pageInfo.currentPage,
-      hasNextPage: response.Page.pageInfo.hasNextPage,
-      results: response.Page.media.map((item) => ({
+      currentPage: data.data.Page.pageInfo.currentPage,
+      hasNextPage: data.data.Page.pageInfo.hasNextPage,
+      results: data.data.Page.media.map((item) => ({
         id: item.id.toString(),
         malId: item.idMal,
-        season: item.season,
-        title:
-          {
-            romaji: item.title.romaji,
-            english: item.title.english,
-            native: item.title.native,
-            userPreferred: item.title.userPreferred,
-          } || item.title.romaji,
+        title: item.title,
         coverImage:
           item.coverImage.extraLarge ??
           item.coverImage.large ??
           item.coverImage.medium,
-        trailer: {
-          id: item.trailer?.id,
-          site: item.trailer?.site,
-          thumbnail: item.trailer?.thumbnail,
-        },
-        description: item.description,
-        status: item.status,
-        bannerImage:
-          item.bannerImage ??
-          item.coverImage.extraLarge ??
-          item.coverImage.large ??
-          item.coverImage.medium,
-        rating: item.averageScore,
-        meanScore: item.meanScore,
-        releaseDate: item.seasonYear,
         color: item.coverImage?.color,
+        studios: item.studios.edges.map((studio) => studio.node.name),
+        season: item.season,
+        year: item.seasonYear,
         genres: item.genres,
-        totalEpisodes: isNaN(item.episodes)
-          ? 0
-          : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
-        duration: item.duration,
-        type: item.format,
+        format: item.format,
         nextAiringEpisode: item.nextAiringEpisode,
-        startDate: item.startDate,
-        endDate: item.endDate,
       })),
     };
 
-    console.log(res);
-
     return res;
   } catch (error) {
-    try {
-      console.log(
-        'There was an error fetching seasonal from anilist. Using consumet....'
-      );
+    console.error(error);
 
-      response = await fetch(
-        `${
-          process.env.CONSUMET_API
-        }/meta/anilist/advanced-search?perPage=24&season=${getCurrentSeason()}&year=${new Date().getFullYear()}`
-      );
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-    }
+    return { hasNextPage: false, currentPage: 0, results: [] };
   }
 };
 
@@ -532,74 +608,6 @@ export async function getEpisodes(
   }
 }
 
-type Params = {
-  params: {
-    id: string;
-  };
-};
-
-interface Prms {
-  id: string;
-}
-
-interface VoiceActor {
-  name: string;
-  image: string;
-}
-interface ConsumetVoiceActor {
-  id: number;
-  language: string;
-  name: ConsumetName;
-  image: string;
-  imageHash: string;
-}
-
-interface ConsumetCharacter {
-  id: number;
-  role: string;
-  name: ConsumetName;
-  image: string;
-  imageHash: string;
-  voiceActors: ConsumetVoiceActor[];
-}
-interface ConsumetName {
-  first: string;
-  last: string;
-  full: string;
-  native: string | null;
-  userPreferred: string;
-}
-
-interface Character {
-  name: string;
-  image: string;
-  voiceActor: VoiceActor;
-}
-
-function convertToVoiceActor(
-  consumetVoiceActor: ConsumetVoiceActor
-): VoiceActor {
-  return {
-    name: consumetVoiceActor.name.first + ' ' + consumetVoiceActor.name.last,
-    image: consumetVoiceActor.image,
-  };
-}
-
-export function convertToCharacter(
-  consumetCharacter: ConsumetCharacter
-): Character | null {
-  const originalVoiceActor = consumetCharacter.voiceActors.find(
-    (vo) => vo.language === 'Japanese'
-  );
-  if (!originalVoiceActor) return null;
-
-  return {
-    name: consumetCharacter.name.first + ' ' + consumetCharacter.name.last,
-    image: consumetCharacter.image,
-    voiceActor: convertToVoiceActor(originalVoiceActor),
-  };
-}
-
 export const getSources = async (
   id: string,
   episodeId: string,
@@ -617,160 +625,5 @@ export const getSources = async (
     return response;
   } catch (error) {
     console.error(error);
-  }
-};
-
-export const getUpcomingAnime = async (): Promise<ReturnData | undefined> => {
-  const query = `query Query($page: Int, $perPage: Int, $notYetAired: Boolean, $episode: Int) {
-    Page(page: $page, perPage: $perPage) {
-      pageInfo {
-        currentPage
-        hasNextPage
-        lastPage
-        perPage
-        total
-      }
-      airingSchedules(notYetAired: $notYetAired, episode: $episode) {
-        media {
-          bannerImage
-          averageScore
-          countryOfOrigin
-          coverImage {
-            extraLarge
-            large
-            medium
-            color
-          }
-          description
-          duration
-          endDate {
-            year
-            month
-            day
-          }
-          episodes
-          format
-          genres
-          hashtag
-          id
-          idMal
-          isAdult
-          meanScore
-          popularity
-          season
-          seasonYear
-          startDate {
-            year
-            month
-            day
-          }
-          status
-          synonyms
-          title {
-            romaji
-            english
-            native
-            userPreferred
-          }
-          trailer {
-            id
-            site
-            thumbnail
-          }
-          trending
-          type
-        }
-      }
-    }
-  }`;
-
-  const variables = {
-    page: 1,
-    perPage: 2000,
-    notYetAired: true,
-    episode: 1,
-  };
-
-  let response;
-
-  try {
-    response = (await (
-      await FetchDataAndCache(
-        `https://graphql.anilist.co`,
-        'upcomin',
-        'POST',
-        {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        JSON.stringify({ query, variables })
-      )
-    ).data) as QueryResponse;
-
-    const res: any = {
-      currentPage: response.Page.pageInfo.currentPage,
-      hasNextPage: response.Page.pageInfo.hasNextPage,
-      results: response.Page.airingSchedules
-        .filter(
-          (item) =>
-            item?.media?.status === 'NOT_YET_RELEASED' && !item?.media?.isAdult
-        )
-        .map((item) => ({
-          id: item?.media?.id.toString(),
-          malId: item?.media?.idMal,
-          title:
-            {
-              romaji: item?.media?.title?.romaji,
-              english: item?.media?.title?.english,
-              native: item?.media?.title?.native,
-              userPreferred: item?.media?.title?.userPreferred,
-            } || item?.media?.title?.romaji,
-          coverImage:
-            item?.media?.coverImage?.extraLarge ??
-            item?.media?.coverImage?.large ??
-            item?.media?.coverImage?.medium,
-          trailer: item?.media?.trailer?.id
-            ? `https://www.youtube.com/watch?v=${item?.media?.trailer?.id}`
-            : null,
-          description: item?.media?.description,
-          status: item?.media?.status,
-          bannerImage:
-            item?.media?.bannerImage ??
-            item?.media?.coverImage?.extraLarge ??
-            item?.media?.coverImage?.large ??
-            item?.media?.coverImage?.medium,
-          rating: item?.media?.averageScore,
-          meanScore: item?.media?.meanScore,
-          releaseDate: item?.media?.seasonYear,
-          startDate: {
-            year: item?.media?.startDate?.year,
-            month: item?.media?.startDate?.month,
-            day: item?.media?.startDate?.day,
-          },
-          color: item?.media?.coverImage?.color,
-          genres: item?.media?.genres,
-          totalEpisodes: item?.media?.episodes,
-          duration: item?.media?.duration,
-          format: item?.media?.format,
-          type: item?.media?.type,
-          season: item?.media?.season,
-        })),
-    };
-
-    return res as ReturnData;
-  } catch (error) {
-    try {
-      console.error(error);
-      console.log(
-        'There was an error fetching popular from anilist. Using consumet....'
-      );
-
-      response = await fetch(
-        `${process.env.CONSUMET_API}/meta/anilist/popular?perPage=24`
-      );
-      return await response.json();
-    } catch (error) {
-      console.error(error);
-    }
   }
 };
