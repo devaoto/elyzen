@@ -15,6 +15,7 @@ import _, { List } from 'lodash';
 import { Input } from '../ui/input';
 import { AnilistInfo } from '@/lib/info';
 import { Image } from '@nextui-org/react';
+import useDeviceDetector from '@/hooks/useDeviceDetector';
 
 interface Props {
   animeData: Provider[];
@@ -39,6 +40,7 @@ const AnimeViewer: React.FC<Props> = ({
   const [language, setLanguage] = useState<'sub' | 'dub'>(defaultLanguage);
   const [episodePage, setEpisodePage] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const device = useDeviceDetector();
 
   const handleProviderChange = (providerId: string) => {
     const provider = animeData.find((p) => p.providerId === providerId);
@@ -71,13 +73,13 @@ const AnimeViewer: React.FC<Props> = ({
   const currentlyWatchingRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (currentlyWatchingRef.current) {
+    if (currentlyWatchingRef.current && !['mobile', 'tab'].includes(device)) {
       currentlyWatchingRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [currentlyWatching]);
+  }, [currentlyWatching, device]);
 
   return (
     <div className='p-4'>

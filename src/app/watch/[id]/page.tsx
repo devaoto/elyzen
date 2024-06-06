@@ -12,7 +12,7 @@ import { Spinner } from '@nextui-org/react';
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
   loading: () => (
-    <div className='flex h-[428px] w-[895px] items-center justify-center bg-white dark:bg-black'>
+    <div className='flex h-[208px] w-full items-center justify-center bg-white dark:bg-black md:h-[430px] md:w-full lg:h-[500px] lg:w-[855px]'>
       <Spinner size='lg' />
     </div>
   ),
@@ -217,7 +217,7 @@ export default function Watch({
       </div>
       <div className='ml-0 mt-16 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
         <div className='flex flex-col gap-2 lg:flex-row'>
-          <div className='max-w-[950px] flex-grow'>
+          <div className='max-h-[208px] min-h-[208px] min-w-full flex-grow md:max-h-[430px] lg:max-h-[500px] lg:min-h-[500px] lg:min-w-[855px] lg:max-w-[855px]'>
             <Player
               title={
                 (currentEpisode as unknown as Episode)?.title
@@ -274,7 +274,7 @@ export default function Watch({
               </p>
             </div>
           </div>
-          <div className='max-h-[509px] max-w-lg overflow-x-hidden overflow-y-scroll scrollbar-hide'>
+          <div className='mt-32 max-h-[509px] max-w-lg overflow-x-hidden overflow-y-scroll scrollbar-hide md:mt-32 lg:mt-0'>
             <AnimeViewer
               currentlyWatching={
                 (currentEpisode as unknown as Episode)?.number!
