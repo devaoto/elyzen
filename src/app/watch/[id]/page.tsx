@@ -6,14 +6,13 @@ import dynamic from 'next/dynamic';
 import { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { TriangleAlert } from 'lucide-react';
-import { redirect } from 'next/navigation';
 import ProviderSwitch from './handleProviderSwitch';
 import { Spinner } from '@nextui-org/react';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
   loading: () => (
-    <div className='flex h-[428px] w-[762px] items-center justify-center bg-white dark:bg-black'>
+    <div className='flex h-[428px] w-[895px] items-center justify-center bg-white dark:bg-black'>
       <Spinner size='lg' />
     </div>
   ),
