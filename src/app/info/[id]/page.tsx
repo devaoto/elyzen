@@ -8,7 +8,6 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +20,8 @@ import { getEpisodes } from '@/lib/anime';
 import { Provider } from '@/types/api';
 import AnimeViewer from '@/components/shared/EpisodeList';
 import Link from 'next/link';
-import InformationAccordions from '@/components/info/Accordion';
+import { Chip } from '@nextui-org/react';
+import Tabs from '@/components/info/Tabs';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const Countdown = dynamic(() => import('@/components/shared/Countdown'), {
@@ -136,46 +136,51 @@ export default function Information({
                       {info.title.romaji}
                     </h2>
                     <div className='mt-2 flex flex-wrap gap-3'>
-                      <Badge>EP {info.totalEpisodes}</Badge>
-                      <Badge variant={'outline'}>{info.format}</Badge>
-                      <Badge variant={'outline'}>{info.season}</Badge>
-                      <Badge variant={'outline'}>
+                      <Chip>EP {info.totalEpisodes}</Chip>
+                      <Chip color={'primary'} variant={'bordered'}>
+                        {info.format}
+                      </Chip>
+                      <Chip color={'primary'} variant={'bordered'}>
+                        {info.season}
+                      </Chip>
+                      <Chip color={'primary'} variant={'bordered'}>
                         <div className='flex gap-1'>
                           <span>{info.startDate.day}</span>
                           <span>{numberToMonth(info.startDate.month!)}</span>
                           <span>{info.startDate.year}</span>
                         </div>
-                      </Badge>
+                      </Chip>
                     </div>
                     <div className='mt-2 flex flex-wrap gap-3'>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Badge
-                              className='cursor-pointer'
-                              variant={'secondary'}
-                            >
+                            <Chip className='cursor-pointer'>
                               CEP{' '}
                               {Number.isNaN(info.currentEpisode)
                                 ? info.totalEpisodes
                                 : info.currentEpisode}
-                            </Badge>
+                            </Chip>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Currently Airing Episode</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <Badge variant={'outline'}>{info.duration}</Badge>
-                      <Badge variant={'outline'}>{info.countryOfOrigin}</Badge>
+                      <Chip color={'primary'} variant={'bordered'}>
+                        {info.duration}
+                      </Chip>
+                      <Chip color={'primary'} variant={'bordered'}>
+                        {info.countryOfOrigin}
+                      </Chip>
                       {info.endDate && info.endDate.day ? (
-                        <Badge variant={'outline'}>
+                        <Chip color={'primary'} variant={'bordered'}>
                           <div className='flex gap-1'>
                             <span>{info.endDate.day}</span>
                             <span>{numberToMonth(info.endDate.month!)}</span>
                             <span>{info.endDate.year}</span>
                           </div>
-                        </Badge>
+                        </Chip>
                       ) : null}
                     </div>
                     <div className='mt-2 max-w-xl'>
@@ -207,9 +212,9 @@ export default function Information({
                     </Dialog>
                     <div className='mt-2 flex flex-wrap gap-2'>
                       {info.genres?.map((g, i) => (
-                        <Badge variant={'outline'} key={g + i}>
+                        <Chip variant={'light'} key={g + i}>
                           {g}
-                        </Badge>
+                        </Chip>
                       ))}
                     </div>
                     <div className='mt-2 flex justify-center md:justify-start lg:justify-start xl:justify-start'>
@@ -225,7 +230,7 @@ export default function Information({
             </div>
           </div>
         </div>
-        <InformationAccordions info={info} episodes={episodes} id={params.id} />
+        <Tabs info={info} episodes={episodes} id={params.id} />
       </div>
     </>
   );

@@ -1,13 +1,12 @@
 'use client';
 
 import { Media } from '@/types/api';
-import { Badge } from '../ui/badge';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { RelationData } from '@/lib/info';
-import { Image, Tooltip } from '@nextui-org/react';
+import { Image, Tooltip, Chip } from '@nextui-org/react';
 import { Info, Play } from 'lucide-react';
 
 export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
@@ -75,12 +74,12 @@ export const SliderCard = ({ anime }: { anime: Media | RelationData }) => {
       )}
       <div className='absolute inset-0 top-0 z-[10]'>
         <div className='flex justify-between'>
-          <Badge>{anime.status}</Badge>
-          <Badge variant={'secondary'}>
+          <Chip>{anime.status}</Chip>
+          <Chip>
             {(anime as Media).format
               ? (anime as Media).format
               : (anime as RelationData).relationType}
-          </Badge>
+          </Chip>
         </div>
       </div>
       <motion.h1 className='max-w-[165px] truncate font-semibold'>

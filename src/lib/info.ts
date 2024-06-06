@@ -136,6 +136,8 @@ export interface RelationData {
     native: string | null;
     userPreferred: string | null;
   };
+  season: string | null;
+  seasonYear: number | null;
   status: string;
   episodes?: number | null;
   image: string | null;
@@ -394,7 +396,7 @@ interface MediaResponse {
 }
 
 export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
-  let cachedData = await cache.get(`Info:${params.id}`);
+  let cachedData = await cache.get(`information:${params.id}`);
 
   if (!cachedData) {
     try {
@@ -524,6 +526,8 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
               id
               relationType
               node {
+                season
+                seasonYear
                 id
                 idMal
                 status(version: 2)
@@ -694,12 +698,20 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
           id: relation.node.id,
           idMal: relation.node.idMal,
           totalEpisodes: relation.node.episodes,
-          image:
+          coverImage:
             relation.node.coverImage.extraLarge ??
             relation.node.coverImage.large ??
             relation.node.coverImage.medium ??
             null,
-          cover:
+          studios: data.Media?.studios.edges
+            .filter((item) => item.isMain)
+            .map((item) => item.node.name),
+          // @ts-ignore
+          season: relation.node.season,
+          // @ts-ignore
+          year: relation.node.seasonYear,
+          genres: data.Media?.genres,
+          bannerImage:
             relation.node.bannerImage ??
             relation.node.coverImage.extraLarge ??
             relation.node.coverImage.large ??
@@ -714,7 +726,11 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
       };
 
       cachedData = animeInfo;
-      await cache.set(`Info:${params.id}`, JSON.stringify(animeInfo), 5 * 3600);
+      await cache.set(
+        `information:${params.id}`,
+        JSON.stringify(animeInfo),
+        5 * 3600
+      );
     } catch (error) {
       console.error(error);
       cachedData = defaultResponse;
