@@ -3,14 +3,14 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import TopProgressBar from '@/components/TopProgressBar';
 import NavBar from '@/components/NavBar';
-import { Source_Sans_3 } from 'next/font/google';
+import { Overpass } from 'next/font/google';
 import { Providers } from './providers';
 import Footer from '@/components/Footer';
 import Changelogs from '@/components/Changelogs';
 import { HydrationOverlay } from '@builder.io/react-hydration-overlay';
 
-const sourceSans = Source_Sans_3({
-  subsets: ['latin', 'latin-ext'],
+const overPass = Overpass({
+  subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'vietnamese'],
   weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
 });
 
@@ -127,7 +127,7 @@ export default function RootLayout({
       <body
         className={
           'h-full scrollbar scrollbar-track-sky-300 scrollbar-thumb-sky-700 ' +
-          sourceSans.className
+          overPass.className
         }
       >
         <HydrationOverlay>
