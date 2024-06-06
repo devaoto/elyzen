@@ -30,8 +30,13 @@ export default function ProviderSwitch({
 
   return (
     <>
+      <div className='flex gap-3'>
+        <p>Providers:</p>
+      <div className='flex gap-2'>
       <Tooltip content='Change to Gogoanime' placement='top'>
         <Chip
+          radius='sm'
+          size='sm'
           className='cursor-pointer'
           color='success'
           onClick={() => handleProviderSwitch('gogoanime')}
@@ -43,6 +48,8 @@ export default function ProviderSwitch({
       {zoroEpisode ? (
         <Tooltip content='Change to Zoro' placement='top'>
           <Chip
+            radius='sm'
+            size='sm'
             className='cursor-pointer'
             color='success'
             onClick={() => handleProviderSwitch('zoro')}
@@ -52,6 +59,8 @@ export default function ProviderSwitch({
           </Chip>
         </Tooltip>
       ) : null}
+      </div>
+      </div>
     </>
   );
 }
