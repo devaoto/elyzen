@@ -8,9 +8,15 @@ import Link from 'next/link';
 import { TriangleAlert } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import ProviderSwitch from './handleProviderSwitch';
+import { Spinner } from '@nextui-org/react';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
+  loading: () => (
+    <div className='flex h-[428px] w-[762px] items-center justify-center bg-white dark:bg-black'>
+      <Spinner size='lg' />
+    </div>
+  ),
 });
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const AnimeViewer = dynamic(
