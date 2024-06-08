@@ -146,6 +146,8 @@ export const getTrendingAnime = async (
     const res: ReturnData = {
       currentPage: response.data.Page.pageInfo.currentPage,
       hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
       results: response.data.Page.media
         .filter((item) => item.status !== 'NOT_YET_RELEASED')
         .map((item) => ({
@@ -188,7 +190,13 @@ export const getTrendingAnime = async (
     return res;
   } catch (error) {
     console.error(error);
-    return { currentPage: 0, hasNextPage: false, results: [] };
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
   }
 };
 
@@ -286,6 +294,8 @@ export const getAllTimePopularAnime = async (): Promise<ReturnData> => {
     const res: ReturnData = {
       currentPage: response.data.Page.pageInfo.currentPage,
       hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
       results: response.data.Page.media
         .filter((item) => item.status !== 'NOT_YET_RELEASED')
         .map((item) => ({
@@ -328,7 +338,13 @@ export const getAllTimePopularAnime = async (): Promise<ReturnData> => {
     return res;
   } catch (error) {
     console.error(error);
-    return { currentPage: 0, hasNextPage: false, results: [] };
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
   }
 };
 
@@ -425,6 +441,8 @@ export const getPopularThisSeasonAnime = async (): Promise<ReturnData> => {
     const res: ReturnData = {
       currentPage: response.data.Page.pageInfo.currentPage,
       hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
       results: response.data.Page.media
         .filter((item) => item.status !== 'NOT_YET_RELEASED')
         .map((item) => ({
@@ -468,7 +486,13 @@ export const getPopularThisSeasonAnime = async (): Promise<ReturnData> => {
     return res;
   } catch (error) {
     console.error(error);
-    return { currentPage: 0, hasNextPage: false, results: [] };
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
   }
 };
 
@@ -553,6 +577,8 @@ export const getUpcomingNextSeason = async (
     const res = {
       currentPage: data.data.Page.pageInfo.currentPage,
       hasNextPage: data.data.Page.pageInfo.hasNextPage,
+      total: data.data.Page.pageInfo.total,
+      lastPage: data.data.Page.pageInfo.lastPage,
       results: data.data.Page.media.map((item) => ({
         id: item.id.toString(),
         malId: item.idMal,
@@ -575,7 +601,179 @@ export const getUpcomingNextSeason = async (
   } catch (error) {
     console.error(error);
 
-    return { hasNextPage: false, currentPage: 0, results: [] };
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
+  }
+};
+
+export const advancedSearch = async (
+  sort: string[] = ['POPULARITY_DESC'],
+  query: string = '',
+  rating: number = 0,
+  status: string = '',
+  format: string = '',
+  type: string = '',
+  year: number = 0,
+  season: string = '',
+  genres: string[] = [],
+  page: number = 1,
+  perPage: number = 24
+) => {
+  const graphQuery = `query ($page: Int, $perPage: Int, $sort: [MediaSort], $query: String, $rating: Int, $status: MediaStatus, $format: MediaFormat, $type: MediaType, $year: Int, $season: MediaSeason, $genres: [String]) {
+    Page(page: $page, perPage: $perPage) {
+      pageInfo {
+        total
+        perPage
+        currentPage
+        lastPage
+        hasNextPage
+      }
+      media(sort: $sort, search: $query, averageScore_greater: $rating, status: $status, format: $format, type: $type, seasonYear: $year, season: $season, genre_in: $genres) {
+        id
+        idMal
+        status(version: 2)
+        title {
+          userPreferred
+          romaji
+          english
+          native
+        }
+        genres
+        trailer {
+          id
+          site
+          thumbnail
+        }
+        description
+        format
+        bannerImage
+        coverImage {
+          extraLarge
+          large
+          medium
+          color
+        }
+        episodes
+        meanScore
+        duration
+        season
+        seasonYear
+        averageScore
+        nextAiringEpisode {
+          airingAt
+          timeUntilAiring
+          episode
+        }
+        studios(isMain: true) {
+          edges {
+            isMain
+            node {
+              id
+              name
+              isAnimationStudio
+            }
+          }
+        }
+        type
+        startDate {
+          year
+          month
+          day
+        }
+        endDate {
+          year
+          month
+          day
+        }
+      }
+    }
+  }`;
+
+  const variables = {
+    page,
+    perPage,
+    sort,
+    query,
+    rating,
+    status,
+    format,
+    type,
+    year,
+    season,
+    genres,
+  };
+
+  try {
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      `advancedSearchResult:${query}:${sort}:${rating}:${status}:${format}:${type}:${year}:${season}:${genres}:${page}:${perPage}`,
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ graphQuery, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          studios: item.studios.edges.map((studio) => studio.node.name),
+          genres: item.genres,
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
   }
 };
 
