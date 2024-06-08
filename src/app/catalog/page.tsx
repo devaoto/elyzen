@@ -17,7 +17,7 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { ReturnData } from '@/types/animeData';
 import { Card } from '@/components/shared/Card';
 
-export default function Catalog() {
+function CatalogComp() {
   const [result, setResult] = React.useState<ReturnData | null>(null);
   const [selectedGenres, setSelectedGenres] = React.useState<string[]>([]);
   const [season, setSeason] = React.useState<string | null>(null);
@@ -272,6 +272,14 @@ export default function Catalog() {
           </div>
         </div>
       </div>
+    </Suspense>
+  );
+}
+
+export default function Catalog() {
+  return (
+    <Suspense>
+      <CatalogComp />
     </Suspense>
   );
 }
