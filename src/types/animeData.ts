@@ -106,6 +106,8 @@ export interface Result {
 export interface ReturnData {
   currentPage: number;
   hasNextPage: boolean;
+  total: number;
+  lastPage: number;
   results: Result[];
 }
 
@@ -154,5 +156,7 @@ export interface SeasonalMedia {
 export interface UpcomingSeasonalReturnData {
   currentPage: number;
   hasNextPage: boolean;
+  total: number;
+  lastPage: number;
   results: SeasonalMedia[];
 }
