@@ -1,57 +1,101 @@
 'use client';
 
-import CasualCard from '@/components/shared/CasualCard';
-import { Input, RadioGroup, Radio, Button } from '@nextui-org/react';
+import {
+  Input,
+  RadioGroup,
+  Radio,
+  Button,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem,
+} from '@nextui-org/react';
 import useDebounce from '@/hooks/useDebounce';
 import React from 'react';
-import { ExtendedAnimePage } from '@/lib/clientSide';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { ReturnData } from '@/types/animeData';
+import { Card } from '@/components/shared/Card';
 
 export default function Catalog() {
-  const [result, setResult] = React.useState<ExtendedAnimePage | null>(null);
+  const [result, setResult] = React.useState<ReturnData | null>(null);
   const [selectedGenres, setSelectedGenres] = React.useState<string[]>([]);
   const [season, setSeason] = React.useState<string | null>(null);
   const [year, setYear] = React.useState<string | null>(null);
   const [query, setQuery] = React.useState<string>('');
   const [format, setFormat] = React.useState<string | null>(null);
+  const [sort, setSort] = React.useState<string[]>([]);
 
   const debouncedQuery = useDebounce(query, 1000);
   const debouncedYear = useDebounce(year, 1000);
 
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+
+    setQuery(params.get('query') || '');
+    setYear(params.get('year') || '');
+    setSeason(params.get('season') || null);
+    setFormat(params.get('format') || null);
+    setSort(params.getAll('sort'));
+    setSelectedGenres(params.getAll('genres'));
+  }, []);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams();
+
+    params.append('type', 'ANIME');
+    if (debouncedQuery) {
+      params.append('query', debouncedQuery);
+    }
+    if (season) {
+      params.append('season', season);
+    }
+    if (debouncedYear) {
+      params.append('year', debouncedYear);
+    }
+    if (format) {
+      params.append('format', format);
+    }
+    if (sort.length > 0) {
+      sort.forEach((s) => {
+        params.append('sort', s);
+      });
+    }
+    if (selectedGenres.length > 0) {
+      selectedGenres.forEach((genre) => {
+        params.append('genres', genre);
+      });
+    }
+
+    router.replace(`${pathname}?${params.toString()}`);
+  }, [
+    debouncedQuery,
+    season,
+    debouncedYear,
+    format,
+    sort,
+    selectedGenres,
+    router,
+    pathname,
+  ]);
+
   React.useEffect(() => {
     const fetchSearchResult = async () => {
-      const params = new URLSearchParams();
-
-      params.append('type', 'ANIME');
-      if (debouncedQuery) {
-        params.append('query', encodeURIComponent(debouncedQuery));
-      }
-      if (season) {
-        params.append('season', season);
-      }
-      if (debouncedYear) {
-        params.append('year', debouncedYear);
-      }
-      if (format) {
-        params.append('format', format);
-      }
-
-      if (selectedGenres.length > 0) {
-        selectedGenres.forEach((genre) => {
-          params.append('genres', genre);
-        });
-      }
-
-      const queryParams = params.toString();
+      const params = new URLSearchParams(window.location.search);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/api/advancedSearch?${queryParams}`
+        `${process.env.NEXT_PUBLIC_DOMAIN}/api/advancedSearch?${params.toString()}`
       );
       const data = await res.json();
       setResult(data);
     };
 
     fetchSearchResult();
-  }, [selectedGenres, season, debouncedYear, debouncedQuery, format]); // Refetch results when filters change
+  }, [searchParams]);
 
   const toggleGenre = (genre: string) => {
     setSelectedGenres((prevGenres) =>
@@ -63,6 +107,43 @@ export default function Catalog() {
 
   const isGenreSelected = (genre: string) => selectedGenres.includes(genre);
 
+  const toggleSort = (value: string) => {
+    setSort((prevSorts) =>
+      prevSorts.includes(value)
+        ? prevSorts.filter((selectedSort) => selectedSort !== value)
+        : [...prevSorts, value]
+    );
+  };
+
+  const isSortSelected = (value: string) => sort.includes(value);
+
+  const sortOptions = [
+    { label: 'Popularity Descending', value: 'POPULARITY_DESC' },
+    { label: 'Popularity Ascending', value: 'POPULARITY' },
+    { label: 'Trending Descending', value: 'TRENDING_DESC' },
+    { label: 'Trending Ascending', value: 'TRENDING' },
+    { label: 'Updated At Descending', value: 'UPDATED_AT_DESC' },
+    { label: 'Updated At Ascending', value: 'UPDATED_AT' },
+    { label: 'Start Date Descending', value: 'START_DATE_DESC' },
+    { label: 'Start Date Ascending', value: 'START_DATE' },
+    { label: 'End Date Descending', value: 'END_DATE_DESC' },
+    { label: 'End Date Ascending', value: 'END_DATE' },
+    { label: 'Favorites Descending', value: 'FAVOURITES_DESC' },
+    { label: 'Favorites Ascending', value: 'FAVOURITES' },
+    { label: 'Score Descending', value: 'SCORE_DESC' },
+    { label: 'Score Ascending', value: 'SCORE' },
+    { label: 'Title Romaji Descending', value: 'TITLE_ROMAJI_DESC' },
+    { label: 'Title Romaji Ascending', value: 'TITLE_ROMAJI' },
+    { label: 'Title English Descending', value: 'TITLE_ENGLISH_DESC' },
+    { label: 'Title English Ascending', value: 'TITLE_ENGLISH' },
+    { label: 'Title Native Descending', value: 'TITLE_NATIVE_DESC' },
+    { label: 'Title Native Ascending', value: 'TITLE_NATIVE' },
+    { label: 'Episodes Descending', value: 'EPISODES_DESC' },
+    { label: 'Episodes Ascending', value: 'EPISODES' },
+    { label: 'ID Descending', value: 'ID_DESC' },
+    { label: 'ID Ascending', value: 'ID' },
+  ];
+
   return (
     <div className='ml-5'>
       <h1 className='mb-20 text-3xl font-bold'>Catalog</h1>
@@ -71,7 +152,7 @@ export default function Catalog() {
           <div className='mb-2 min-w-full max-w-full md:min-w-full md:max-w-full lg:min-w-[300px] lg:max-w-[300px]'>
             <Input
               label='Query'
-              value={query}
+              value={query ?? undefined}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
@@ -80,7 +161,7 @@ export default function Catalog() {
               color='primary'
               variant='bordered'
               label='Year (1998 - 2024)'
-              value={year!}
+              value={year ?? undefined}
               onChange={(e) => setYear(e.target.value)}
             />
           </div>
@@ -88,7 +169,7 @@ export default function Catalog() {
             <RadioGroup
               label='Select a season to search'
               color='primary'
-              value={season as string | undefined}
+              value={season ?? undefined}
               onValueChange={(value) => setSeason(value)}
             >
               <Radio value='SPRING'>Spring</Radio>
@@ -112,6 +193,35 @@ export default function Catalog() {
               <Radio value='SPECIAL'>Special</Radio>
               <Radio value='MUSIC'>Music</Radio>
             </RadioGroup>
+          </div>
+          <div className='mt-2 min-w-full max-w-full rounded-lg bg-background/90 p-2 shadow-md md:min-w-full md:max-w-full lg:min-w-[300px] lg:max-w-[300px]'>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button variant='flat'>
+                  Sort by:{' '}
+                  {sort.length > 0
+                    ? sort
+                        .map(
+                          (s) =>
+                            sortOptions.find((option) => option.value === s)
+                              ?.label
+                        )
+                        .join(', ')
+                    : 'Select Sort'}
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label='Sort Options'
+                color='primary'
+                selectionMode='multiple'
+                selectedKeys={sort} /* @ts-ignore */
+                onSelectionChange={(keys) => setSort([...keys])}
+              >
+                {sortOptions.map((option) => (
+                  <DropdownItem key={option.value}>{option.label}</DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
           </div>
           <div className='mt-4 min-w-full max-w-full md:min-w-full md:max-w-full lg:min-w-[300px] lg:max-w-[300px]'>
             <h2 className='mb-2 text-lg font-semibold'>Genres</h2>
@@ -138,8 +248,10 @@ export default function Catalog() {
               ].map((genre) => (
                 <Button
                   key={genre}
+                  onPress={() => toggleGenre(genre)}
+                  color={isGenreSelected(genre) ? 'primary' : 'default'}
                   variant={isGenreSelected(genre) ? 'solid' : 'ghost'}
-                  onClick={() => toggleGenre(genre)}
+                  className='capitalize'
                 >
                   {genre}
                 </Button>
@@ -147,27 +259,13 @@ export default function Catalog() {
             </div>
           </div>
         </div>
-        <div>
-          <h1 className='text-2xl font-bold'>Search Results</h1>
-          {result ? (
-            <div className='grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-4'>
-              {result.results.length > 0 ? (
-                <>
-                  {result.results.map((anime) => {
-                    return (
-                      <div key={anime.id}>
-                        <CasualCard anime={anime} />
-                      </div>
-                    );
-                  })}
-                </>
-              ) : (
-                <>
-                  <div>No result found...</div>
-                </>
-              )}
-            </div>
-          ) : null}
+        <div className='flex-grow'>
+          <h2 className='mb-4 text-2xl font-semibold'>Results</h2>
+          <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
+            {result?.results.map((anime) => (
+              <Card key={anime.id} anime={anime} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
