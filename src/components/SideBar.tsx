@@ -70,7 +70,7 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Link href='/trending'>
+                    <Link href='/catalog?sort=TRENDING_DESC&type=ANIME'>
                       <Button variant={'outline'} size='icon'>
                         <FlameIcon className='hover:fill-slate-200' />
                       </Button>
@@ -86,7 +86,7 @@ export default function SideBar() {
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <div>
-                    <Link href='/popular'>
+                    <Link href='/catalog?sort=POPULARITY_DESC&sort=SCORE_DESC&type=ANIME'>
                       <Button variant={'outline'} size='icon'>
                         <StarIcon className='hover:fill-slate-200' />
                       </Button>
@@ -160,7 +160,7 @@ export default function SideBar() {
                   <span className='font-bold'>Change Theme</span>
                 </div>
                 <Separator className='my-2' />
-                <Link href='/trending'>
+                <Link href='/catalog?sort=TRENDING_DESC&type=ANIME'>
                   <div className='flex items-center gap-1'>
                     <span>
                       <Button variant={'outline'} size={'icon'}>
@@ -170,7 +170,7 @@ export default function SideBar() {
                     <span className='font-bold'>Trending</span>
                   </div>
                 </Link>
-                <Link href='/popular'>
+                <Link href='/catalog?sort=POPULARITY_DESC&sort=SCORE_DESC&type=ANIME'>
                   <div className='flex items-center gap-1'>
                     <span>
                       <Button variant={'outline'} size={'icon'}>

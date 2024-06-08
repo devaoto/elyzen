@@ -7,6 +7,9 @@ import { ColumnCard } from '@/components/shared/ColumnCard';
 import { motion } from 'framer-motion';
 import { ReturnData, UpcomingSeasonalReturnData } from '@/types/animeData';
 import { HomeCards } from '@/components/home/homeCards';
+import { Link } from '@nextui-org/react';
+import NextLink from 'next/link';
+import { getCurrentSeason } from '@/lib/utils';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const ContinueWatching = dynamic(
@@ -48,9 +51,18 @@ export default function Home({
           transition={{ duration: 0.5 }}
         >
           <ContinueWatching />
-          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
-            <Flame className='size-9' /> <span>Trending Now</span>
-          </h1>
+          <div className='flex min-w-full justify-between'>
+            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+              <Flame className='size-9' /> <span>Trending Now</span>
+            </h1>
+            <Link
+              as={NextLink}
+              href='/catalog?sort=TRENDING_DESC&type=ANIME'
+              underline='hover'
+            >
+              View More
+            </Link>
+          </div>
           <HomeCards animeData={trending} />
         </motion.div>
 
@@ -62,9 +74,18 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
-            Upcoming Next Season
-          </h1>
+          <div className='flex min-w-full justify-between'>
+            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+              Upcoming Next Season
+            </h1>
+            <Link
+              as={NextLink}
+              href={`/catalog?season=${getCurrentSeason(new Date().getMonth() + 1).toUpperCase()}&year=${new Date().getFullYear()}&type=ANIME`}
+              underline='hover'
+            >
+              View More
+            </Link>
+          </div>
           <HomeCards animeData={upcomingNxt} />
         </motion.div>
 
@@ -76,9 +97,18 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
-            Popular This Season
-          </h1>
+          <div className='flex min-w-full justify-between'>
+            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+              Popular This Season
+            </h1>
+            <Link
+              as={NextLink}
+              href={`/catalog?season=${getCurrentSeason(new Date().getMonth()).toUpperCase()}&year=${new Date().getFullYear()}&sort=POPULARITY_DESC&sort=SCORE_DESC&type=ANIME`}
+              underline='hover'
+            >
+              View More
+            </Link>
+          </div>
           <HomeCards animeData={popularThis} />
         </motion.div>
 
@@ -90,9 +120,18 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
-            <Star className='size-9' /> All Time Popular
-          </h1>
+          <div className='flex min-w-full justify-between'>
+            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+              <Star /> <span>Trending Now</span>
+            </h1>
+            <Link
+              as={NextLink}
+              href='/catalog?sort=POPULARITY_DESC&sort=SCORE_DESC&type=ANIME'
+              underline='hover'
+            >
+              View More
+            </Link>
+          </div>
           <HomeCards animeData={popular} />
         </motion.div>
       </div>
