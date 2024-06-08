@@ -9,9 +9,7 @@ import { getBrightnessScore } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 type CardProps = {
-  getDays: (time: number) => string;
   anime: Result | SeasonalMedia;
-  calculateTimeRemaining: (time: number) => number;
 };
 
 const getRatingIcon = (rating: number) => {
@@ -24,11 +22,16 @@ const getRatingIcon = (rating: number) => {
   }
 };
 
-export const Card = ({
-  anime,
-  getDays,
-  calculateTimeRemaining,
-}: Readonly<CardProps>) => {
+export const Card = ({ anime }: Readonly<CardProps>) => {
+  const calculateTimeRemaining = (airingAt: number) => {
+    const currentTime = Date.now();
+    const timeRemaining = airingAt * 1000 - currentTime;
+    return timeRemaining;
+  };
+
+  const getDays = (time: number) =>
+    `${isNaN(Math.floor(time / (1000 * 60 * 60 * 24))) ? 'unknown' : Math.floor(time / (1000 * 60 * 60 * 24))} days`;
+
   return (
     <>
       <motion.div key={anime.id}>

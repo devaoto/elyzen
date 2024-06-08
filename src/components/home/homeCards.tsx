@@ -28,20 +28,12 @@ export const HomeCards = ({ animeData }: Readonly<CardProps>) => {
     0,
     device === 'mobile' ? 2 : device === 'tab' ? 3 : 5
   ) as Result[] | SeasonalMedia[];
-  const calculateTimeRemaining = (airingAt: number) => {
-    const currentTime = Date.now();
-    const timeRemaining = airingAt * 1000 - currentTime;
-    return timeRemaining;
-  };
-
-  const getDays = (time: number) =>
-    `${isNaN(Math.floor(time / (1000 * 60 * 60 * 24))) ? 'unknown' : Math.floor(time / (1000 * 60 * 60 * 24))} days`;
 
   return (
     <>
       <div className='grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
         {slicedAnimeArray.map((anime) => (
-          <Card anime={anime} getDays={getDays} calculateTimeRemaining={calculateTimeRemaining} key={anime.id}/>
+          <Card anime={anime} key={anime.id} />
         ))}
       </div>
     </>
