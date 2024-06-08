@@ -16,15 +16,6 @@ export default function Tabs({
   episodes: Provider[];
   id: string;
 }) {
-  const calculateTimeRemaining = (airingAt: number) => {
-    const currentTime = Date.now();
-    const timeRemaining = airingAt * 1000 - currentTime;
-    return timeRemaining;
-  };
-
-  const getDays = (time: number) =>
-    `${isNaN(Math.floor(time / (1000 * 60 * 60 * 24))) ? 'unknown' : Math.floor(time / (1000 * 60 * 60 * 24))} days`;
-
   return (
     <>
       <div className='min-w-full'>
@@ -42,8 +33,6 @@ export default function Tabs({
                   <div key={relation.id} className='max-w-[190px]'>
                     <Card
                       anime={relation as unknown as SeasonalMedia}
-                      getDays={getDays}
-                      calculateTimeRemaining={calculateTimeRemaining}
                     />
                   </div>
                 ))}
