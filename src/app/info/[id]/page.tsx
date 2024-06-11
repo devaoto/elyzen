@@ -82,7 +82,7 @@ export default function Information({
         <SideBar />
       </div>
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
-        <div className='min-h-max overflow-x-hidden scrollbar-hide'>
+        <div className='min-h-[1000px] md:min-h-full lg:min-h-full overflow-hidden'>
           <div className='relative'>
             <div
               style={{
@@ -115,7 +115,7 @@ export default function Information({
             <div className='absolute inset-0 z-[2] bg-gradient-to-l from-transparent from-[80%] to-background' />
             <div className='absolute inset-0 z-[2] bg-gradient-to-t from-transparent from-[80%] to-background' />
             <div className='absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-background'>
-              <div className='ml-10 mt-40 flex h-full flex-col justify-center md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0'>
+              <div className='ml-10 mt-40 flex h-screen flex-col justify-center md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0'>
                 <div className='flex flex-col items-center gap-4 md:flex-row lg:flex-row xl:flex-row'>
                   <Image
                     src={info.coverImage!}
@@ -230,7 +230,7 @@ export default function Information({
             </div>
           </div>
         </div>
-        <Tabs info={info} episodes={episodes} id={params.id} />
+          <Tabs info={info} episodes={episodes} id={params.id} />
       </div>
     </>
   );
