@@ -25,7 +25,7 @@ Elyzen
 
 ## What is Elyzen?
 
-Welcome to **Elyzen** your best anime site ever! Explore **[elyzen.vercel.app](https://elyzen.vercel.app)** and dive into the world of anime.
+Welcome to **Elyzen** your best anime site ever! Explore **[elyzen.sohom829.xyz](https://elyzen.sohom829.xyz)** and dive into the world of anime.
 Enjoy your favorite anime with English subs or dubs, and here's the kicker - you can download individual episodes hassle-free, no sign-up required!
 
 ## Installation and Local Development 💻
