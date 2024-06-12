@@ -80,152 +80,160 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
 
   return (
     <div className='p-4' id='watch'>
-      <div className='mb-4 flex gap-3'>
-        <Select onValueChange={handleProviderChange}>
-          <SelectTrigger
-            className='w-[130px]'
-            value={selectedProvider?.providerId}
-          >
-            <SelectValue
-              placeholder={
-                selectedProvider?.providerId === 'zoro'
-                  ? 'hianime'
-                  : selectedProvider?.providerId
-              }
-            />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {animeData.map((provider) => (
-                <SelectItem
-                  key={provider.providerId}
-                  value={provider.providerId}
-                >
-                  {provider.providerId === 'zoro'
-                    ? 'hianime'
-                    : provider.providerId}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        {selectedProvider?.providerId === 'gogoanime' && (
-          <Select
-            onValueChange={(e) => setLanguage(e as 'sub' | 'dub')}
-            value={language}
-          >
-            <SelectTrigger className='w-[130px]'>
-              <SelectValue placeholder={language} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value='sub'>Sub</SelectItem>
-                <SelectItem value='dub'>Dub</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-        {episodeChunks.length > 1 && (
-          <Select
-            onValueChange={(e) => setEpisodePage(Number(e))}
-            value={String(episodePage)}
-          >
-            <SelectTrigger className='w-[130px]'>
-              <SelectValue
-                placeholder={`${episodePage * 100 + 1}-${(episodePage + 1) * 100}`}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {episodeChunks.map((_, index) => (
-                  <SelectItem key={index} value={String(index)}>
-                    {index * 100 + 1}-{(index + 1) * 100}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-        <div className='max-w-44'>
-          <Input
-            type='text'
-            placeholder='Search episodes...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <Button
-                  onClick={() => {
-                    setLayout('grid');
-                    saveLayoutToLocalStorage('grid');
-                  }}
-                  variant={'light'}
-                  isIconOnly
-                >
-                  <Grid />
-                </Button>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Grid Layout</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div>
-                <Button
-                  onClick={() => {
-                    setLayout('list');
-                    saveLayoutToLocalStorage('list');
-                  }}
-                  variant={'light'}
-                  isIconOnly
-                >
-                  <ListIcon />
-                </Button>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>List Layout</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      <div className='mt-20'>
-        <ScrollArea className='h-[600px]'>
-          {layout === 'list' ? (
-            currentEpisodes.map((episode) => (
-              <EpisodeCard
-                info={info}
-                key={episode.id || episode.episodeId}
-                episode={episode}
-                provider={selectedProvider?.providerId!}
-                id={id}
-                type={language}
-              />
-            ))
-          ) : (
-            <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4'>
-              {currentEpisodes.map((episode) => (
-                <GridEpisodeCard
-                  info={info}
-                  key={episode.id || episode.episodeId}
-                  episode={episode}
-                  provider={selectedProvider?.providerId!}
-                  id={id}
-                  type={language}
+      {currentEpisodes.length > 0 ? (
+        <>
+          <div className='mb-4 flex gap-3'>
+            <Select onValueChange={handleProviderChange}>
+              <SelectTrigger
+                className='w-[130px]'
+                value={selectedProvider?.providerId}
+              >
+                <SelectValue
+                  placeholder={
+                    selectedProvider?.providerId === 'zoro'
+                      ? 'hianime'
+                      : selectedProvider?.providerId
+                  }
                 />
-              ))}
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {animeData.map((provider) => (
+                    <SelectItem
+                      key={provider.providerId}
+                      value={provider.providerId}
+                    >
+                      {provider.providerId === 'zoro'
+                        ? 'hianime'
+                        : provider.providerId}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            {selectedProvider?.providerId === 'gogoanime' && (
+              <Select
+                onValueChange={(e) => setLanguage(e as 'sub' | 'dub')}
+                value={language}
+              >
+                <SelectTrigger className='w-[130px]'>
+                  <SelectValue placeholder={language} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value='sub'>Sub</SelectItem>
+                    <SelectItem value='dub'>Dub</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+            {episodeChunks.length > 1 && (
+              <Select
+                onValueChange={(e) => setEpisodePage(Number(e))}
+                value={String(episodePage)}
+              >
+                <SelectTrigger className='w-[130px]'>
+                  <SelectValue
+                    placeholder={`${episodePage * 100 + 1}-${(episodePage + 1) * 100}`}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {episodeChunks.map((_, index) => (
+                      <SelectItem key={index} value={String(index)}>
+                        {index * 100 + 1}-{(index + 1) * 100}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+            <div className='max-w-44'>
+              <Input
+                type='text'
+                placeholder='Search episodes...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-          )}
-        </ScrollArea>
-      </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button
+                      onClick={() => {
+                        setLayout('grid');
+                        saveLayoutToLocalStorage('grid');
+                      }}
+                      variant={'light'}
+                      isIconOnly
+                    >
+                      <Grid />
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Grid Layout</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div>
+                    <Button
+                      onClick={() => {
+                        setLayout('list');
+                        saveLayoutToLocalStorage('list');
+                      }}
+                      variant={'light'}
+                      isIconOnly
+                    >
+                      <ListIcon />
+                    </Button>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>List Layout</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className='mt-20'>
+            <ScrollArea className='h-[600px]'>
+              {layout === 'list' ? (
+                currentEpisodes.map((episode) => (
+                  <EpisodeCard
+                    info={info}
+                    key={episode.id || episode.episodeId}
+                    episode={episode}
+                    provider={selectedProvider?.providerId!}
+                    id={id}
+                    type={language}
+                  />
+                ))
+              ) : (
+                <div className='grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4'>
+                  {currentEpisodes.map((episode) => (
+                    <GridEpisodeCard
+                      info={info}
+                      key={episode.id || episode.episodeId}
+                      episode={episode}
+                      provider={selectedProvider?.providerId!}
+                      id={id}
+                      type={language}
+                    />
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
+          </div>
+        </>
+      ) : (
+        <>
+          <h1 className='text-3xl font-bold'>No episodes available</h1>
+        </>
+      )}
     </div>
   );
 };
