@@ -5,11 +5,9 @@ import {
   RadioGroup,
   Radio,
   Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownSection,
-  DropdownItem,
+  Select,
+  SelectItem,
+  Pagination,
 } from '@nextui-org/react';
 import useDebounce from '@/hooks/useDebounce';
 import React, { Suspense } from 'react';
@@ -25,6 +23,7 @@ function CatalogComp() {
   const [query, setQuery] = React.useState<string>('');
   const [format, setFormat] = React.useState<string | null>(null);
   const [sort, setSort] = React.useState<string[]>([]);
+  const [page, setPage] = React.useState<number>(1);
 
   const debouncedQuery = useDebounce(query, 1000);
   const debouncedYear = useDebounce(year, 1000);
@@ -42,6 +41,7 @@ function CatalogComp() {
     setFormat(params.get('format') || null);
     setSort(params.getAll('sort'));
     setSelectedGenres(params.getAll('genres'));
+    setPage(Number(params.get('page') || 1));
   }, []);
 
   React.useEffect(() => {
@@ -70,6 +70,7 @@ function CatalogComp() {
         params.append('genres', genre);
       });
     }
+    params.append('page', page.toString());
 
     router.replace(`${pathname}?${params.toString()}`);
   }, [
@@ -79,6 +80,7 @@ function CatalogComp() {
     format,
     sort,
     selectedGenres,
+    page,
     router,
     pathname,
   ]);
@@ -146,7 +148,7 @@ function CatalogComp() {
 
   return (
     <Suspense>
-      <div className='ml-5'>
+      <div className='ml-5 overflow-x-hidden'>
         <h1 className='mb-20 text-3xl font-bold'>Catalog</h1>
         <div className='flex flex-col gap-4 lg:flex-row'>
           <div>
@@ -196,39 +198,43 @@ function CatalogComp() {
               </RadioGroup>
             </div>
             <div className='mt-2 min-w-full max-w-full rounded-lg bg-background/90 p-2 shadow-md md:min-w-full md:max-w-full lg:min-w-[300px] lg:max-w-[300px]'>
-              <Dropdown>
-                <DropdownTrigger>
-                  <Button variant='flat'>
-                    Sort by:{' '}
-                    {sort.length > 0
-                      ? sort
-                          .map(
-                            (s) =>
-                              sortOptions.find((option) => option.value === s)
-                                ?.label
-                          )
-                          .join(', ')
-                      : 'Select Sort'}
-                  </Button>
-                </DropdownTrigger>
-                <DropdownMenu
-                  aria-label='Sort Options'
-                  color='primary'
-                  selectionMode='multiple'
-                  selectedKeys={sort} /* @ts-ignore */
-                  onSelectionChange={(keys) => setSort([...keys])}
-                >
-                  {sortOptions.map((option) => (
-                    <DropdownItem key={option.value}>
-                      {option.label}
-                    </DropdownItem>
-                  ))}
-                </DropdownMenu>
-              </Dropdown>
+              <Select
+                label='Sort by'
+                selectionMode='multiple'
+                selectedKeys={sort}
+                // @ts-ignore
+                onSelectionChange={(keys) => setSort([...keys])}
+                placeholder='Select Sort'
+              >
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Select>
             </div>
             <div className='mt-4 min-w-full max-w-full md:min-w-full md:max-w-full lg:min-w-[300px] lg:max-w-[300px]'>
-              <h2 className='mb-2 text-lg font-semibold'>Genres</h2>
-              <div className='flex flex-wrap gap-2'>
+              <Button
+                variant='light'
+                color='primary'
+                onPress={() => {
+                  setQuery('');
+                  setSeason(null);
+                  setYear(null);
+                  setFormat(null);
+                  setSort([]);
+                  setSelectedGenres([]);
+                  setPage(1);
+                }}
+              >
+                Clear All
+              </Button>
+            </div>
+          </div>
+          <div className='flex flex-col'>
+            <div className='mb-2 flex flex-col rounded-lg bg-background/90 p-2 shadow-md lg:ml-2'>
+              <span className='mb-2'>Genres</span>
+              <div className='flex flex-wrap'>
                 {[
                   'Action',
                   'Adventure',
@@ -251,24 +257,34 @@ function CatalogComp() {
                 ].map((genre) => (
                   <Button
                     key={genre}
+                    variant={isGenreSelected(genre) ? 'solid' : 'bordered'}
+                    color='primary'
+                    size='sm'
+                    className='m-1'
                     onPress={() => toggleGenre(genre)}
-                    color={isGenreSelected(genre) ? 'primary' : 'default'}
-                    variant={isGenreSelected(genre) ? 'solid' : 'ghost'}
-                    className='capitalize'
                   >
                     {genre}
                   </Button>
                 ))}
               </div>
             </div>
-          </div>
-          <div className='flex-grow'>
-            <h2 className='mb-4 text-2xl font-semibold'>Results</h2>
-            <div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3'>
-              {result?.results.map((anime) => (
-                <Card key={anime.id} anime={anime} />
-              ))}
-            </div>
+            {result && result.results.length > 0 ? (
+              <div className='flex flex-wrap justify-center'>
+                <div className='flex flex-wrap justify-center gap-5'>
+                  {result.results.map((mediaItem) => (
+                    <Card key={mediaItem.id} anime={mediaItem} />
+                  ))}
+                </div>
+                <Pagination
+                  className='mt-5'
+                  initialPage={page}
+                  total={result.lastPage}
+                  onChange={(page) => setPage(page)}
+                />
+              </div>
+            ) : (
+              <p className='text-center'>No results found</p>
+            )}
           </div>
         </div>
       </div>
