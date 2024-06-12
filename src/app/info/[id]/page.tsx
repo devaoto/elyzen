@@ -210,7 +210,7 @@ export default function Information({
                         <NextTooltip key={g + i} content={`Search for ${g}`}>
                           <Chip variant={'bordered'}>
                             <Link
-                              href={`/catalog?type=ANIME&genres=Comedy&page=1`}
+                              href={`/catalog?type=ANIME&genres=${g}&page=1`}
                             >
                               {g}
                             </Link>
