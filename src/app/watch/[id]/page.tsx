@@ -19,7 +19,7 @@ const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
 });
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const AnimeViewer = dynamic(
-  () => import('@/components/shared/WatchEpisodeList'),
+  () => import('@/components/watch/WatchEpisodeList'),
   {
     ssr: false,
   }
