@@ -18,7 +18,7 @@ import dynamic from 'next/dynamic';
 import { Metadata, Viewport } from 'next';
 import { getEpisodes } from '@/lib/anime';
 import { Provider } from '@/types/api';
-import AnimeViewer from '@/components/shared/EpisodeList';
+import { Tooltip as NextTooltip } from '@nextui-org/react';
 import Link from 'next/link';
 import { Chip } from '@nextui-org/react';
 import Tabs from '@/components/info/Tabs';
@@ -82,7 +82,7 @@ export default function Information({
         <SideBar />
       </div>
       <div className='ml-0 md:ml-16 lg:ml-16 xl:ml-16 2xl:ml-16'>
-        <div className='min-h-[1000px] md:min-h-full lg:min-h-full overflow-hidden'>
+        <div className='min-h-[1000px] overflow-hidden md:min-h-full lg:min-h-full'>
           <div className='relative'>
             <div
               style={{
@@ -152,24 +152,19 @@ export default function Information({
                       </Chip>
                     </div>
                     <div className='mt-2 flex flex-wrap gap-3'>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Chip className='cursor-pointer'>
-                              CEP{' '}
-                              {Number.isNaN(info.currentEpisode)
-                                ? info.totalEpisodes
-                                : info.currentEpisode}
-                            </Chip>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Currently Airing Episode</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <Chip color={'primary'} variant={'bordered'}>
-                        {info.duration}
-                      </Chip>
+                      <NextTooltip content='Currently Airing Episode'>
+                        <Chip className='cursor-pointer'>
+                          CEP{' '}
+                          {Number.isNaN(info.currentEpisode)
+                            ? info.totalEpisodes
+                            : info.currentEpisode}
+                        </Chip>
+                      </NextTooltip>
+                      <NextTooltip content='Duration'>
+                        <Chip color={'primary'} variant={'bordered'}>
+                          {info.duration ?? '24'}
+                        </Chip>
+                      </NextTooltip>
                       <Chip color={'primary'} variant={'bordered'}>
                         {info.countryOfOrigin}
                       </Chip>
@@ -212,9 +207,15 @@ export default function Information({
                     </Dialog>
                     <div className='mt-2 flex flex-wrap gap-2'>
                       {info.genres?.map((g, i) => (
-                        <Chip variant={'light'} key={g + i}>
-                          {g}
-                        </Chip>
+                        <NextTooltip key={g + i} content={`Search for ${g}`}>
+                          <Chip variant={'bordered'}>
+                            <Link
+                              href={`/catalog?type=ANIME&genres=Comedy&page=1`}
+                            >
+                              {g}
+                            </Link>
+                          </Chip>
+                        </NextTooltip>
                       ))}
                     </div>
                     <div className='mt-2 flex justify-center md:justify-start lg:justify-start xl:justify-start'>
@@ -230,7 +231,7 @@ export default function Information({
             </div>
           </div>
         </div>
-          <Tabs info={info} episodes={episodes} id={params.id} />
+        <Tabs info={info} episodes={episodes} id={params.id} />
       </div>
     </>
   );
