@@ -122,7 +122,7 @@ export default function Home({
         >
           <div className='flex min-w-full justify-between'>
             <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
-              <Star /> <span>Trending Now</span>
+              <Star /> <span>All Time Popular</span>
             </h1>
             <Link
               as={NextLink}
