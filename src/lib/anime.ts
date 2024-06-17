@@ -611,6 +611,179 @@ export const getUpcomingNextSeason = async (
   }
 };
 
+export const top100Anime = async (): Promise<ReturnData> => {
+  try {
+    const query = `query ($page: Int, $perPage: Int, $sort: [MediaSort], $type: MediaType, $isAdult: Boolean) {
+  Page(page: $page, perPage: $perPage) {
+    media(sort: $sort, type: $type, isAdult: $isAdult) {
+      id
+      idMal
+      title {
+        romaji
+        english
+        native
+        userPreferred
+      }
+      description
+      coverImage {
+        extraLarge
+        large
+        medium
+        color
+      }
+      bannerImage
+      averageScore
+      countryOfOrigin
+      duration
+      endDate {
+        year
+        month
+        day
+      }
+      airingSchedule {
+        edges {
+          node {
+            airingAt
+            episode
+            id
+            mediaId
+            timeUntilAiring
+          }
+        }
+      }
+      episodes
+      favourites
+      format
+      genres
+      hashtag
+      isAdult
+      meanScore
+      popularity
+      nextAiringEpisode {
+        id
+        airingAt
+        timeUntilAiring
+        episode
+        mediaId
+      }
+      season
+      seasonYear
+      startDate {
+        year
+        month
+        day
+      }
+      trailer {
+        id
+        site
+        thumbnail
+      }
+      type
+      updatedAt
+      studios {
+        edges {
+          isMain
+          node {
+            id
+            favourites
+            isAnimationStudio
+            isFavourite
+            name
+            siteUrl
+          }
+          id
+        }
+      }
+    }
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+  }
+}`;
+
+    const variables = {
+      type: 'ANIME',
+      page: 1,
+      perPage: 10,
+      sort: 'SCORE_DESC',
+      isAdult: false,
+    };
+
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      'top100Anime',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          genres: item.genres,
+          studios: item.studios.edges
+            .filter((studio) => studio.isMain)
+            .map((studio) => studio.node.name),
+
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
+  }
+};
+
 export const advancedSearch = async (
   sort: string[] = ['POPULARITY_DESC'],
   query: string = '',
