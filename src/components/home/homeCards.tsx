@@ -6,36 +6,45 @@ import {
   SeasonalMedia,
   UpcomingSeasonalReturnData,
 } from '@/types/animeData';
-import useDeviceDetector from '@/hooks/useDeviceDetector';
-import { useEffect, useState } from 'react';
 import { Card } from '../shared/Card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 type CardProps = {
   animeData: ReturnData | UpcomingSeasonalReturnData;
 };
 
 export const HomeCards = ({ animeData }: Readonly<CardProps>) => {
-  const deviceType = useDeviceDetector();
-  const [device, setDevice] = useState<'desktop' | 'mobile' | 'tab'>('desktop');
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setDevice(deviceType);
-    }
-  }, [deviceType]);
-
-  const slicedAnimeArray = animeData.results.slice(
-    0,
-    device === 'mobile' ? 2 : device === 'tab' ? 3 : 5
-  ) as Result[] | SeasonalMedia[];
+  const slicedAnimeArray = animeData.results.slice(0, 15) as
+    | Result[]
+    | SeasonalMedia[];
 
   return (
     <>
-      <div className='grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-        {slicedAnimeArray.map((anime) => (
-          <Card anime={anime} key={anime.id} />
-        ))}
-      </div>
+      <Carousel
+        opts={{
+          align: 'start',
+        }}
+        className='relative w-full'
+      >
+        <CarouselContent>
+          {slicedAnimeArray.map((anime) => (
+            <CarouselItem
+              className='basis-1/2 md:basis-1/3 lg:basis-1/5'
+              key={anime.id}
+            >
+              <Card anime={anime} />
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className='absolute -left-5 md:-left-10' />
+        <CarouselNext className='absolute -right-1' />
+      </Carousel>
     </>
   );
 };

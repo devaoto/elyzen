@@ -25,6 +25,7 @@
     "babel-plugin-react-compiler": "^0.0.0-experimental-592953e-20240517",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.1.5",
     "framer-motion": "^11.2.6",
     "ioredis": "^5.4.1",
     "lodash": "^4.17.21",
