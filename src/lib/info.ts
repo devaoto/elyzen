@@ -298,9 +298,10 @@ interface MediaInterface {
           alternative: string;
           userPreferred: string;
         };
+        languageV2: string;
       }[];
     }[];
-  }[];
+  };
   recommendations: {
     edges: {
       node: {
@@ -484,7 +485,9 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
                   alternative
                   userPreferred
                 }
+                languageV2
               }
+              name
             }
           }
           recommendations {
@@ -576,6 +579,8 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
             month
             day
           }
+          hashtag
+          favourites
         }
       }`;
 
@@ -653,21 +658,16 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
         })),
         type: data.Media?.format,
         mappings: convertMappingsToArray(mappingsData.mappings),
-        //@ts-ignore
-        characters: data.Media?.characters?.edges?.map(async (item: any) => ({
+        characters: data.Media?.characters?.edges?.map(async (item) => ({
           id: item.node?.id,
           role: item.role,
           name: { ...item.node.name },
           image: item.node.image.large ?? item.node.image.medium,
-          voiceActors: await item.voiceActors.map(
-            // @ts-ignore
-            async (voiceActor) => ({
-              id: voiceActor.id,
-              language: voiceActor.languageV2,
-              name: { ...voiceActor.name },
-              image: (await voiceActor.image.large) ?? voiceActor.image.medium,
-            })
-          ),
+          voiceActors: await item.voiceActors.map(async (voiceActor) => ({
+            language: voiceActor.languageV2,
+            name: { ...voiceActor.name },
+            image: (await voiceActor.image.large) ?? voiceActor.image.medium,
+          })),
         })),
         //@ts-ignore
         recommendations: data.Media?.recommendations?.edges?.map(
