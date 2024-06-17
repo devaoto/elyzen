@@ -9,7 +9,7 @@ declare namespace NodeJS {
   }
 }
 
-// If bun supports NextJs any soon. Uncomment this:
+// If bun supports NextJs any soon. Uncomment these codes
 
 // declare module 'bun' {
 //   interface Env {

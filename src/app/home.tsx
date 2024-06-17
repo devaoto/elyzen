@@ -51,8 +51,8 @@ export default function Home({
           transition={{ duration: 0.5 }}
         >
           <ContinueWatching />
-          <div className='flex min-w-full justify-between'>
-            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+          <div className='flex min-w-full items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-xl font-bold md:text-3xl lg:text-3xl'>
               <Flame className='size-9' /> <span>Trending Now</span>
             </h1>
             <Link
@@ -74,8 +74,8 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <div className='flex min-w-full justify-between'>
-            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+          <div className='flex min-w-full items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-xl font-bold md:text-3xl lg:text-3xl'>
               Upcoming Next Season
             </h1>
             <Link
@@ -97,8 +97,8 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <div className='flex min-w-full justify-between'>
-            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+          <div className='flex min-w-full items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-xl font-bold md:text-3xl lg:text-3xl'>
               Popular This Season
             </h1>
             <Link
@@ -120,8 +120,8 @@ export default function Home({
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <div className='flex min-w-full justify-between'>
-            <h1 className='mb-4 flex gap-1 text-3xl font-bold'>
+          <div className='flex min-w-full items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-xl font-bold md:text-3xl lg:text-3xl'>
               <Star /> <span>All Time Popular</span>
             </h1>
             <Link
