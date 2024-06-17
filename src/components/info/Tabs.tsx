@@ -4,7 +4,7 @@ import { AnilistInfo } from '@/lib/info';
 import { Provider } from '@/types/api';
 import AnimeViewer from '../shared/EpisodeList';
 import { Card } from '../shared/Card';
-import { Tabs as UITabs, Tab } from '@nextui-org/react';
+import { Tabs as UITabs, Tab, Image } from '@nextui-org/react';
 import { SeasonalMedia } from '@/types/animeData';
 
 export default function Tabs({
@@ -31,9 +31,7 @@ export default function Tabs({
                 )
                 .map((relation) => (
                   <div key={relation.id} className='max-w-[190px]'>
-                    <Card
-                      anime={relation as unknown as SeasonalMedia}
-                    />
+                    <Card anime={relation as unknown as SeasonalMedia} />
                   </div>
                 ))}
             </div>

@@ -3,12 +3,6 @@ import { use } from 'react';
 import { darkHexColor, numberToMonth } from '@/lib/utils';
 import { Button, Image } from '@nextui-org/react';
 import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/ui/tooltip';
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,12 +15,12 @@ import { Provider } from '@/types/api';
 import { Tooltip as NextTooltip } from '@nextui-org/react';
 import Link from 'next/link';
 import { Chip } from '@nextui-org/react';
-import Tabs from '@/components/info/Tabs';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const Countdown = dynamic(() => import('@/components/shared/Countdown'), {
   ssr: false,
 });
+const Tabs = dynamic(() => import('@/components/info/Tabs'), { ssr: false });
 
 export const generateMetadata = async ({
   params,
@@ -75,6 +69,7 @@ export default function Information({
   ) as Promise<Provider[]>;
 
   const [info, episodes] = use(Promise.all([infoPromise, episodesPromise]));
+  console.log(info.characters);
 
   return (
     <>

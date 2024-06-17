@@ -22,11 +22,13 @@ export default function Home({
   popular,
   popularThis,
   upcomingNxt,
+  top100,
 }: {
   trending: ReturnData;
   popular: ReturnData;
   popularThis: ReturnData;
   upcomingNxt: UpcomingSeasonalReturnData;
+  top100: ReturnData;
 }) {
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -133,6 +135,17 @@ export default function Home({
             </Link>
           </div>
           <HomeCards animeData={popular} />
+        </motion.div>
+
+        <motion.div
+          className='container mt-20 pr-4 min-w-full'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          transition={{ duration: 0.5 }}
+        >
+          <ColumnCard media={top100.results} title='Top 100 Anime' />
         </motion.div>
       </div>
     </>

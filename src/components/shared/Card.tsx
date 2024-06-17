@@ -12,7 +12,7 @@ type CardProps = {
   anime: Result | SeasonalMedia;
 };
 
-const getRatingIcon = (rating: number) => {
+export const getRatingIcon = (rating: number) => {
   if (rating >= 75) {
     return <Smile className='text-green-400' />;
   } else if (rating > 50) {
