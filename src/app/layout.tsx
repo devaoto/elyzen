@@ -8,6 +8,9 @@ import { Providers } from './providers';
 import Footer from '@/components/Footer';
 import Changelogs from '@/components/Changelogs';
 import { HydrationOverlay } from '@builder.io/react-hydration-overlay';
+import { AuthProvider } from '@/components/session-provider';
+import { getAuthSession } from './api/auth/[...nextauth]/route';
+import { use } from 'react';
 
 const overPass = Overpass({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'vietnamese'],
@@ -123,6 +126,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = use(getAuthSession());
   return (
     <html lang='en' suppressHydrationWarning>
       <body
@@ -132,19 +136,21 @@ export default function RootLayout({
         }
       >
         <HydrationOverlay>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Providers>
-              <NavBar />
-              <main>{children}</main>
-              <Footer />
-              <Changelogs />
-            </Providers>
-          </ThemeProvider>
+          <AuthProvider session={session}>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Providers>
+                <NavBar />
+                <main>{children}</main>
+                <Footer />
+                <Changelogs />
+              </Providers>
+            </ThemeProvider>
+          </AuthProvider>
           <TopProgressBar />
         </HydrationOverlay>
       </body>
