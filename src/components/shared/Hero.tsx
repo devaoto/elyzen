@@ -84,17 +84,13 @@ export const Hero = ({ data }: { data: ReturnData }) => {
             <div>
               <div className='flex gap-3'>
                 <h3
-                  style={{ color: randomElement.color ?? 'pink' }}
-                  className='line-clamp-1 max-w-[15%]'
+                  style={{ color: randomElement?.color ?? '#FFFFFF' }}
+                  className='line-clamp-1 max-w-[75%]'
                 >
-                  {randomElement?.title.native}
-                </h3>
-                <div>•</div>
-                <h3 className='className="line-clamp-1 max-w-[15%]"'>
                   {randomElement?.title.romaji}
                 </h3>
               </div>
-              <h1 className='line-clamp-2 max-w-[70%] text-3xl font-bold lg:max-w-[55%] lg:text-7xl'>
+              <h1 className='line-clamp-2 max-w-[70%] text-3xl font-bold lg:max-w-[55%] lg:text-5xl'>
                 {randomElement?.title.english ?? randomElement?.title.romaji}
               </h1>
             </div>
