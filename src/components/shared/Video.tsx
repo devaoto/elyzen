@@ -16,6 +16,7 @@ export default function RenderVideo({
       <video
         src={trailer as string}
         preload='auto'
+        loop={true}
         autoPlay={isPlaying}
         muted
         onEnded={handleVideoEnded}
