@@ -46,7 +46,7 @@ function Footer() {
             </div>
             <div className='grid grid-cols-2 sm:grid-cols-2 sm:gap-6 lg:gap-16'>
               <div>
-                <ul className='flex flex-col gap-2 text-[0.7rem] font-semibold lg:text-[0.85rem] '>
+                <ul className='flex flex-col gap-2 text-[0.7rem] font-semibold lg:text-[0.85rem]'>
                   <li className=''>
                     <Link
                       href={`/anime/catalog?season=${getSeason(month + 1)}&year=2024`}
@@ -102,13 +102,16 @@ function Footer() {
             <Link href='/' className='hover:text-white'>
               Elyzen
             </Link>{' '}
-            | Made by <span className='font-bold'>codeblitz97</span>
+            | Made by{' '}
+            <Link href='https://www.sohom829.xyz/' target='_blank'>
+              <span className='font-bold'>codeblitz97</span>
+            </Link>
           </span>
           <div className='mt-4 flex lg:mt-0 lg:justify-center'>
             <Link
               href='https://github.com/codeblitz97/elyzen'
               target='_blank'
-              className=' ms-5 hover:text-gray-900 dark:hover:text-white lg:ms-0'
+              className='ms-5 hover:text-gray-900 dark:hover:text-white lg:ms-0'
             >
               <GithubIcon />
               <span className='sr-only'>GitHub</span>

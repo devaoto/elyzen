@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import {
   CaptionButton,
   FullscreenButton,
@@ -21,7 +22,9 @@ import {
   PlayIcon,
   VolumeHighIcon,
   VolumeLowIcon,
+  CameraIcon,
 } from '@vidstack/react/icons';
+import { saveAs } from 'file-saver';
 
 export interface MediaButtonProps {
   tooltipPlacement: TooltipPlacement;
@@ -40,9 +43,9 @@ export function Play({ tooltipPlacement }: MediaButtonProps) {
       <Tooltip.Trigger asChild>
         <PlayButton className={buttonClass}>
           {isPaused ? (
-            <PlayIcon className="h-8 w-8" />
+            <PlayIcon className='h-8 w-8' />
           ) : (
-            <PauseIcon className="h-8 w-8" />
+            <PauseIcon className='h-8 w-8' />
           )}
         </PlayButton>
       </Tooltip.Trigger>
@@ -61,11 +64,11 @@ export function Mute({ tooltipPlacement }: MediaButtonProps) {
       <Tooltip.Trigger asChild>
         <MuteButton className={buttonClass}>
           {isMuted || volume == 0 ? (
-            <MuteIcon className="h-8 w-8" />
+            <MuteIcon className='h-8 w-8' />
           ) : volume < 0.5 ? (
-            <VolumeLowIcon className="h-8 w-8" />
+            <VolumeLowIcon className='h-8 w-8' />
           ) : (
-            <VolumeHighIcon className="h-8 w-8" />
+            <VolumeHighIcon className='h-8 w-8' />
           )}
         </MuteButton>
       </Tooltip.Trigger>
@@ -84,9 +87,9 @@ export function Caption({ tooltipPlacement }: MediaButtonProps) {
       <Tooltip.Trigger asChild>
         <CaptionButton className={buttonClass}>
           {isOn ? (
-            <ClosedCaptionsOnIcon className="h-8 w-8" />
+            <ClosedCaptionsOnIcon className='h-8 w-8' />
           ) : (
-            <ClosedCaptionsIcon className="h-8 w-8" />
+            <ClosedCaptionsIcon className='h-8 w-8' />
           )}
         </CaptionButton>
       </Tooltip.Trigger>
@@ -104,9 +107,9 @@ export function PIP({ tooltipPlacement }: MediaButtonProps) {
       <Tooltip.Trigger asChild>
         <PIPButton className={buttonClass}>
           {isActive ? (
-            <PictureInPictureExitIcon className="h-8 w-8" />
+            <PictureInPictureExitIcon className='h-8 w-8' />
           ) : (
-            <PictureInPictureIcon className="h-8 w-8" />
+            <PictureInPictureIcon className='h-8 w-8' />
           )}
         </PIPButton>
       </Tooltip.Trigger>
@@ -124,9 +127,9 @@ export function Fullscreen({ tooltipPlacement }: MediaButtonProps) {
       <Tooltip.Trigger asChild>
         <FullscreenButton className={buttonClass}>
           {isActive ? (
-            <FullscreenExitIcon className="h-8 w-8" />
+            <FullscreenExitIcon className='h-8 w-8' />
           ) : (
-            <FullscreenIcon className="h-8 w-8" />
+            <FullscreenIcon className='h-8 w-8' />
           )}
         </FullscreenButton>
       </Tooltip.Trigger>
@@ -136,3 +139,32 @@ export function Fullscreen({ tooltipPlacement }: MediaButtonProps) {
     </Tooltip.Root>
   );
 }
+
+function takeScreenshot(videoElement: HTMLVideoElement) {
+  const canvas = document.createElement('canvas');
+  canvas.width = videoElement.videoWidth;
+  canvas.height = videoElement.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx?.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+  canvas.toBlob((blob) => {
+    saveAs(blob!, 'screenshot.png');
+  });
+}
+
+export function ScreenshotButton({ tooltipPlacement }: MediaButtonProps) {
+  const videoElement = document.querySelector('video');
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <CameraIcon
+          className={cn(`${buttonClass}`, 'h-8 w-8')}
+          onClick={() => takeScreenshot(videoElement!)}
+        />
+      </Tooltip.Trigger>
+      <Tooltip.Content className={tooltipClass} placement={tooltipPlacement}>
+        Screenshot
+      </Tooltip.Content>
+    </Tooltip.Root>
+  );
+}
+
