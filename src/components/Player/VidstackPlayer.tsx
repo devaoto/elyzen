@@ -49,6 +49,7 @@ import {
 
 import { VideoLayout } from './components/layouts/video-layout';
 import VideoProgressSave from '@/hooks/VideoProgressSave';
+import { saveProgress } from '@/lib/authenticated';
 
 type Props = {
   hls?: string;
@@ -72,6 +73,7 @@ type Props = {
     file: string;
     kind: string;
   };
+  session: any;
 };
 
 export default function Player({
@@ -86,6 +88,7 @@ export default function Player({
   subtitles,
   sources,
   thumbnails,
+  session,
 }: Readonly<Props>) {
   let player = useRef<MediaPlayerInstance>(null);
   const { duration } = useMediaStore(player);
@@ -211,6 +214,7 @@ export default function Player({
   const [endingButton, setEndingButton] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showButton, setShowButton] = useState(true);
+  const [progressSaved, setProgressSaved] = useState(false);
 
   useEffect(() => {
     const btn = localStorage.getItem('show-player-button');
@@ -319,6 +323,17 @@ export default function Player({
     });
   }
 
+  function handleTimeChange() {
+    const currentTime = player.current?.currentTime;
+    const percentage = currentTime! / duration;
+    console.log('Percentage', percentage);
+
+    if (session && !progressSaved && percentage >= 0.9) {
+      setProgressSaved(true);
+      saveProgress(session.user.token, Number(anId), currentEp);
+    }
+  }
+
   return (
     <div>
       {sources && subtitles ? (
@@ -336,6 +351,7 @@ export default function Player({
           onEnd={onEnd}
           onLoadedMetadata={onLoadedMetadata}
           ref={player}
+          onTimeUpdate={handleTimeChange}
         >
           <MediaProvider>
             <Poster
@@ -391,10 +407,10 @@ export default function Player({
             ) : (
               <VideoLayout />
             )}
-            {uniqueSubtitles?.map((s) => {
+            {uniqueSubtitles?.map((s, i) => {
               return (
                 <Track
-                  key={s.file}
+                  key={`${s.file}-${i}`}
                   src={s.file as string}
                   label={s.label}
                   default={s.label === 'English'}
@@ -420,6 +436,7 @@ export default function Player({
           onEnd={onEnd}
           onLoadedMetadata={onLoadedMetadata}
           ref={player}
+          onTimeUpdate={handleTimeChange}
         >
           <MediaProvider>
             <Poster
@@ -470,10 +487,10 @@ export default function Player({
             </button>
           )}
           {uniqueSubtitles &&
-            uniqueSubtitles?.map((s) => {
+            uniqueSubtitles?.map((s, i) => {
               return (
                 <Track
-                  key={s.file}
+                  key={`${s.file}-${i}`}
                   src={s.file as string}
                   label={s.label}
                   default={s.label === 'English'}

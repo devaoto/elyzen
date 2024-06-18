@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { TriangleAlert } from 'lucide-react';
 import ProviderSwitch from './handleProviderSwitch';
 import { Spinner } from '@nextui-org/react';
+import { getAuthSession } from '@/app/api/auth/[...nextauth]/route';
 
 const Player = dynamic(() => import('@/components/Player/VidstackPlayer'), {
   ssr: false,
@@ -98,7 +99,7 @@ export default function Watch({
     type: string;
   };
 }) {
-  const [info, sources, episodes] = use(
+  const [info, sources, episodes, session] = use(
     Promise.all([
       fetchAnilistInfo(params),
       getSources(
@@ -116,6 +117,7 @@ export default function Watch({
           }
       >,
       getEpisodes(params.id),
+      getAuthSession(),
     ])
   );
 
@@ -219,6 +221,7 @@ export default function Watch({
         <div className='flex flex-col gap-2 lg:flex-row'>
           <div className='max-h-[208px] min-h-[208px] min-w-full flex-grow md:max-h-[430px] lg:max-h-[500px] lg:min-h-[500px] lg:min-w-[855px] lg:max-w-[855px]'>
             <Player
+              session={session}
               title={
                 (currentEpisode as unknown as Episode)?.title
                   ? (currentEpisode as unknown as Episode).title!
