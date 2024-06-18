@@ -1,4 +1,9 @@
-import { AnilistInfo, fetchAnilistInfo } from '@/lib/info';
+import {
+  AnilistInfo,
+  ICharacter,
+  fetchAnilistInfo,
+  getCharacters,
+} from '@/lib/info';
 import { use } from 'react';
 import { darkHexColor, numberToMonth } from '@/lib/utils';
 import { Button, Image } from '@nextui-org/react';
@@ -15,6 +20,7 @@ import { Provider } from '@/types/api';
 import { Tooltip as NextTooltip } from '@nextui-org/react';
 import Link from 'next/link';
 import { Chip } from '@nextui-org/react';
+import { ImageZoom } from '@/components/info/ImageZoom';
 
 const SideBar = dynamic(() => import('@/components/SideBar'), { ssr: false });
 const Countdown = dynamic(() => import('@/components/shared/Countdown'), {
@@ -67,9 +73,12 @@ export default function Information({
     params.id,
     searchParams.releasing
   ) as Promise<Provider[]>;
+  const charactersPromise = getCharacters(params.id!) as Promise<ICharacter[]>;
 
-  const [info, episodes] = use(Promise.all([infoPromise, episodesPromise]));
-  console.log(info.characters);
+  const [info, episodes, characters] = use(
+    Promise.all([infoPromise, episodesPromise, charactersPromise])
+  );
+  console.log(characters);
 
   return (
     <>
@@ -112,13 +121,9 @@ export default function Information({
             <div className='absolute inset-0 z-[5] bg-gradient-to-b from-transparent to-background'>
               <div className='ml-10 mt-40 flex h-screen flex-col justify-center md:mt-0 lg:mt-0 xl:mt-0 2xl:mt-0'>
                 <div className='flex flex-col items-center gap-4 md:flex-row lg:flex-row xl:flex-row'>
-                  <Image
+                  <ImageZoom
                     src={info.coverImage!}
-                    className='max-h-[400px] rounded-xl object-cover'
                     alt={info.title.english! ?? info.title.romaji!}
-                    width={300}
-                    height={500}
-                    isBlurred
                   />
                   <div>
                     <h1
@@ -226,7 +231,12 @@ export default function Information({
             </div>
           </div>
         </div>
-        <Tabs info={info} episodes={episodes} id={params.id} />
+        <Tabs
+          info={info}
+          episodes={episodes}
+          id={params.id}
+          characters={characters}
+        />
       </div>
     </>
   );

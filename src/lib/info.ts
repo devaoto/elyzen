@@ -741,3 +741,189 @@ export const fetchAnilistInfo = async (params: Prms): Promise<AnilistInfo> => {
 
   return cachedData;
 };
+
+export interface ICharacter {
+  id: number;
+  name: IName;
+  role: string;
+  node: ICharacterNode;
+  voiceActors: IVoiceActor[];
+  voiceActorRoles: IVoiceActorRole[];
+}
+
+export interface IName {
+  first?: string;
+  middle?: string;
+  last?: string;
+  full?: string;
+  native?: string;
+  alternative?: string[];
+  alternativeSpoiler?: string[];
+  userPreferred?: string;
+}
+
+export interface ICharacterNode {
+  age?: number;
+  bloodType?: string;
+  dateOfBirth?: IDate;
+  description?: string;
+  favourites?: number;
+  gender?: string;
+  id: number;
+  image: IImage;
+  name: IName;
+  siteUrl?: string;
+}
+
+export interface IDate {
+  month?: number;
+  day?: number;
+  year?: number;
+}
+
+export interface IImage {
+  large?: string;
+  medium?: string;
+}
+
+export interface IVoiceActor {
+  age?: number;
+  bloodType?: string;
+  dateOfBirth?: IDate;
+  dateOfDeath?: IDate;
+  description?: string;
+  favourites?: number;
+  gender?: string;
+  homeTown?: string;
+  id: number;
+  image: IImage;
+  languageV2?: string;
+  name: IName;
+  primaryOccupations?: string[];
+  siteUrl?: string;
+  yearsActive?: number[];
+}
+
+export interface IVoiceActorRole {
+  dubGroup?: string;
+  roleNotes?: string;
+}
+
+export interface IGetCharactersResponse {
+  Media: {
+    characters: {
+      edges: ICharacter[];
+    };
+  };
+}
+
+export const getCharacters = async (id: string): Promise<ICharacter[]> => {
+  let cachedData = await cache.get(`characters:${id}`);
+
+  if (!cachedData) {
+    const response = await fetch(`https://graphql.anilist.co`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query Query($id: Int) {
+  Media(id: $id) {
+    characters {
+      edges {
+        id
+        name
+        role
+        node {
+          age
+          bloodType
+          dateOfBirth {
+            month
+            day
+            year
+          }
+          description
+          favourites
+          gender
+          id
+          image {
+            large
+            medium
+          }
+          name {
+            first
+            middle
+            last
+            full
+            native
+            alternative
+            alternativeSpoiler
+            userPreferred
+          }
+          siteUrl
+        }
+        voiceActors {
+          age
+          bloodType
+          dateOfBirth {
+            year
+            month
+            day
+          }
+          dateOfDeath {
+            year
+            month
+            day
+          }
+          description
+          favourites
+          gender
+          homeTown
+          id
+          image {
+            large
+            medium
+          }
+          languageV2
+          name {
+            first
+            middle
+            last
+            full
+            native
+            alternative
+            userPreferred
+          }
+          primaryOccupations
+          siteUrl
+          yearsActive
+        }
+        voiceActorRoles {
+          dubGroup
+          roleNotes
+        }
+      }
+    }
+  }
+}
+        `,
+        variables: {
+          id: parseInt(id, 10),
+        },
+      }),
+    });
+
+    const { data } = (await response.json()) as {
+      data: IGetCharactersResponse;
+    };
+
+    cachedData = data.Media.characters.edges;
+    await cache.set(`characters:${id}`, JSON.stringify(cachedData), 5 * 3600);
+  } else {
+    cachedData = JSON.parse(cachedData) as ICharacter[];
+  }
+
+  return cachedData;
+};
