@@ -2,7 +2,6 @@
 
 import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -14,22 +13,49 @@ import {
   Navbar,
   NavbarBrand,
   NavbarContent,
-  NavbarItem,
   Link,
-  Button,
+  Avatar,
 } from '@nextui-org/react';
 import { ConsumetSearchResult } from '@/types/consumet';
 import useDebounce from '@/hooks/useDebounce';
 import Image from 'next/image';
+import { AnilistUserResponse, getAnilistUser } from '@/lib/authenticated';
+import { signIn, signOut } from 'next-auth/react';
+import { Session } from 'next-auth';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
-export default function NavBar() {
-  const [isVisible, setIsVisible] = useState(true);
+export default function NavBar({ session }: { session: Session | null }) {
   const [searchResults, setSearchResults] =
     useState<ConsumetSearchResult | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [label, setLabel] = useState<string>('Spy x Family');
+  const [user, setUser] = useState<AnilistUserResponse | null>(null);
 
   const debouncedSearch = useDebounce(searchQuery, 1000);
+
+  useEffect(() => {
+    async function getUser() {
+      if (session && session.user) {
+        try {
+          const userData = await getAnilistUser(
+            (session as any).user.token,
+            session?.user?.name!
+          );
+          if (userData?.data) {
+            setUser(userData.data);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      }
+    }
+
+    getUser();
+  }, [session]);
 
   useEffect(() => {
     async function search(
@@ -42,7 +68,7 @@ export default function NavBar() {
         );
         return (await response.json()) as ConsumetSearchResult;
       } catch (error) {
-        console.log(error);
+        console.error('Error fetching search results:', error);
       }
     }
 
@@ -79,7 +105,7 @@ export default function NavBar() {
           <DialogTrigger>
             <SearchIcon className='size-5 md:size-8 lg:size-8' />
           </DialogTrigger>
-          <DialogContent className=''>
+          <DialogContent>
             <DialogDescription>
               <h1 className='text-2xl font-bold'>Search By Name</h1>
               <Input
@@ -132,6 +158,49 @@ export default function NavBar() {
             </DialogDescription>
           </DialogContent>
         </Dialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar
+              isBordered
+              as='button'
+              className='transition-transform'
+              color='secondary'
+              name={user?.User?.name || 'Guest'}
+              size='sm'
+              src={
+                user?.User?.avatar?.large ||
+                user?.User?.avatar?.medium ||
+                'https://i.pinimg.com/736x/40/0c/e7/400ce7d399fb081bdb226b9b740c9983.jpg'
+              }
+            />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent aria-label='Profile Actions'>
+            {session && session.user ? (
+              <>
+                <DropdownMenuItem key='profile'>
+                  <Link href='/profile'>Profile</Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem key='settings'>
+                  <Link href='/settings'>Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  key='logout'
+                  color='danger'
+                  onClick={() => signOut()}
+                >
+                  Logout
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <>
+                <DropdownMenuItem key='login' onClick={() => signIn()}>
+                  Login
+                </DropdownMenuItem>
+              </>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </NavbarContent>
     </Navbar>
   );

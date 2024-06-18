@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import TopProgressBar from '@/components/TopProgressBar';
-import NavBar from '@/components/NavBar';
 import { Overpass } from 'next/font/google';
 import { Providers } from './providers';
 import Footer from '@/components/Footer';
@@ -11,6 +10,8 @@ import { HydrationOverlay } from '@builder.io/react-hydration-overlay';
 import { AuthProvider } from '@/components/session-provider';
 import { getAuthSession } from './api/auth/[...nextauth]/route';
 import { use } from 'react';
+import dynamic from 'next/dynamic';
+const NavBar = dynamic(() => import('@/components/NavBar'), { ssr: false });
 
 const overPass = Overpass({
   subsets: ['latin', 'latin-ext', 'cyrillic', 'cyrillic-ext', 'vietnamese'],
@@ -144,7 +145,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <Providers>
-                <NavBar />
+                <NavBar session={session} />
                 <main>{children}</main>
                 <Footer />
                 <Changelogs />
