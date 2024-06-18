@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Badge from '../ui/badge';
 import { getBrightnessScore } from '@/lib/utils';
 import { getRatingIcon } from './Card';
+import { FaStar } from 'react-icons/fa';
 
 export const ColumnCard = ({
   media,
@@ -99,42 +100,85 @@ export const ColumnCard = ({
                 className='flex-1 rounded-xl bg-slate-200 text-foreground dark:bg-neutral-800'
                 href={`/info/${anime.id}`}
               >
-                <div className='flex items-center px-3 py-2 duration-300'>
-                  <Image
-                    src={anime.coverImage!}
-                    alt={anime.title.english! ?? anime.title.romaji!}
-                    radius='none'
-                    isBlurred
-                    className='max-h-[62px] min-h-[62px] min-w-[50px] max-w-[50px] object-cover'
-                    width={50}
-                    height={62}
-                  />
-                  <div className='ml-4 flex flex-col justify-between'>
-                    <Tooltip
-                      content={anime.title.english! ?? anime.title.romaji!}
+                <div className='flex w-full items-center justify-between'>
+                  <div>
+                    <div className='flex items-center px-3 py-2 duration-300'>
+                      <Image
+                        src={anime.coverImage!}
+                        alt={anime.title.english! ?? anime.title.romaji!}
+                        radius='none'
+                        isBlurred
+                        className='max-h-[62px] min-h-[62px] min-w-[50px] max-w-[50px] object-cover'
+                        width={50}
+                        height={62}
+                      />
+                      <div className='ml-4 flex flex-col justify-between'>
+                        <Tooltip
+                          content={anime.title.english! ?? anime.title.romaji!}
+                        >
+                          <motion.h1
+                            className='max-w-[210px] truncate'
+                            whileHover={{ color: anime.color ?? 'greenyellow' }}
+                          >
+                            {anime.title.english! ?? anime.title.romaji!}
+                          </motion.h1>
+                        </Tooltip>
+                        <div className='flex items-center gap-2'>
+                          <span>{anime.season}</span>
+                          <div className='h-4 w-[0.5px] bg-black dark:bg-white'></div>
+                          <span>
+                            {anime.startDate?.day
+                              ? String(anime.startDate?.day).length >= 2
+                                ? `${anime.startDate?.day}`
+                                : `0${anime.startDate?.day}`
+                              : '01'}
+                            /
+                            {String(anime.startDate?.month).length >= 2
+                              ? `${anime.startDate?.month}`
+                              : `0${anime.startDate?.month}`}
+                            /{anime.startDate?.year}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='flex flex-col items-end gap-1 pr-4'>
+                    <span>
+                      {anime.rating ? (
+                        <div className='flex items-center gap-2'>
+                          <div className='flex items-center gap-1'>
+                            <FaStar /> <span>{anime.rating / 10}</span>
+                          </div>{' '}
+                          |{' '}
+                          {anime.status ??
+                            (anime.format === 'TV'
+                              ? 'TV Show'
+                              : anime.format) ??
+                            anime.type}
+                        </div>
+                      ) : (
+                        <>{anime.type}</>
+                      )}
+                    </span>
+                    <div
+                      className='flex gap-2'
+                      style={{
+                        color:
+                          getBrightnessScore(anime.color ?? '#FFFFFF') >= 70
+                            ? '#000000'
+                            : '#FFFFFF',
+                      }}
                     >
-                      <motion.h1
-                        className='max-w-[210px] truncate'
-                        whileHover={{ color: anime.color ?? 'greenyellow' }}
-                      >
-                        {anime.title.english! ?? anime.title.romaji!}
-                      </motion.h1>
-                    </Tooltip>
-                    <div className='flex items-center gap-2'>
-                      <span>{anime.season}</span>
-                      <div className='h-4 w-[0.5px] bg-black dark:bg-white'></div>
-                      <span>
-                        {anime.startDate?.day
-                          ? String(anime.startDate?.day).length >= 2
-                            ? `${anime.startDate?.day}`
-                            : `0${anime.startDate?.day}`
-                          : '01'}
-                        /
-                        {String(anime.startDate?.month).length >= 2
-                          ? `${anime.startDate?.month}`
-                          : `0${anime.startDate?.month}`}
-                        /{anime.startDate?.year}
-                      </span>
+                      {anime.genres.slice(0, 3).map((genre, i) => (
+                        <Badge
+                          key={`${genre}-${i}`}
+                          color={anime.color ?? '#FFFFFF'}
+                          rounded='full'
+                          size={'sm'}
+                        >
+                          {genre}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
                 </div>
