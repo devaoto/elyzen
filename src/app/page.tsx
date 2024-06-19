@@ -5,6 +5,7 @@ import {
   getUpcomingNextSeason,
   getPopularThisSeasonAnime,
   top100Anime,
+  getAllTimePopularMovies,
 } from '@/lib/anime';
 import { ReturnData } from '@/types/animeData';
 import dynamic from 'next/dynamic';
@@ -29,15 +30,24 @@ const HomeComp = dynamic(() => import('./home'), { ssr: false });
 export const revalidate = 3600;
 
 export default function Home() {
-  const [trending, popular, upcomingNxt, popularThis, top100] = use(
-    Promise.all([
-      getTrendingAnime(),
-      getAllTimePopularAnime(),
-      getUpcomingNextSeason(),
-      getPopularThisSeasonAnime(),
-      top100Anime(),
-    ])
-  ) as [ReturnData, ReturnData, ReturnData, ReturnData, ReturnData];
+  const [trending, popular, upcomingNxt, popularThis, top100, popularMovies] =
+    use(
+      Promise.all([
+        getTrendingAnime(),
+        getAllTimePopularAnime(),
+        getUpcomingNextSeason(),
+        getPopularThisSeasonAnime(),
+        top100Anime(),
+        getAllTimePopularMovies(),
+      ])
+    ) as [
+      ReturnData,
+      ReturnData,
+      ReturnData,
+      ReturnData,
+      ReturnData,
+      ReturnData,
+    ];
 
   return (
     <HomeComp
@@ -46,6 +56,7 @@ export default function Home() {
       upcomingNxt={upcomingNxt}
       popularThis={popularThis}
       top100={top100}
+      popularMovies={popularMovies}
     />
   );
 }

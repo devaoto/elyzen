@@ -348,6 +348,167 @@ export const getAllTimePopularAnime = async (): Promise<ReturnData> => {
   }
 };
 
+export const getAllTimePopularMovies = async (): Promise<ReturnData> => {
+  const query = `query ($page: Int, $perPage: Int, $sort: [MediaSort], $format: MediaFormat) {
+  Page(page: $page, perPage: $perPage) {
+    media(sort: $sort, format: $format) {
+      siteUrl
+      title {
+        english
+        native
+        romaji
+        userPreferred
+      }
+      description
+      averageScore
+      bannerImage
+      countryOfOrigin
+      coverImage {
+        extraLarge
+        large
+        medium
+        color
+      }
+      duration
+      endDate {
+        year
+        month
+        day
+      }
+      episodes
+      format
+      genres
+      hashtag
+      id
+      idMal
+      isAdult
+      popularity
+      nextAiringEpisode {
+        id
+        airingAt
+        timeUntilAiring
+        episode
+        mediaId
+      }
+      season
+      startDate {
+        year
+        month
+        day
+      }
+      synonyms
+      status
+      studios {
+        edges {
+          isMain
+          id
+          node {
+            id
+            favourites
+            isAnimationStudio
+            name
+          }
+        }
+      }
+      trailer {
+        id
+        site
+        thumbnail
+      }
+      trending
+      type
+      updatedAt
+      meanScore
+      favourites
+    }
+    pageInfo {
+      total
+      perPage
+      currentPage
+      lastPage
+      hasNextPage
+    }
+  }
+}`;
+
+  const variables = {
+    page: 1,
+    size: 35,
+    format: 'MOVIE',
+    sort: ['POPULARITY_DESC', 'SCORE_DESC'],
+  };
+
+  try {
+    const response = (await await FetchDataAndCache(
+      `https://graphql.anilist.co`,
+      'allTimePopularMovies',
+      'POST',
+      {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      JSON.stringify({ query, variables })
+    )) as { data: ResponseData };
+
+    const res: ReturnData = {
+      currentPage: response.data.Page.pageInfo.currentPage,
+      hasNextPage: response.data.Page.pageInfo.hasNextPage,
+      total: response.data.Page.pageInfo.total,
+      lastPage: response.data.Page.pageInfo.lastPage,
+      results: response.data.Page.media
+        .filter((item) => item.status !== 'NOT_YET_RELEASED')
+        .map((item) => ({
+          id: item.id.toString(),
+          malId: item.idMal,
+          title: item.title,
+          coverImage:
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          trailer: item.trailer?.id
+            ? `https://www.youtube.com/watch?v=${item.trailer?.id}`
+            : null,
+          description: item.description,
+          status: item.status,
+          bannerImage:
+            item.bannerImage ??
+            item.coverImage.extraLarge ??
+            item.coverImage.large ??
+            item.coverImage.medium,
+          rating: item.averageScore,
+          meanScore: item.meanScore,
+          releaseDate: item.seasonYear,
+          startDate: item.startDate,
+          color: item.coverImage?.color,
+          studios: item.studios.edges
+            .filter((studio) => studio.isMain)
+            .map((studio) => studio.node.name),
+          genres: item.genres,
+          totalEpisodes: isNaN(item.episodes)
+            ? 0
+            : item.episodes ?? item.nextAiringEpisode?.episode! - 1 ?? 0,
+          duration: item.duration,
+          format: item.format,
+          type: item.type,
+          season: item.season,
+          year: item.seasonYear,
+          nextAiringEpisode: item.nextAiringEpisode,
+        })),
+    };
+
+    return res;
+  } catch (error) {
+    console.error(error);
+    return {
+      hasNextPage: false,
+      total: 0,
+      lastPage: 0,
+      currentPage: 0,
+      results: [],
+    };
+  }
+};
+
 export const getPopularThisSeasonAnime = async (): Promise<ReturnData> => {
   const query = `query ($page: Int, $isAdult: Boolean = false, $size: Int, $sort: [MediaSort] = [POPULARITY_DESC], $type: MediaType, $season: MediaSeason = ${getCurrentSeason().toUpperCase()}, $seasonYear: Int = ${new Date().getFullYear()}) {
     Page(page: $page, perPage: $size) {

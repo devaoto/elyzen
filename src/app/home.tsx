@@ -23,12 +23,14 @@ export default function Home({
   popularThis,
   upcomingNxt,
   top100,
+  popularMovies,
 }: {
   trending: ReturnData;
   popular: ReturnData;
   popularThis: ReturnData;
   upcomingNxt: UpcomingSeasonalReturnData;
   top100: ReturnData;
+  popularMovies: ReturnData;
 }) {
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
@@ -138,14 +140,37 @@ export default function Home({
         </motion.div>
 
         <motion.div
-          className='container mt-20 pr-4 min-w-full'
+          className='container mt-20 min-w-full pr-4'
           initial='hidden'
           whileInView='visible'
           viewport={{ once: true }}
           variants={fadeInUp}
           transition={{ duration: 0.5 }}
         >
-          <ColumnCard media={top100.results} title='Top 100 Anime' />
+          <ColumnCard media={top100.results} title='Top 10 Anime' />
+        </motion.div>
+
+        <motion.div
+          className='container mt-20 pr-4'
+          initial='hidden'
+          whileInView='visible'
+          viewport={{ once: true }}
+          variants={fadeInUp}
+          transition={{ duration: 0.5 }}
+        >
+          <div className='flex min-w-full items-center justify-between'>
+            <h1 className='mb-4 flex gap-1 text-xl font-bold md:text-3xl lg:text-3xl'>
+              <span>All Time Popular Movies</span>
+            </h1>
+            <Link
+              as={NextLink}
+              href='/catalog?sort=POPULARITY_DESC&sort=SCORE_DESC&type=ANIME&format=MOVIE'
+              underline='hover'
+            >
+              View More
+            </Link>
+          </div>
+          <HomeCards animeData={popularMovies} />
         </motion.div>
       </div>
     </>
