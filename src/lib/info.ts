@@ -927,3 +927,262 @@ export const getCharacters = async (id: string): Promise<ICharacter[]> => {
 
   return cachedData;
 };
+
+export interface InfoCharacter {
+  age: number | null;
+  bloodType: string | null;
+  dateOfBirth: InfoDate | null;
+  description: string | null;
+  favourites: number;
+  gender: string | null;
+  id: number;
+  image: InfoImage;
+  name: InfoCharacterName;
+  media: InfoMediaConnection;
+}
+
+export interface InfoDate {
+  year: number | null;
+  month: number | null;
+  day: number | null;
+}
+
+export interface InfoImage {
+  large: string | null;
+  medium: string | null;
+}
+
+export interface InfoCharacterName {
+  first: string | null;
+  middle: string | null;
+  last: string | null;
+  full: string | null;
+  native: string | null;
+  alternative: string[] | null;
+  alternativeSpoiler: string[] | null;
+  userPreferred: string | null;
+}
+
+export interface InfoMediaConnection {
+  edges: InfoMediaEdge[];
+}
+
+export interface InfoMediaEdge {
+  characterName: string | null;
+  characterRole: string | null;
+  id: number;
+  node: InfoMediaNode;
+  voiceActors: InfoVoiceActor[];
+}
+
+export interface InfoMediaNode {
+  averageScore: number | null;
+  bannerImage: string | null;
+  countryOfOrigin: string | null;
+  coverImage: InfoImageDetails;
+  description: string | null;
+  duration: number | null;
+  endDate: InfoDate | null;
+  seasonYear: number | null;
+  season: string | null;
+  startDate: InfoDate | null;
+  title: InfoMediaTitle;
+  trending: number | null;
+  type: string;
+  synonyms: string[];
+  status: string | null;
+  popularity: number | null;
+  meanScore: number | null;
+  id: number;
+  idMal: number | null;
+  genres: string[];
+  format: string | null;
+  episodes: number | null;
+}
+
+export interface InfoImageDetails {
+  extraLarge: string | null;
+  large: string | null;
+  medium: string | null;
+  color: string | null;
+}
+
+export interface InfoMediaTitle {
+  romaji: string | null;
+  english: string | null;
+  native: string | null;
+  userPreferred: string | null;
+}
+
+export interface InfoVoiceActor {
+  age: number | null;
+  bloodType: string | null;
+  dateOfBirth: InfoDate | null;
+  dateOfDeath: InfoDate | null;
+  description: string | null;
+  gender: string | null;
+  id: number;
+  image: InfoImage;
+  languageV2: string | null;
+  name: InfoVoiceActorName;
+  yearsActive: number[] | null;
+  favourites: number;
+  homeTown: string | null;
+}
+
+export interface InfoVoiceActorName {
+  first: string | null;
+  middle: string | null;
+  last: string | null;
+  full: string | null;
+  native: string | null;
+  alternative: string[] | null;
+  userPreferred: string | null;
+}
+
+export const getCharacterInfo = async (
+  characterId: string
+): Promise<InfoCharacter> => {
+  let cachedData = await cache.get(`character.info:${characterId}`);
+
+  if (!cachedData) {
+    const response = await fetch(`https://graphql.anilist.co`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        query: `query Query($characterId: Int, $type: MediaType) {
+  Character(id: $characterId) {
+    age
+    bloodType
+    dateOfBirth {
+      year
+      month
+      day
+    }
+    description
+    favourites
+    gender
+    id
+    image {
+      large
+      medium
+    }
+    name {
+      first
+      middle
+      last
+      full
+      native
+      alternative
+      alternativeSpoiler
+      userPreferred
+    }
+    media(type: $type) {
+      edges {
+        characterName
+        characterRole
+        id
+        node {
+          averageScore
+          bannerImage
+          countryOfOrigin
+          coverImage {
+            extraLarge
+            large
+            medium
+            color
+          }
+          description
+          duration
+          endDate {
+            year
+            month
+            day
+          }
+          seasonYear
+          season
+          startDate {
+            year
+            month
+            day
+          }
+          title {
+            romaji
+            english
+            native
+            userPreferred
+          }
+          trending
+          type
+          synonyms
+          status
+          popularity
+          meanScore
+          id
+          idMal
+          genres
+          format
+          episodes
+        }
+        voiceActors {
+          age
+          bloodType
+          dateOfBirth {
+            year
+            month
+            day
+          }
+          dateOfDeath {
+            year
+            month
+            day
+          }
+          description
+          gender
+          id
+          image {
+            large
+            medium
+          }
+          languageV2
+          name {
+            first
+            middle
+            last
+            full
+            native
+            alternative
+            userPreferred
+          }
+          yearsActive
+          favourites
+          homeTown
+        }
+      }
+    }
+  }
+}`,
+        variables: {
+          characterId: Number(characterId),
+          type: 'ANIME',
+        },
+      }),
+    });
+    const { data } = (await response.json()) as {
+      data: { Character: InfoCharacter };
+    };
+
+    cachedData = data.Character;
+    await cache.set(
+      `character.info:${characterId}`,
+      JSON.stringify(cachedData),
+      30 * 24 * 3600
+    );
+  } else {
+    cachedData = JSON.parse(cachedData);
+  }
+  return cachedData;
+};
