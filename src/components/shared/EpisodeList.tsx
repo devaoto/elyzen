@@ -111,7 +111,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
                 </SelectGroup>
               </SelectContent>
             </Select>
-            {selectedProvider?.providerId === 'gogoanime' && (
+            {
               <Select
                 onValueChange={(e) => setLanguage(e as 'sub' | 'dub')}
                 value={language}
@@ -126,7 +126,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
-            )}
+            }
             {episodeChunks.length > 1 && (
               <Select
                 onValueChange={(e) => setEpisodePage(Number(e))}
