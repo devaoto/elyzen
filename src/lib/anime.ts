@@ -26,6 +26,7 @@ const FetchDataAndCache = async (
         method: method ? method : 'GET',
         headers: headers ? new Headers(headers) : undefined,
         body: body ? body : undefined,
+        cache: 'no-store'
       };
 
       data = await (await fetch(url, options)).json();
