@@ -1,388 +1,371 @@
-import axios from 'axios';
-import { cache } from '@/lib/cache';
+import ky from 'ky';
+import _ from 'lodash';
 import { NextRequest, NextResponse } from 'next/server';
-import { mergeEpisodeMetadata } from '@/lib/episode';
-import { ConsumetAnimeEpisode } from '@/types/consumet';
-import { AnifyEpisodesResponse } from '@/types/anify';
-import { MalSyncAnime, MalSyncSiteDetails } from '@/types/malSync';
-import { GogoAnimeAnime } from '@/types/gogo';
-import { HiAnimeSeries } from '@/types/hianime';
-import { AniZipData } from '@/types/anizip';
 
-axios.interceptors.request.use((config) => {
-  config.timeout = 9000;
-  return config;
+import { Anime } from '@/types/episodes';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 3600;
+
+const bky = ky.extend({
+  timeout: 11000,
 });
 
-const fetchCData = async (id: string, dub: boolean) => {
-  const res = await axios.get(
-    `${process.env.CONSUMET_API}/meta/anilist/episodes/${id}${
-      dub ? '?dub=true' : ''
-    }`
-  );
-  const data = res.data as ConsumetAnimeEpisode[] | { message: string };
+export interface HiAnimeEpisode {
+  title: string;
+  episodeId: string;
+  number: number;
+  isFiller: boolean;
+}
 
-  if (
-    (data as { message: string })?.message === 'Anime not found' &&
-    (data as ConsumetAnimeEpisode[])?.length < 1
-  ) {
-    return [];
-  }
-  return data as ConsumetAnimeEpisode[];
-};
+export interface HiAnimeEpisodesData {
+  totalEpisodes: number;
+  episodes: HiAnimeEpisode[];
+}
 
-async function fetchConsumet(id: string) {
+interface EpisodeTitle {
+  ja: string;
+  en: string;
+  'x-jat': string;
+}
+
+interface Episode {
+  tvdbShowId: number;
+  tvdbId: number;
+  seasonNumber: number;
+  episodeNumber: number;
+  absoluteEpisodeNumber: number;
+  title: EpisodeTitle;
+  airDate: string;
+  airDateUtc: string;
+  runtime: number;
+  overview: string;
+  image: string;
+  episode: string;
+  anidbEid: number;
+  length: number;
+  airdate: string;
+  rating: string;
+  summary: string;
+  finaleType?: string;
+}
+
+interface Episodes {
+  [key: string]: Episode;
+}
+
+interface GogoAnimeInfo {
+  id: string;
+  title: string;
+  url: string;
+  genres: string[];
+  totalEpisodes: number;
+  image: string;
+  releaseDate: string;
+  description: string;
+  subOrDub: string;
+  type: string;
+  status: string;
+  otherName: string;
+  episodes: GogoEpisode[];
+}
+
+interface GogoEpisode {
+  id: string;
+  number: number;
+  url: string;
+}
+
+interface ConsumetEpisode {
+  id: string;
+  title: string | null;
+  image: string | null;
+  imageHash: string;
+  number: number;
+  createdAt: string | null;
+  description: null;
+  url: string;
+}
+
+interface ProviderEpisodes {
+  sub: Omit<ConsumetEpisode, 'imageHash'>[];
+  dub: Omit<ConsumetEpisode, 'imageHash'>[];
+}
+
+export interface ProviderData {
+  providerId: string;
+  episodes: ProviderEpisodes;
+}
+
+const getConsumet = async (id: string): Promise<ProviderData[]> => {
+  const fetchGogoData = async (i: string, dub = false) => {
+    try {
+      const res = await bky.get(
+        `${process.env.CONSUMET_API}/meta/anilist/episodes/${i}${
+          dub ? '?dub=true' : ''
+        }`
+      );
+      const data = await res.json<ConsumetEpisode[]>();
+
+      if (data.length < 1) return [];
+
+      return data.map((d) =>
+        _.omit(d, ['image', 'imageHash', 'description', 'createdAt'])
+      );
+    } catch (error) {
+      return [];
+    }
+  };
+
   try {
-    const [subData, dubData] = await Promise.all([
-      fetchCData(id, false),
-      fetchCData(id, true),
+    const [dub, sub] = await Promise.all([
+      fetchGogoData(id, true),
+      fetchGogoData(id),
     ]);
 
-    const array = [
+    return [
       {
-        consumet: true,
         providerId: 'gogoanime',
         episodes: {
-          ...(subData && subData.length > 0 && { sub: subData }),
-          ...(dubData && dubData.length > 0 && { dub: dubData }),
+          sub: (sub ?? []) as _.Omit<ConsumetEpisode, 'imageHash'>[],
+          dub: (dub ?? []) as _.Omit<ConsumetEpisode, 'imageHash'>[],
         },
       },
     ];
-
-    return array;
   } catch (error) {
-    console.error('Error fetching consumet:', error);
-    return [];
+    return [
+      {
+        providerId: 'gogoanime',
+        episodes: {
+          sub: [],
+          dub: [],
+        },
+      },
+      {
+        providerId: 'hianime',
+        episodes: {
+          sub: [],
+          dub: [],
+        },
+      },
+    ];
   }
-}
+};
 
-async function fetchAnify(id: string) {
+const getMadaraMappings = async (id: string) => {
   try {
-    const res = await axios.get(
-      `https://api.anify.tv/info/${id}?fields=[episodes]`
+    const res = await bky.get(
+      process.env.MADARA_MAPPINGS_API_KEY
+        ? `https://api-mappings.madara.live/anime/${id}?api_key=${process.env.MADARA_MAPPINGS_API_KEY}`
+        : `https://api-mappings.madara.live/anime/${id}`
     );
-    const data = res.data as AnifyEpisodesResponse;
+    const data = await res.json<Anime>();
 
-    if (!data || !data?.episodes?.data) {
-      return [];
-    }
-    const epData = data?.episodes?.data;
+    const malSync = data.mappings.malSync;
 
-    const filteredData = epData?.filter(
-      (episodes) => episodes.providerId !== '9anime'
-    );
-    const mappedData = filteredData?.map((i) => {
-      if (i?.providerId === 'gogoanime') {
-        return {
-          episodes: i.episodes,
-          providerId: 'gogobackup',
-        };
-      }
-      return i;
-    });
-    return mappedData;
-  } catch (error) {
-    console.error('Error fetching anify:', error);
-    return [];
-  }
-}
+    let subUrl = '';
+    let dubUrl = '';
+    let hianimeUrl = '';
 
-async function malSync(id: string) {
-  try {
-    const response = await axios.get(`${process.env.MALSYNC_URI}${id}`);
-
-    const data = response?.data as MalSyncAnime;
-    const sites = Object.keys(data.Sites).map((providerId) => ({
-      providerId: providerId.toLowerCase(),
-      data: Object.values(data.Sites[providerId]),
-    })) as {
-      providerId: string;
-      data: MalSyncSiteDetails[];
-    }[];
-    const newData = sites.filter(
-      (site) => site.providerId === 'gogoanime' || site.providerId === 'zoro'
-    );
-    const finalData: any = [];
-    console.log(newData);
-    newData.forEach((item) => {
-      const { providerId, data } = item;
-      if (providerId === 'gogoanime') {
-        const remove1 = 'https://anitaku.so/category/';
-        const remove2 = 'https://anitaku.to/category/';
-
-        const dub = data.find((item: any) =>
-          item.title.toLowerCase().endsWith(' (dub)')
-        );
-        const dubUrl = dub?.url?.replace(
-          dub.url.includes('https://anitaku.to/') ? remove2 : remove1,
+    if (malSync.Sites?.Gogoanime) {
+      for (const key in malSync.Sites.Gogoanime) {
+        const siteDetail =
+          malSync.Sites.Gogoanime[key as keyof typeof malSync.Sites.Gogoanime];
+        const cleanedUrl = siteDetail.url.replace(
+          /https?:\/\/[^/]+\/category\//,
           ''
         );
 
-        const subItem = data.find((item: any) =>
-          item.title.toLowerCase().includes(' (uncensored)')
-        );
-        const subUrl = subItem
-          ? subItem.url.replace(
-              subItem.url.includes('https://anitaku.to/') ? remove2 : remove1,
-              ''
-            )
-          : null;
+        if (!siteDetail.title.includes('Dub') && !key.includes('dub')) {
+          subUrl = cleanedUrl;
+        }
 
-        const nonDubNonUncensoredItem = data.find(
-          (item: any) =>
-            !item.title.toLowerCase().includes(')') && item.url !== dub?.url
-        );
-        const nonDubNonUncensoredUrl = nonDubNonUncensoredItem
-          ? nonDubNonUncensoredItem.url.replace(
-              nonDubNonUncensoredItem.url.includes('https://anitaku.to/')
-                ? remove2
-                : remove1,
-              ''
-            )
-          : null;
-
-        const sub =
-          subUrl ??
-          data
-            .find((item: any) => item.url === dub?.url?.replace(/-dub$/, ''))
-            ?.url.replace(
-              dub?.url?.includes('https://anitaku.to/') ? remove2 : remove1,
-              ''
-            ) ??
-          nonDubNonUncensoredUrl;
-
-        finalData.push({ providerId, sub: sub || '', dub: dubUrl || '' });
-      } else {
-        const remove = 'https://hianime.to/';
-        const sub = data[0]?.url?.replace(remove, '');
-        finalData.push({ providerId, sub: sub || '' });
+        if (siteDetail.title.includes('(Dub)') || key.includes('dub')) {
+          dubUrl = cleanedUrl;
+        }
       }
-    });
-    return finalData as { providerId?: string; sub?: string; dub?: string }[];
+    }
+
+    if (malSync.Sites?.Zoro) {
+      for (const key in malSync.Sites?.Zoro) {
+        const siteDetail =
+          malSync.Sites.Zoro[key as keyof typeof malSync.Sites.Zoro];
+
+        const cleanedUrl = siteDetail.url.replace(/https?:\/\/[^/]+\//, '');
+
+        hianimeUrl = cleanedUrl;
+      }
+    }
+
+    const malsync = { sub: subUrl, dub: dubUrl, hianime: hianimeUrl };
+
+    const aniZip = data.mappings.anizip;
+    let anizip = {};
+
+    if (!aniZip || !aniZip.episodes) anizip = {};
+    anizip = aniZip.episodes;
+
+    return {
+      malsync,
+      anizip,
+    };
   } catch (error) {
-    console.error('Error fetching data from Malsync:', error);
-    return null;
+    return {
+      malsync: {
+        sub: '',
+        dub: '',
+        hianime: '',
+      },
+      anizip: {},
+    };
   }
-}
-
-const fetchDData = async (id: string) => {
-  const res = await axios.get(
-    `${process.env.CONSUMET_API}/anime/gogoanime/info/${id}`
-  );
-  const data = res.data as GogoAnimeAnime | { message: string };
-
-  if (
-    (data as { message: string })?.message === 'Anime not found' &&
-    (data as GogoAnimeAnime)?.episodes?.length < 1
-  ) {
-    return [];
-  }
-  return (data as GogoAnimeAnime)?.episodes;
 };
 
-async function fetchGogoanime(sub: string, dub: string) {
+const getGogoAnime = async (id: string) => {
   try {
-    const [subData, dubData] = await Promise.all([
-      sub !== '' ? fetchDData(sub) : Promise.resolve([]),
-      dub !== '' ? fetchDData(dub) : Promise.resolve([]),
-    ]);
+    const res = await bky.get(
+      `${process.env.CONSUMET_API}/anime/gogoanime/info/${id}`
+    );
+    const data = await res.json<GogoAnimeInfo>();
 
-    const array = [
-      {
-        consumet: true,
-        providerId: 'gogoanime',
-        episodes: {
-          ...(subData && subData.length > 0 && { sub: subData }),
-          ...(dubData && dubData.length > 0 && { dub: dubData }),
-        },
-      },
-    ];
+    if (!data || !data.episodes) return [];
 
-    return array;
+    return data.episodes;
   } catch (error) {
-    console.error('Error fetching consumet gogoanime:', error);
     return [];
   }
-}
+};
 
-async function fetchHIAnime(id: string) {
+const getHiAnime = async (id: string) => {
   try {
-    const res = await axios.get(
+    const res = await bky.get(
       `${process.env.HIANIME_API}/anime/episodes/${id}`
     );
 
-    const data = res.data as HiAnimeSeries;
-    if (!data?.episodes) return [];
+    const data = await res.json<HiAnimeEpisodesData>();
 
-    const array = [
-      {
-        providerId: 'zoro',
-        episodes: data?.episodes,
-      },
-    ];
-
-    return array;
-  } catch (error) {
-    console.error('Error fetching hianime:', error);
+    return data.episodes;
+  } catch {
     return [];
-  }
-}
-
-async function fetchEpisodeMeta(id: string, available = false) {
-  try {
-    if (available) {
-      return null;
-    }
-    const data = await axios.get(
-      `https://api.ani.zip/mappings?anilist_id=${id}`
-    );
-    const episodesArray = Object.values((data?.data as AniZipData)?.episodes);
-
-    if (!episodesArray) {
-      return [];
-    }
-    return episodesArray;
-  } catch (error) {
-    console.error('Error fetching and processing meta:', error);
-    return [];
-  }
-}
-
-/**
- * Asynchronously fetches and caches data based on the provided parameters.
- *
- * @param {string} id - The ID used to fetch the data.
- * @param {any} meta - The metadata associated with the data.
- * @param {any} cacheTime - The time to cache the data.
- * @param {any} refresh - Flag indicating whether to refresh the cache.
- * @return {Promise<any>} The combined and processed data after caching and merging.
- */
-const fetchAndCacheData = async (
-  id: string,
-  meta: any,
-  cacheTime: any,
-  refresh: any
-): Promise<any> => {
-  let malsync;
-  if (id) {
-    malsync = await malSync(id);
-  }
-  const promises = [];
-
-  if (malsync) {
-    const gogoAnimeProvider = malsync.find((i) => i.providerId === 'gogoanime');
-    const hiAnimeProvider = malsync.find((i) => i.providerId === 'zoro');
-
-    if (gogoAnimeProvider) {
-      promises.push(
-        fetchGogoanime(gogoAnimeProvider.sub!, gogoAnimeProvider.dub!)
-      );
-    } else {
-      promises.push(Promise.resolve([]));
-    }
-
-    if (hiAnimeProvider) {
-      promises.push(fetchHIAnime(hiAnimeProvider.sub!));
-    } else {
-      promises.push(Promise.resolve([]));
-    }
-    promises.push(fetchEpisodeMeta(id, !refresh));
-  } else {
-    promises.push(fetchConsumet(id));
-    promises.push(fetchAnify(id));
-    promises.push(fetchEpisodeMeta(id, !refresh));
-  }
-  const [consumet, anify, cover] = await Promise.all(promises);
-
-  // Check if cache is available
-  if (cache) {
-    if (consumet?.length! > 0 || anify?.length! > 0) {
-      await cache.set(
-        `episode:data:${id}`,
-        JSON.stringify(consumet && anify ? [...consumet, ...anify] : []),
-        cacheTime
-      );
-    }
-
-    const combinedData = [...(consumet ?? []), ...(anify ?? [])];
-    let data = combinedData;
-    if (refresh) {
-      if (cover && cover?.length > 0) {
-        try {
-          await cache.set(`meta:data:${id}`, JSON.stringify(cover), cacheTime);
-          data = await mergeEpisodeMetadata(combinedData, cover);
-        } catch (error) {
-          console.error('Error serializing cover:', error);
-        }
-      } else if (meta) {
-        data = await mergeEpisodeMetadata(combinedData, JSON.parse(meta));
-      }
-    } else if (meta) {
-      data = await mergeEpisodeMetadata(combinedData, JSON.parse(meta));
-    }
-
-    return data;
-  } else {
-    console.error('cache URL not provided. Caching not possible.');
-    return [...(consumet ?? []), ...(anify ?? [])];
   }
 };
 
+const combineMetadataAndEpisodes = (
+  consumetResponse: ProviderData[],
+  metadataResponse: Episodes,
+  combinedSubAndDub: ProviderData[]
+): ProviderData[] => {
+  if (consumetResponse.length < 1) {
+    return [];
+  }
+
+  const gogoAnimeIndex = consumetResponse.findIndex(
+    (provider) => provider.providerId === 'gogoanime'
+  );
+
+  if (gogoAnimeIndex !== -1) {
+    consumetResponse[gogoAnimeIndex] = combinedSubAndDub[0];
+  }
+
+  _.forEach(consumetResponse, (provider) => {
+    _.forEach(['sub', 'dub'], (type) => {
+      // @ts-ignore
+      provider.episodes[type as 'sub' | 'dub'] = _.map(
+        provider.episodes[type as 'sub' | 'dub'],
+        (episode: _.Omit<ConsumetEpisode, 'imageHash'>) => {
+          const metadataEpisode = metadataResponse[episode.number];
+
+          if (metadataEpisode) {
+            const title =
+              metadataEpisode.title.en ||
+              metadataEpisode.title['x-jat'] ||
+              metadataEpisode.title.ja;
+
+            return {
+              ...episode,
+              id:
+                episode.id || (episode as unknown as HiAnimeEpisode).episodeId,
+              title: title,
+              image: metadataEpisode.image,
+              description: metadataEpisode.overview ?? null,
+              rating: Number(metadataEpisode.rating),
+              season: metadataEpisode.seasonNumber,
+              createdAt: metadataEpisode.airDateUtc,
+            };
+          } else {
+            return {
+              ...episode,
+              title: null,
+              image: null,
+              description: null,
+              rating: null,
+            };
+          }
+        }
+      ) as {
+        title: string;
+        image: string | null;
+        description: string | null;
+        rating: string;
+        createdAt: string;
+        number: number;
+        id: string;
+        url: string;
+      }[];
+    });
+  });
+
+  return consumetResponse;
+};
+
+const getEpisodes = async (id: string) => {
+  const [consumet, madara] = await Promise.all([
+    getConsumet(id),
+    getMadaraMappings(id),
+  ]);
+
+  const malsync = madara.malsync;
+  const meta = madara.anizip;
+
+  const [sub, dub, hianime] = await Promise.all([
+    malsync.sub !== '' ? getGogoAnime(malsync.sub) : Promise.resolve([]),
+    malsync.dub !== '' ? getGogoAnime(malsync.dub) : Promise.resolve([]),
+    malsync.hianime !== '' ? getHiAnime(malsync.hianime) : Promise.resolve([]),
+  ]);
+
+  const combinedSubAndDub: ProviderData[] = [
+    {
+      providerId: 'gogoanime',
+      episodes: {
+        sub: [...sub] as _.Omit<ConsumetEpisode, 'imageHash'>[],
+        dub: [...dub] as _.Omit<ConsumetEpisode, 'imageHash'>[],
+      },
+    },
+  ];
+
+  const combinedHiAnime: ProviderData = {
+    providerId: 'hianime',
+    episodes: {
+      sub: [...hianime] as unknown as _.Omit<ConsumetEpisode, 'imageHash'>[],
+      dub:
+        dub.length > 0
+          ? ([...hianime] as unknown as _.Omit<ConsumetEpisode, 'imageHash'>[])
+          : ([] as _.Omit<ConsumetEpisode, 'imageHash'>[]),
+    },
+  };
+
+  return combineMetadataAndEpisodes(
+    [...consumet, combinedHiAnime],
+    meta,
+    combinedSubAndDub
+  );
+};
+
 export const GET = async (
-  req: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) => {
-  const url = new URL(req.url);
-  const id = params.id;
-  const releasing = url.searchParams.get('releasing') || false;
-  const refresh = url.searchParams.get('refresh') === 'true' || false;
+  const res = await getEpisodes(params.id);
 
-  let cacheTime = null;
-  if (releasing === 'true') {
-    cacheTime = 60 * 60 * 3;
-  } else if (releasing === 'false') {
-    cacheTime = 60 * 60 * 3;
-  }
-
-  let meta: any = null;
-  let cached: string | null = null;
-
-  if (cache) {
-    try {
-      meta = await cache.get(`meta:data:${id}`);
-      if (JSON.parse(meta)?.length === 0) {
-        await cache.del(`meta:data:${id}`);
-        meta = null;
-      }
-      cached = await cache.get(`episode:data:${id}`);
-      if (JSON.parse(cached!)?.length === 0) {
-        await cache.del(`episode:data:${id}`);
-        cached = null;
-      }
-      let data: any[] | any = null;
-      if (refresh) {
-        data = await fetchAndCacheData(id, meta, cacheTime, refresh);
-      }
-      if (data?.length > 0) {
-        return NextResponse.json(data);
-      }
-    } catch (error) {
-      console.error('Error checking cache cache:', error);
-    }
-  }
-
-  if (cached) {
-    try {
-      let cachedData = JSON.parse(cached);
-      if (meta) {
-        cachedData = await mergeEpisodeMetadata(cachedData, JSON.parse(meta));
-      }
-      return NextResponse.json(cachedData);
-    } catch (error) {
-      console.error('Error parsing cached data:', error);
-    }
-  } else {
-    const fetchedData = await fetchAndCacheData(id, meta, cacheTime, !refresh);
-    return NextResponse.json(fetchedData);
-  }
+  return NextResponse.json(res);
 };

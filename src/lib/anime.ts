@@ -26,7 +26,7 @@ const FetchDataAndCache = async (
         method: method ? method : 'GET',
         headers: headers ? new Headers(headers) : undefined,
         body: body ? body : undefined,
-        cache: 'no-store'
+        cache: 'no-store',
       };
 
       data = await (await fetch(url, options)).json();
@@ -1122,20 +1122,12 @@ export async function getEpisodes(
       `episode-${id}`
     );
 
-    if (response && typeof response === 'object' && !Array.isArray(response)) {
-      return Object.keys(response)
-        .filter((key) => key !== 'isCached')
-        .map((key) => {
-          const provider = response[key];
-          return {
-            consumet: provider.consumet,
-            providerId: provider.providerId,
-            episodes: provider.episodes,
-          } as Provider;
-        });
-    } else {
-      throw new Error('Invalid response format');
-    }
+    // Check if the response is an object with numeric keys and convert it to an array
+    const episodesArray = Object.keys(response)
+      .filter((key) => !isNaN(Number(key))) // Filter out non-numeric keys
+      .map((key) => response[key]); // Map numeric keys to array elements
+
+    return episodesArray;
   } catch (error) {
     throw error;
   }

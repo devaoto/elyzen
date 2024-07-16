@@ -23,9 +23,10 @@ import {
   TooltipTrigger,
 } from '../ui/tooltip';
 import { Button, Image } from '@nextui-org/react';
+import { ProviderData } from '@/app/api/episodes/[id]/route';
 
 interface Props {
-  animeData: Provider[];
+  animeData: ProviderData[];
   id: string;
   info: AnilistInfo;
 }
@@ -33,7 +34,7 @@ interface Props {
 const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   const [selectedProvider, setSelectedProvider] = useState<
     Provider | undefined
-  >(animeData.find((p) => p.providerId === 'zoro') || animeData[0]);
+  >(animeData.find((p) => p.providerId === 'hianime') || animeData[0]);
   const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
   const [episodePage, setEpisodePage] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -63,7 +64,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   }, [selectedProvider, language]);
 
   const filteredEpisodes = useMemo(() => {
-    return (episodes as Episode[]).filter(
+    return (episodes as Episode[])?.[language].filter(
       (episode) =>
         (episode.title ?? `Episode ${episode.number}`)
           .toLowerCase()

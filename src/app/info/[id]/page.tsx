@@ -78,7 +78,7 @@ export default function Information({
   const [info, episodes, characters] = use(
     Promise.all([infoPromise, episodesPromise, charactersPromise])
   );
-  console.log(characters);
+  console.log(episodes);
 
   return (
     <>
