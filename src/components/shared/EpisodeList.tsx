@@ -33,7 +33,7 @@ interface Props {
 
 const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   const [selectedProvider, setSelectedProvider] = useState<
-    Provider | undefined
+    ProviderData | undefined
   >(animeData.find((p) => p.providerId === 'hianime') || animeData[0]);
   const [language, setLanguage] = useState<'sub' | 'dub'>('sub');
   const [episodePage, setEpisodePage] = useState<number>(0);
@@ -64,7 +64,7 @@ const AnimeViewer: React.FC<Props> = ({ animeData, info, id }) => {
   }, [selectedProvider, language]);
 
   const filteredEpisodes = useMemo(() => {
-    return (episodes as Episode[])?.[language].filter(
+    return (episodes as Episode[])?.[language as 'sub' | 'dub'].filter(
       (episode) =>
         (episode.title ?? `Episode ${episode.number}`)
           .toLowerCase()
@@ -262,8 +262,8 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
     >
       <Image
         src={
-          episode.img
-            ? episode.img!
+          episode.thumbnail
+            ? episode.thumbnail!
             : info.bannerImage
               ? info.bannerImage!
               : info.coverImage!
