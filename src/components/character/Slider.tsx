@@ -8,7 +8,7 @@ import {
   CarouselContent,
   CarouselItem,
   CarouselNext,
-  CarouselPrevious,
+  CarouselPrevious
 } from '../ui/carousel';
 
 export const CharacterAnimeSlider = ({
