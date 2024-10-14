@@ -57,7 +57,7 @@ export interface Episode {
   episodeId?: string;
   number: number;
   url?: string;
-  img: string;
+  thumbnail: string;
   title: string;
   description: string;
   isFiller?: boolean;
